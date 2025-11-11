@@ -24,6 +24,8 @@ npm run dev
 
 Server akan berjalan di `http://localhost:5173`
 
+**Catatan:** Script npm sudah dikonfigurasi untuk menjalankan Vite dengan Node.js secara langsung untuk menghindari masalah PATH di Windows.
+
 ## Build untuk Production
 
 ```bash
