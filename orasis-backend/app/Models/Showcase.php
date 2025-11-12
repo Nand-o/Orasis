@@ -13,6 +13,7 @@ class Showcase extends Model
         'user_id',
         'title',
         'description',
+        'url_website',
         'image_url',
         'category',
     ];

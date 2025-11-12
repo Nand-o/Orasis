@@ -39,6 +39,7 @@ class ShowcaseController extends Controller
             'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'url_website' => 'required|string|max:255',
             'image_url' => 'required|string|url',
             'category' => 'nullable|string',
         ]);
@@ -72,6 +73,7 @@ class ShowcaseController extends Controller
             'user_id' => 'sometimes|required|exists:users,id',
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string',
+            'url_website' => 'sometimes|required|string|url',
             'image_url' => 'sometimes|required|string|url',
             'category' => 'sometimes|nullable|string',
         ]);
