@@ -4,29 +4,37 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+// public route
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// protected route
+Route::middleware('auth:sanctum')->group(function () {
+    
+    // endpoint untuk mengambil data user yang sedang login
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    // endpoint logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // admin route
+    // Rute ini harus login and admin
+    Route::middleware('is.admin')->group(function () {
+
+    // endpoint showcase
+    Route::apiResource('showcases', ShowcaseController::class);
+
+    // endpoint untuk Tag
+    Route::apiResource('tags', TagController::class);
+
+    // endpoint user
+    Route::apiResource('users', UserController::class);
+    });
 });
 
-// -- CRUD UNTUK ADMIN FITUR (TUGAS MINGGU KE-3) --
 
-// Ini secara otomatis membuat 7 endpoint untuk Showcase (index, show, store, update, destroy, dll)
-Route::apiResource('showcases', ShowcaseController::class);
-
-// Ini membuat endpoint untuk Tag
-Route::apiResource('tags', TagController::class);
-
-// Catatan: Rute untuk 'Collection' akan kita buat di Minggu ke-4
-// karena sangat bergantung pada Autentikasi Pengguna.
