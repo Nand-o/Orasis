@@ -14,15 +14,16 @@ class Collection extends Model
         'name',
     ];
 
-    // Relasi ke User
+    // Relasi ke User (Pemilik Koleksi)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Collection punya banyak Showcase
+    // Relasi ke Showcase (Isi Koleksi)
     public function showcases()
     {
-        return $this->belongsToMany(Showcase::class, 'collection_showcase');
+        return $this->belongsToMany(Showcase::class, 'collection_showcase')
+                    ->withTimestamps(); // <--- PENTING: Agar created_at di tabel pivot terisi
     }
 }

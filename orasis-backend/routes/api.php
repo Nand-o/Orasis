@@ -30,6 +30,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/showcases/{id}', [ShowcaseController::class, 'update']);
     Route::delete('/showcases/{id}', [ShowcaseController::class, 'destroy']);
 
+    // === COLLECTION MANAGEMENT (Fitur User) ===
+    Route::apiResource('collections', CollectionController::class);
+
+    // Fitur Bookmark (Masukin/Keluarin item)
+    Route::post('/collections/{collection}/showcases', [CollectionController::class, 'addShowcase']);
+    Route::delete('/collections/{collection}/showcases/{showcase}', [CollectionController::class, 'removeShowcase']);
 
     // === KHUSUS ADMIN ===
     Route::middleware('is.admin')->group(function () {
