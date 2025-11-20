@@ -16,6 +16,7 @@ class Showcase extends Model
         'url_website',
         'image_url',
         'category',
+        'status',
     ];
 
     // Relasi ke User
