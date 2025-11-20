@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminShowcaseController;
 use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 
 // === PUBLIC route ===
 Route::post('/register', [AuthController::class, 'register']);
@@ -25,7 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profil & Logout
     Route::get('/user', function (Request $request) { return $request->user(); });
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    Route::put('/profile', [ProfileController::class, 'update']);
+    
     // User Action: Upload, Edit, Hapus Punya Sendiri
     Route::post('/showcases', [ShowcaseController::class, 'store']);
     Route::put('/showcases/{id}', [ShowcaseController::class, 'update']);
@@ -40,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // === KHUSUS ADMIN ===
     Route::middleware('is.admin')->group(function () {
+        // Dashboard
+        Route::get('/admin/stats', [DashboardController::class, 'stats']);
         
         // Moderasi Showcase
         Route::get('/admin/showcases/pending', [AdminShowcaseController::class, 'indexPending']);
