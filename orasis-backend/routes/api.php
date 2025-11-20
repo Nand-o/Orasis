@@ -7,33 +7,34 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 
-// public route
+// public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// protected route
+// showcase & tags (read only)
+Route::get('/showcases', [ShowcaseController::class, 'index']);
+Route::get('/showcases/{id}', [ShowcaseController::class, 'show']);
+Route::get('/tags', [TagController::class, 'index']);
+
+// protected routes (harus login)
 Route::middleware('auth:sanctum')->group(function () {
     
-    // endpoint untuk mengambil data user yang sedang login
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-
-    // endpoint logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // admin route
-    // Rute ini harus login and admin
+    // user collection/wishlist
+    // Route::apiResource('collections', CollectionController::class);
+
+    // admin routes
     Route::middleware('is.admin')->group(function () {
-
-    // endpoint showcase
-    Route::apiResource('showcases', ShowcaseController::class);
-
-    // endpoint untuk Tag
-    Route::apiResource('tags', TagController::class);
-
-    // endpoint user
-    Route::apiResource('users', UserController::class);
+        // Admin bisa Create/Update/Delete Showcase & Tags
+        Route::apiResource('showcases', ShowcaseController::class)->except(['index', 'show']);
+        Route::apiResource('tags', TagController::class)->except(['index']);
+        
+        // Admin kelola User
+        Route::apiResource('users', UserController::class);
     });
 });
 

@@ -32,9 +32,9 @@ class ShowcaseController extends Controller
      * CREATE: Menyimpan data showcase baru.
      * (POST /api/showcases)
      */
-    public function store(Request $request)
+public function store(Request $request)
     {
-        // Validasi data yang masuk
+        // validasi
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
@@ -42,10 +42,26 @@ class ShowcaseController extends Controller
             'url_website' => 'required|string|url|max:255',
             'image_url' => 'required|string|url',
             'category' => 'nullable|string',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
         ]);
 
-        // Buat showcase baru
-        $showcase = Showcase::create($validated);
+        // simpan data showcase
+        $showcase = Showcase::create([
+            'user_id' => $validated['user_id'],
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'url_website' => $validated['url_website'],
+            'image_url' => $validated['image_url'],
+            'category' => $validated['category'],
+        ]);
+
+        // simpan relasi
+        if ($request->has('tags')) {
+            $showcase->tags()->attach($request['tags']);
+        }
+
+        $showcase->load('tags');
 
         return response()->json([
             'message' => 'Showcase created successfully',

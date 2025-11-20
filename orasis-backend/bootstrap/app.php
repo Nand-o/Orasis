@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyToken;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api();
+        $middleware->api(); 
         $middleware->alias([
             'is.admin' => \App\Http\Middleware\IsAdminMiddleware::class,
         ]);
@@ -21,5 +22,3 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->create();
-
-
