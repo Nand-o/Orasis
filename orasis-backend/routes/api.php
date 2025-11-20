@@ -7,6 +7,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminShowcaseController;
+use App\Http\Controllers\CollectionController;
 
 // === PUBLIC route ===
 Route::post('/register', [AuthController::class, 'register']);
