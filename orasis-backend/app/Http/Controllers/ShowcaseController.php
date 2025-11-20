@@ -7,94 +7,122 @@ use Illuminate\Http\Request;
 
 class ShowcaseController extends Controller
 {
-    /**
-     * READ: Menampilkan semua data showcase.
-     * (GET /api/showcases)
-     */
+    // PUBLIC: Hanya tampilkan yang APPROVED
     public function index(Request $request)
     {
-        $category = $request->query('category');
+        $query = Showcase::with(['user', 'tags'])
+            ->where('status', 'approved')
+            ->latest();
 
-        $query = Showcase::query()->latest();
-
-        // filter berdasar kategori
-        if ($category) {
+        if ($category = $request->query('category')) {
             $query->whereRaw('LOWER(category) = ?', [strtolower($category)]);
         }
 
-        // jalankan query dengan pagination
-        $showcases = $query->paginate(10);
-
-        return response()->json($showcases);
+        return response()->json($query->paginate(10));
     }
 
-    /**
-     * CREATE: Menyimpan data showcase baru.
-     * (POST /api/showcases)
-     */
+    // USER: Upload showcase baru (Otomatis Pending)
     public function store(Request $request)
     {
-        // Validasi data yang masuk
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'url_website' => 'required|string|max:255',
-            'image_url' => 'required|string|url',
-            'category' => 'nullable|string',
+            'description' => 'required|string',
+            'url_website' => 'required|url',
+            'image_url' => 'required|url',
+            'category' => 'required|string',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id'
         ]);
 
-        // Buat showcase baru
-        $showcase = Showcase::create($validated);
+        // Cek role user (jika admin maka langsung approve upload)
+        $initialStatus = $request->user()->role === 'admin' ? 'approved' : 'pending';
 
-        return response()->json([
-            'message' => 'Showcase created successfully',
-            'data' => $showcase
-        ], 201);
+        // Create showcase
+        $showcase = $request->user()->showcases()->create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'url_website' => $validated['url_website'],
+            'image_url' => $validated['image_url'],
+            'category' => $validated['category'],
+            'status' => $initialStatus
+        ]);
+
+        // Attach tags
+        if ($request->has('tags')) {
+            $showcase->tags()->attach($request->tags);
+        }
+
+        $message = $initialStatus === 'pending'
+            ? 'Karya berhasil diunggah dan sedang menunggu moderasi.'
+            : 'Karya berhasil diterbitkan.';
+
+        return response()->json(['message' => $message, 'data' => $showcase], 201);
     }
 
-    /**
-     * READ: Menampilkan satu data showcase spesifik.
-     * (GET /api/showcases/{id})
-     */
-    public function show(Showcase $showcase)
+    // PUBLIC/USER: Lihat detail
+    public function show($id)
     {
-        return response()->json($showcase);
+        $showcase = Showcase::with(['user', 'tags'])->find($id);
+
+        if (!$showcase) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        // cegah intip status pending kecuali pemilik/admin
+        $user = request()->user('sanctum');
+        $isOwner = $user && $user->id === $showcase->user_id;
+        $isAdmin = $user && $user->role === 'admin';
+
+        if ($showcase->status !== 'approved' && !$isOwner && !$isAdmin) {
+            return response()->json(['message' => 'Showcase sedang dimoderasi.'], 403);
+        }
+
+        return response()->json(['data' => $showcase]);
     }
 
-    /**
-     * UPDATE: Memperbarui data showcase spesifik.
-     * (PUT /api/showcases/{id})
-     */
-    public function update(Request $request, Showcase $showcase)
+    // USER: Update showcase sendiri
+    public function update(Request $request, $id)
     {
-        // Validasi data
+        $showcase = Showcase::findOrFail($id);
+
+        // validasi
+        if ($request->user()->id !== $showcase->user_id && !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
-            'user_id' => 'sometimes|required|exists:users,id',
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|nullable|string',
-            'url_website' => 'sometimes|required|string|url',
-            'image_url' => 'sometimes|required|string|url',
-            'category' => 'sometimes|nullable|string',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'category' => 'sometimes|string',
+            'tags' => 'nullable|array'
         ]);
 
-        // Update data showcase
         $showcase->update($validated);
 
-        return response()->json([
-            'message' => 'Showcase updated successfully',
-            'data' => $showcase
-        ]);
+        // sync tag
+        if ($request->has('tags')) {
+            $showcase->tags()->sync($request->tags);
+        }
+
+        // kembalikan status ke pending jika diedit user biasa
+        if (!$request->user()->isAdmin()) {
+            $showcase->update(['status' => 'pending']);
+        }
+
+        return response()->json(['message' => 'Showcase updated', 'data' => $showcase]);
     }
 
-    /**
-     * DELETE: Menghapus data showcase spesifik.
-     * (DELETE /api/showcases/{id})
-     */
-    public function destroy(Showcase $showcase)
+    // USER: Hapus showcase sendiri
+    public function destroy(Request $request, $id)
     {
-        $showcase->delete();
+        $showcase = Showcase::findOrFail($id);
 
-        return response()->json(null, 204);
+        // validasi
+        if ($request->user()->id !== $showcase->user_id && !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $showcase->delete();
+        return response()->json(['message' => 'Showcase deleted'], 200);
     }
 }
