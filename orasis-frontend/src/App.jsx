@@ -4,7 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Layout from './components/layout/Layout';
 import HomePage from './features/home/HomePage';
 import DesignDetailPage from './features/design/DesignDetailPage';
+import SearchResultPage from './features/design/SearchResultPage';
 import AboutPage from './features/about/AboutPage';
+import CollectionPage from './features/collections/CollectionPage';
 import { CollectionProvider } from './features/collections/context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -44,10 +46,26 @@ const AnimatedRoutes = ({ searchValue }) => {
           }
         />
         <Route
+          path="/search"
+          element={
+            <PageWrapper>
+              <SearchResultPage />
+            </PageWrapper>
+          }
+        />
+        <Route
           path="/about"
           element={
             <PageWrapper>
               <AboutPage />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/collections"
+          element={
+            <PageWrapper>
+              <CollectionPage />
             </PageWrapper>
           }
         />
