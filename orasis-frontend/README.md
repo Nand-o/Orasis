@@ -1,72 +1,40 @@
-# Orasis Frontend
+# Orasis - Design Showcase
 
-Template React + Vite + Tailwind CSS
+Orasis is a modern, responsive design showcase website built with React and Tailwind CSS. It features a curated gallery of web and mobile design inspirations, similar to platforms like Mobbin or Siteinspire.
 
-## Teknologi yang Digunakan
+## Features
 
-- **React** - Library JavaScript untuk membangun user interface
-- **Vite** - Build tool yang cepat dan modern
-- **Tailwind CSS** - Utility-first CSS framework
+- **Responsive Grid**: Adapts seamlessly from mobile to large desktop screens (4 columns).
+- **Filtering**: Filter designs by categories (SaaS, Mobile, Landing Page, etc.).
+- **Search**: Real-time search by title and tags.
+- **Detail View**: Modal interface for viewing high-resolution design details.
+- **Modern UI**: Clean aesthetic with micro-animations and hover effects.
 
-## Instalasi
+## Tech Stack
 
-Dependencies sudah terinstall. Jika perlu install ulang:
+- **React**: UI Library
+- **Vite**: Build tool
+- **Tailwind CSS**: Styling
+- **Lucide React**: Icons
 
-```bash
-npm install
-```
+## Getting Started
 
-## Menjalankan Development Server
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-```
+2. **Run development server**:
+   ```bash
+   npm run dev
+   ```
 
-Server akan berjalan di `http://localhost:5173`
+3. **Build for production**:
+   ```bash
+   npm run build
+   ```
 
-**Catatan:** Script npm sudah dikonfigurasi untuk menjalankan Vite dengan Node.js secara langsung untuk menghindari masalah PATH di Windows.
+## Project Structure
 
-## Build untuk Production
-
-```bash
-npm run build
-```
-
-Hasil build akan ada di folder `dist/`
-
-## Preview Build Production
-
-```bash
-npm run preview
-```
-
-## Struktur Folder
-
-```
-orasis-frontend/
-├── public/           # File static
-├── src/
-│   ├── assets/      # Gambar, font, dll
-│   ├── App.jsx      # Komponen utama
-│   ├── main.jsx     # Entry point
-│   └── index.css    # Global CSS dengan Tailwind
-├── index.html       # Template HTML
-├── package.json     # Dependencies
-├── vite.config.js   # Konfigurasi Vite
-├── tailwind.config.js # Konfigurasi Tailwind
-└── postcss.config.js  # Konfigurasi PostCSS
-```
-
-## Tailwind CSS
-
-Tailwind sudah dikonfigurasi dan siap digunakan. Gunakan utility classes untuk styling:
-
-```jsx
-<div className="bg-blue-500 text-white p-4 rounded-lg">
-  Hello Tailwind!
-</div>
-```
-
-## Hot Module Replacement (HMR)
-
-Vite menyediakan HMR yang sangat cepat. Setiap perubahan akan langsung terlihat tanpa refresh halaman.
+- `src/components`: Reusable UI components (Layout, Navbar, ShowcaseCard, etc.)
+- `src/App.jsx`: Main application logic and state management.
