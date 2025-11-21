@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import ShowcaseCard from './components/ShowcaseCard';
 import { MOCK_DESIGNS } from '../../data/mockData';
 import { useNavigate } from 'react-router-dom';

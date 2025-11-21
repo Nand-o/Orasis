@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Users, Target, Zap } from 'lucide-react';
 
 const AboutPage = () => {
