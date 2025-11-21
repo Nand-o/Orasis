@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowUpRight, Heart, Share2 } from 'lucide-react';
 import { MOCK_DESIGNS } from '../../data/mockData';
 import ShowcaseCard from './components/ShowcaseCard';
