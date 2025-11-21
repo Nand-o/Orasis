@@ -1,0 +1,264 @@
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import SearchBar from '../ui/SearchBar';
+import { useTheme } from '../../context/ThemeContext';
+
+const Navbar = ({ searchValue, onSearchChange }) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const { theme, setTheme } = useTheme();
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const isActive = (path) => {
+        return location.pathname === path
+            ? "border-black dark:border-white text-black dark:text-white"
+            : "border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200";
+    };
+
+    return (
+        <nav className="border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 transition-colors duration-200">
+            <div className="w-full px-4 sm:px-6 lg:px-16">
+                <div className="flex items-center justify-between h-16 gap-4">
+                    {/* Left Section: Logo & Nav Links */}
+                    <div className="flex items-center shrink-0">
+                        <div className="shrink-0 flex items-center">
+                            <a href="/" className="cursor-pointer">
+                                <img
+                                    src="/logo-black.svg"
+                                    alt="Orasis"
+                                    className="h-14 w-auto dark:invert"
+                                />
+                            </a>
+                        </div>
+                        <div className="hidden md:ml-4 md:flex md:space-x-4">
+                            <motion.a
+                                href="/"
+                                className={`${isActive('/')} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-bold`}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Inspiration
+                            </motion.a>
+                            <motion.a
+                                href="/about"
+                                className={`${isActive('/about')} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-bold`}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                About Us
+                            </motion.a>
+                        </div>
+                    </div>
+
+                    {/* Center Section: Search Bar */}
+                    <div className="hidden sm:flex flex-1 justify-center max-w-2xl px-4">
+                        <SearchBar
+                            value={searchValue}
+                            onChange={onSearchChange}
+                            className="w-full"
+                            placeholder="Search on Web..."
+                        />
+                    </div>
+
+                    {/* Right Section: Bookmark, Profile & Mobile Menu */}
+                    <div className="flex items-center shrink-0 space-x-4">
+                        {/* Bookmark Icon - Quick access to Collections */}
+                        <motion.button
+                            onClick={() => navigate('/collections')}
+                            className={`hidden sm:flex p-2 rounded-full transition-colors ${location.pathname === '/collections'
+                                ? 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30'
+                                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                            whileTap={{ scale: 0.95 }}
+                            title="My Collections"
+                        >
+                            <Bookmark className={`w-5 h-5 ${location.pathname === '/collections'
+                                ? 'text-indigo-600 dark:text-indigo-400 fill-indigo-600 dark:fill-indigo-400'
+                                : 'text-gray-700 dark:text-gray-300'
+                                }`} />
+                        </motion.button>
+
+                        {/* Profile Dropdown */}
+                        <div className="relative hidden sm:block">
+                            <motion.button
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <span>Hi, Waka</span>
+                                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                            </motion.button>
+
+                            <AnimatePresence>
+                                {isProfileOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50"
+                                    >
+                                        <div className="px-4 py-2">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-semibold text-gray-900 dark:text-white">Theme</span>
+                                                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-1 relative">
+                                                    {['light', 'dark', 'system'].map((t) => (
+                                                        <button
+                                                            key={t}
+                                                            onClick={() => setTheme(t)}
+                                                            className={`relative p-1.5 rounded-full transition-colors z-10 ${theme === t ? 'text-gray-900 dark:text-black' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                                        >
+                                                            {theme === t && (
+                                                                <motion.div
+                                                                    layoutId="activeTheme"
+                                                                    className="absolute inset-0 bg-white dark:bg-white rounded-full shadow-sm -z-10"
+                                                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                                />
+                                                            )}
+                                                            {t === 'light' && <Sun className="w-4 h-4" />}
+                                                            {t === 'dark' && <Moon className="w-4 h-4" />}
+                                                            {t === 'system' && <Monitor className="w-4 h-4" />}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
+
+                                        <div className="px-1">
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Settings
+                                            </a>
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Your Profiles
+                                            </a>
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Submissions
+                                            </a>
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Submit a site
+                                            </a>
+                                            <a href="/collections" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Collections
+                                            </a>
+                                            <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                                                <LogOut className="w-4 h-4 mr-3 text-red-400" />
+                                                Log out
+                                            </a>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <div className="flex items-center sm:hidden">
+                            <motion.button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <span className="sr-only">Open main menu</span>
+                                {isMenuOpen ? (
+                                    <X className="block h-6 w-6" aria-hidden="true" />
+                                ) : (
+                                    <Menu className="block h-6 w-6" aria-hidden="true" />
+                                )}
+                            </motion.button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu */}
+            {isMenuOpen && (
+                <div className="sm:hidden">
+                    <div className="pt-2 pb-3 space-y-1">
+                        <a
+                            href="/"
+                            className={`${location.pathname === '/' ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 text-indigo-700 dark:text-indigo-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200'} block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
+                        >
+                            Inspiration
+                        </a>
+                        <a
+                            href="/about"
+                            className={`${location.pathname === '/about' ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 text-indigo-700 dark:text-indigo-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200'} block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
+                        >
+                            About Us
+                        </a>
+                    </div>
+                    <div className="pt-4 pb-4 border-t border-gray-200 dark:border-gray-700 px-4">
+                        <SearchBar value={searchValue} onChange={onSearchChange} placeholder="Search on Web..." />
+
+                        {/* Mobile Theme Toggle */}
+                        <div className="mt-6">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-semibold text-gray-900 dark:text-white">Theme</span>
+                                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-1 relative">
+                                    {['light', 'dark', 'system'].map((t) => (
+                                        <button
+                                            key={t}
+                                            onClick={() => setTheme(t)}
+                                            className={`relative p-1.5 rounded-full transition-colors z-10 ${theme === t ? 'text-gray-900 dark:text-black' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                        >
+                                            {theme === t && (
+                                                <motion.div
+                                                    layoutId="activeThemeMobile"
+                                                    className="absolute inset-0 bg-white dark:bg-white rounded-full shadow-sm -z-10"
+                                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                />
+                                            )}
+                                            {t === 'light' && <Sun className="w-4 h-4" />}
+                                            {t === 'dark' && <Moon className="w-4 h-4" />}
+                                            {t === 'system' && <Monitor className="w-4 h-4" />}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Profile Links */}
+                        <div className="mt-4 space-y-2">
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Hi, Waka</div>
+                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Settings
+                            </a>
+                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Your Profiles
+                            </a>
+                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Submissions
+                            </a>
+                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Submit a site
+                            </a>
+                            <a href="/collections" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Collections
+                            </a>
+                            <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
+                            <a href="#" className="flex items-center py-2 text-sm text-red-600 hover:text-red-700 dark:hover:text-red-400">
+                                <LogOut className="w-4 h-4 mr-3 text-red-400" />
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
+};
+
+export default Navbar;
