@@ -1,0 +1,142 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Plus, Trash2, Pencil } from 'lucide-react';
+import { useCollections } from '../context/CollectionContext';
+
+const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewImages = [] }) => {
+    const { renameCollection } = useCollections();
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedName, setEditedName] = useState('');
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [isEditing]);
+
+    const handleDeleteClick = (e) => {
+        e.stopPropagation();
+        onDelete(collection);
+    };
+
+    const handleEdit = (e) => {
+        e.stopPropagation();
+        setEditedName(collection.name);
+        setIsEditing(true);
+    };
+
+    const handleSave = () => {
+        if (editedName.trim() && editedName !== collection.name) {
+            renameCollection(collection.id, editedName);
+        }
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setEditedName(collection.name);
+        setIsEditing(false);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSave();
+        } else if (e.key === 'Escape') {
+            handleCancel();
+        }
+    };
+
+    if (isNew) {
+        return (
+            <motion.div
+                onClick={onClick}
+                className="aspect-square rounded-3xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                whileTap={{ scale: 0.98 }}
+            >
+                <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3 group-hover:bg-white dark:group-hover:bg-gray-700 group-hover:shadow-sm transition-all">
+                    <Plus className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white">New Collection</span>
+            </motion.div>
+        );
+    }
+
+    const hasImages = previewImages && previewImages.length > 0;
+
+    return (
+        <motion.div
+            onClick={!isEditing ? onClick : undefined}
+            className="group cursor-pointer"
+            whileTap={!isEditing ? { scale: 0.98 } : {}}
+        >
+            <div className="aspect-square rounded-3xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-3 relative border border-gray-100 dark:border-gray-800">
+                {hasImages ? (
+                    <div className={`grid h-full w-full gap-0.5 ${previewImages.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                        {previewImages.map((img, index) => (
+                            <img
+                                key={index}
+                                src={img}
+                                alt=""
+                                className={`w-full h-full object-cover ${previewImages.length === 3 && index === 0 ? 'row-span-2' : ''
+                                    }`}
+                            />
+                        ))}
+                        {/* Fill remaining spots with gray if needed */}
+                        {previewImages.length < 4 && previewImages.length !== 1 && Array.from({ length: 4 - previewImages.length }).map((_, i) => (
+                            <div key={`empty-${i}`} className="bg-gray-200 dark:bg-gray-700 w-full h-full" />
+                        ))}
+
+                        {/* Overlay with count */}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors" />
+                    </div>
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                        <span className="text-gray-300 dark:text-gray-600 text-4xl font-bold opacity-20">{collection.name.charAt(0)}</span>
+                    </div>
+                )}
+            </div>
+            <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                    {isEditing ? (
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={editedName}
+                            onChange={(e) => setEditedName(e.target.value)}
+                            onBlur={handleSave}
+                            onKeyDown={handleKeyDown}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-indigo-500 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    ) : (
+                        <>
+                            <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">{collection.name}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{collection.designIds.length} items</p>
+                        </>
+                    )}
+                </div>
+                {!isEditing && (
+                    <div className="flex items-center gap-1 shrink-0">
+                        <button
+                            onClick={handleEdit}
+                            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+                            title="Rename collection"
+                        >
+                            <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" />
+                        </button>
+                        <button
+                            onClick={handleDeleteClick}
+                            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+                            title="Delete collection"
+                        >
+                            <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" />
+                        </button>
+                    </div>
+                )}
+            </div>
+        </motion.div>
+    );
+};
+
+export default CollectionCard;
