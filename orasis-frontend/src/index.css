@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+    html {
+    @apply text-gray-900 dark:text-white;
+    }
+}
+
 @theme {
     --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
 
@@ -14,3 +22,4 @@
     }
     }
 }
+
