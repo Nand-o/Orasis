@@ -7,6 +7,20 @@ use Illuminate\Http\Request;
 
 class AdminShowcaseController extends Controller
 {
+    // melihat SEMUA showcase untuk admin dashboard (tanpa pagination)
+    public function indexAll()
+    {
+        $showcases = Showcase::with(['user', 'tags'])
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'message' => 'List all showcases for admin',
+            'data' => $showcases,
+            'total' => $showcases->count()
+        ]);
+    }
+
     // melihat daftar showcase yang MENUNGGU persetujuan
     public function indexPending()
     {

@@ -62,6 +62,26 @@ const showcaseService = {
             throw error.response?.data || error.message;
         }
     },
+
+    // ===== GET ALL FOR ADMIN (No pagination) =====
+    async getAllForAdmin() {
+        try {
+            const response = await api.get('/admin/showcases');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // ===== UPDATE STATUS (Admin Only) =====
+    async updateStatus(id, status) {
+        try {
+            const response = await api.patch(`/admin/showcases/${id}/status`, { status });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
 };
 
 export default showcaseService;

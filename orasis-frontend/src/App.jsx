@@ -11,9 +11,12 @@ import CollectionTestPage from './features/collections/CollectionTestPage';
 import ShowcaseTestPage from './features/design/ShowcaseTestPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
+import DashboardPage from './features/profile/DashboardPage';
+import AdminDashboardPage from './features/profile/AdminDashboardPage';
+import ProfilePage from './features/profile/ProfilePage';
 import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 const PageWrapper = ({ children }) => {
   return (
@@ -25,6 +28,26 @@ const PageWrapper = ({ children }) => {
     >
       {children}
     </motion.div>
+  );
+};
+
+// Import Overview Pages and Dashboard Layout
+import AdminOverviewPage from './features/profile/AdminOverviewPage';
+import UserOverviewPage from './features/profile/UserOverviewPage';
+import DashboardLayout from './components/layout/DashboardLayout';
+
+// Component to conditionally render dashboard based on user role
+const DashboardRouter = () => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <DashboardLayout><UserOverviewPage /></DashboardLayout>;
+  }
+  
+  return (
+    <DashboardLayout>
+      {user.role === 'admin' ? <AdminOverviewPage /> : <UserOverviewPage />}
+    </DashboardLayout>
   );
 };
 
@@ -91,6 +114,42 @@ const AnimatedRoutes = ({ searchValue }) => {
           }
         />
         <Route
+          path="/dashboard"
+          element={<DashboardRouter />}
+        />
+        <Route
+          path="/dashboard/showcases"
+          element={
+            <DashboardLayout>
+              <DashboardPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/collections"
+          element={
+            <DashboardLayout>
+              <CollectionPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/pending"
+          element={
+            <DashboardLayout>
+              <AdminDashboardPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <DashboardLayout>
+              <ProfilePage />
+            </DashboardLayout>
+          }
+        />
+        <Route
           path="/login"
           element={<LoginPage />}
         />
@@ -103,6 +162,24 @@ const AnimatedRoutes = ({ searchValue }) => {
   );
 };
 
+// Wrapper to conditionally use Layout or not
+const ConditionalLayout = ({ children, searchValue, onSearchChange }) => {
+  const location = useLocation();
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
+  const isProfileRoute = location.pathname.startsWith('/profile');
+  
+  // Dashboard and Profile routes use their own layouts (no main navbar)
+  if (isDashboardRoute || isProfileRoute) {
+    return children;
+  }
+  
+  return (
+    <Layout searchValue={searchValue} onSearchChange={onSearchChange}>
+      {children}
+    </Layout>
+  );
+};
+
 function App() {
   const [searchValue, setSearchValue] = useState('');
 
@@ -111,9 +188,9 @@ function App() {
       <CollectionProvider>
         <ThemeProvider>
           <BrowserRouter>
-            <Layout searchValue={searchValue} onSearchChange={(e) => setSearchValue(e.target.value)}>
+            <ConditionalLayout searchValue={searchValue} onSearchChange={(e) => setSearchValue(e.target.value)}>
               <AnimatedRoutes searchValue={searchValue} />
-            </Layout>
+            </ConditionalLayout>
           </BrowserRouter>
         </ThemeProvider>
       </CollectionProvider>

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark } from 'lucide-react';
+import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchBar from '../ui/SearchBar';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = ({ searchValue, onSearchChange }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const { theme, setTheme } = useTheme();
+    const { user } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -86,7 +88,7 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                 className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors"
                                 whileTap={{ scale: 0.95 }}
                             >
-                                <span>Hi, Waka</span>
+                                <span>Hi, {user?.name || 'Guest'}</span>
                                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
                             </motion.button>
 
@@ -128,25 +130,25 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                         <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
 
                                         <div className="px-1">
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Settings
+                                            <a href="/dashboard" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <LayoutDashboard className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Dashboard
                                             </a>
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                            <a href="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
                                                 <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Your Profiles
-                                            </a>
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Submissions
-                                            </a>
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Submit a site
+                                                Profile Settings
                                             </a>
                                             <a href="/collections" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
                                                 <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                                 Collections
+                                            </a>
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                My Submissions
+                                            </a>
+                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Submit a site
                                             </a>
                                             <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
                                             <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
@@ -227,26 +229,26 @@ const Navbar = ({ searchValue, onSearchChange }) => {
 
                         {/* Mobile Profile Links */}
                         <div className="mt-4 space-y-2">
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Hi, Waka</div>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Settings
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Hi, {user?.name || 'Guest'}</div>
+                            <a href="/dashboard" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <LayoutDashboard className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Dashboard
                             </a>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <a href="/profile" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                                 <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Your Profiles
-                            </a>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Submissions
-                            </a>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Submit a site
+                                Profile Settings
                             </a>
                             <a href="/collections" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                                 <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                 Collections
+                            </a>
+                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                My Submissions
+                            </a>
+                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                Submit a site
                             </a>
                             <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
                             <a href="#" className="flex items-center py-2 text-sm text-red-600 hover:text-red-700 dark:hover:text-red-400">

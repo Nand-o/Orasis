@@ -27,7 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profil & Logout
     Route::get('/user', function (Request $request) { return $request->user(); });
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::put('/user', [ProfileController::class, 'update']);
+    Route::put('/user/password', [ProfileController::class, 'changePassword']);
+    Route::get('/user/showcases', [ProfileController::class, 'showcases']);
     
     // User Action: Upload, Edit, Hapus Punya Sendiri
     Route::post('/showcases', [ShowcaseController::class, 'store']);
@@ -47,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/stats', [DashboardController::class, 'stats']);
         
         // Moderasi Showcase
+        Route::get('/admin/showcases', [AdminShowcaseController::class, 'indexAll']);
         Route::get('/admin/showcases/pending', [AdminShowcaseController::class, 'indexPending']);
         Route::patch('/admin/showcases/{id}/status', [AdminShowcaseController::class, 'updateStatus']);
 
