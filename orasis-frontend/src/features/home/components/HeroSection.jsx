@@ -63,7 +63,7 @@ const HeroSection = ({ designs }) => {
                                         className="w-full h-full shrink-0 relative"
                                     >
                                         <img
-                                            src={design.imageUrl}
+                                            src={design.image_url || design.imageUrl}
                                             alt={design.title}
                                             className="w-full h-full object-cover shadow-lg"
                                         />

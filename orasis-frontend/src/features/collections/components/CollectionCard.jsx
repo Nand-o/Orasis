@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Trash2, Pencil } from 'lucide-react';
-import { useCollections } from '../context/CollectionContext';
+import { useCollection } from '../../../context/CollectionContext';
 
-const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewImages = [] }) => {
-    const { renameCollection } = useCollections();
+const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewImages }) => {
+    const { updateCollection } = useCollection();
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
     const inputRef = useRef(null);
+    
+    // Ensure previewImages is always an array
+    const images = Array.isArray(previewImages) ? previewImages : [];
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
@@ -27,9 +30,13 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
         setIsEditing(true);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (editedName.trim() && editedName !== collection.name) {
-            renameCollection(collection.id, editedName);
+            try {
+                await updateCollection(collection.id, { name: editedName });
+            } catch (error) {
+                console.error('Failed to update collection:', error);
+            }
         }
         setIsEditing(false);
     };
@@ -62,7 +69,7 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
         );
     }
 
-    const hasImages = previewImages && previewImages.length > 0;
+    const hasImages = images.length > 0;
 
     return (
         <motion.div
@@ -72,18 +79,18 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
         >
             <div className="aspect-square rounded-3xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-3 relative border border-gray-100 dark:border-gray-800">
                 {hasImages ? (
-                    <div className={`grid h-full w-full gap-0.5 ${previewImages.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                        {previewImages.map((img, index) => (
+                    <div className={`grid h-full w-full gap-0.5 ${images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                        {images.map((img, index) => (
                             <img
                                 key={index}
                                 src={img}
                                 alt=""
-                                className={`w-full h-full object-cover ${previewImages.length === 3 && index === 0 ? 'row-span-2' : ''
+                                className={`w-full h-full object-cover ${images.length === 3 && index === 0 ? 'row-span-2' : ''
                                     }`}
                             />
                         ))}
                         {/* Fill remaining spots with gray if needed */}
-                        {previewImages.length < 4 && previewImages.length !== 1 && Array.from({ length: 4 - previewImages.length }).map((_, i) => (
+                        {images.length < 4 && images.length !== 1 && Array.from({ length: 4 - images.length }).map((_, i) => (
                             <div key={`empty-${i}`} className="bg-gray-200 dark:bg-gray-700 w-full h-full" />
                         ))}
 
@@ -92,7 +99,7 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
                     </div>
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                        <span className="text-gray-300 dark:text-gray-600 text-4xl font-bold opacity-20">{collection.name.charAt(0)}</span>
+                        <span className="text-gray-300 dark:text-gray-600 text-4xl font-bold opacity-20">{collection?.name?.charAt(0) || '?'}</span>
                     </div>
                 )}
             </div>
@@ -112,7 +119,7 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
                     ) : (
                         <>
                             <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">{collection.name}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{collection.designIds.length} items</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{collection.showcases_count || collection.showcases?.length || 0} items</p>
                         </>
                     )}
                 </div>

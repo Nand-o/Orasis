@@ -7,10 +7,11 @@ import DesignDetailPage from './features/design/DesignDetailPage';
 import SearchResultPage from './features/design/SearchResultPage';
 import AboutPage from './features/about/AboutPage';
 import CollectionPage from './features/collections/CollectionPage';
+import CollectionTestPage from './features/collections/CollectionTestPage';
 import ShowcaseTestPage from './features/design/ShowcaseTestPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
-import { CollectionProvider } from './features/collections/context/CollectionContext';
+import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -78,6 +79,14 @@ const AnimatedRoutes = ({ searchValue }) => {
           element={
             <PageWrapper>
               <ShowcaseTestPage />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/test-collections"
+          element={
+            <PageWrapper>
+              <CollectionTestPage />
             </PageWrapper>
           }
         />

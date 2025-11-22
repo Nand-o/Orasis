@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Bookmark } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CollectionModal from '../../collections/components/CollectionModal';
-import { useCollections } from '../../collections/context/CollectionContext';
+import { useCollection } from '../../../context/CollectionContext';
 
 const ShowcaseCard = ({ design, onClick }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { collections } = useCollections();
+    const { collections } = useCollection();
 
     // Check if this design is saved in ANY collection
-    const isSaved = collections.some(col => col.designIds.includes(design.id));
+    const isSaved = collections.some(col => 
+        col.showcases?.some(s => s.id === design.id)
+    );
 
     const handleBookmarkClick = (e) => {
         e.stopPropagation();
@@ -27,7 +29,7 @@ const ShowcaseCard = ({ design, onClick }) => {
                 <div className="relative aspect-4/3 bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden mb-4 p-12 transition-colors duration-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-700">
                     <div className="w-full h-full rounded-lg overflow-hidden shadow-sm relative">
                         <img
-                            src={design.imageUrl}
+                            src={design.image_url || design.imageUrl}
                             alt={design.title}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             loading="lazy"

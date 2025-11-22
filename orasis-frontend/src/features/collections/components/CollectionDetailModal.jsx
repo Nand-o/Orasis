@@ -2,13 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Package, SearchX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_DESIGNS } from '../../../data/mockData';
-import { useCollections } from '../context/CollectionContext';
+import { useCollection } from '../../../context/CollectionContext';
 
 const CollectionDetailModal = ({ isOpen, onClose, collection }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
-    const { removeDesignFromCollection, collections } = useCollections();
+    const { removeShowcaseFromCollection, collections } = useCollection();
 
     // Get the latest collection data from context to ensure real-time updates
     const currentCollection = useMemo(() => {
@@ -16,12 +15,10 @@ const CollectionDetailModal = ({ isOpen, onClose, collection }) => {
         return collections.find(c => c.id === collection.id) || collection;
     }, [collection, collections]);
 
-    // Get full design objects from designIds
+    // Get showcases from collection (they come from backend now)
     const designs = useMemo(() => {
         if (!currentCollection) return [];
-        return currentCollection.designIds
-            .map(id => MOCK_DESIGNS.find(d => d.id === id))
-            .filter(Boolean);
+        return currentCollection.showcases || [];
     }, [currentCollection]);
 
     // Filter designs by search query
@@ -34,8 +31,12 @@ const CollectionDetailModal = ({ isOpen, onClose, collection }) => {
         );
     }, [designs, searchQuery]);
 
-    const handleRemove = (designId) => {
-        removeDesignFromCollection(currentCollection.id, designId);
+    const handleRemove = async (designId) => {
+        try {
+            await removeShowcaseFromCollection(currentCollection.id, designId);
+        } catch (error) {
+            console.error('Failed to remove showcase:', error);
+        }
     };
 
     const handleTitleClick = (designId) => {
@@ -122,16 +123,14 @@ const CollectionDetailModal = ({ isOpen, onClose, collection }) => {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors group"
                                             >
-                                                {/* Preview Image */}
-                                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
-                                                    <img
-                                                        src={design.imageUrl}
-                                                        alt={design.title}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </div>
-
-                                                {/* Design Info */}
+                                {/* Preview Image */}
+                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                                    <img
+                                        src={design.image_url || design.imageUrl}
+                                        alt={design.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>                                                {/* Design Info */}
                                                 <div className="flex-1 min-w-0">
                                                     <button
                                                         onClick={() => handleTitleClick(design.id)}

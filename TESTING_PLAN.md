@@ -1,19 +1,34 @@
-# 🎯 Rencana Testing Axios Integration - Orasis Project
+# 🎯 Orasis Frontend Integration Plan
 
-## 📋 Status Saat Ini
-✅ **Sudah Selesai:**
-- Laragon terinstall (PHP, Composer, PostgreSQL)
-- Backend Laravel sudah setup lengkap
-- Database migrations dan seeding sudah berjalan
-- Axios sudah terinstall di frontend
-- Service layer sudah dibuat (showcase.service.js, api.js)
-- HomePage sudah menggunakan API (dengan loading & error handling)
+## 📊 Overall Progress: Phase 1-3 Complete (60%)
 
-## ⚠️ Masalah yang Ditemui
-❌ **Server Backend tidak bisa diakses:**
-- `php artisan serve` dan `php -S` tidak listening di port yang ditentukan
-- Kemungkinan issue: Windows Firewall, Antivirus, atau PHP configuration
-- Solusi: **Gunakan Apache di Laragon** (lebih stabil untuk development)
+### ✅ **COMPLETED PHASES**
+
+#### **Phase 1: Backend Setup & Authentication** ✅ DONE
+- ✅ Laragon Apache setup (orasis-backend.test)
+- ✅ Database fresh migration with 21 seeded showcases
+- ✅ CORS configuration
+- ✅ Laravel Sanctum authentication
+- ✅ All CRUD endpoints tested and working
+
+#### **Phase 2: Frontend Authentication & Showcase CRUD** ✅ DONE
+- ✅ auth.service.js with login/register/logout
+- ✅ AuthContext for global auth state
+- ✅ LoginPage and RegisterPage components
+- ✅ showcaseService.js with full CRUD operations
+- ✅ ShowcaseTestPage with visual UPDATE mode
+- ✅ Authorization (only owner/admin can modify)
+- ✅ Pagination handling (fetch all pages)
+- ✅ Snake_case to camelCase transformation
+- ✅ Image display fixed (Unsplash integration)
+- ✅ SearchResultPage uses API data
+- ✅ HomePage displays real data from API
+
+**Last Commit:** `feat: implement authentication and enhance showcase CRUD operations`
+
+---
+
+## 🎯 UPCOMING PHASES (Prioritized Roadmap)
 
 ---
 
@@ -59,224 +74,292 @@ Buka browser dan test:
 }
 ```
 
+### **Phase 3: Collection System** ✅ COMPLETE
+**Priority:** HIGH | **Completed:** November 22, 2025
+
+**Goals:**
+- ✅ Implement collection.service.js for CRUD operations
+- ✅ Integrate CollectionContext with real API
+- ✅ Test collections on CollectionPage
+- ✅ Add/remove showcases to/from collections
+- ✅ Display user's collections
+
+**Tasks:**
+1. ✅ Check backend API endpoints (/api/collections)
+2. ✅ Create collection.service.js with 7 methods
+3. ✅ Update CollectionContext with API calls (moved to /context/)
+4. ✅ Build CollectionTestPage with modern UI (Tailwind + Framer Motion)
+5. ✅ Integrate bookmark functionality on showcase cards
+6. ✅ Update CollectionPage with real API data
+7. ✅ Fix data structure migration (designIds → showcases)
+8. ✅ Update all components to use image_url from API
+9. ✅ Create comprehensive testing guide
+
+**Files Created/Updated:**
+- ✅ `orasis-frontend/src/services/collection.service.js`
+- ✅ `orasis-frontend/src/context/CollectionContext.jsx` (new location)
+- ✅ `orasis-frontend/src/features/collections/CollectionTestPage.jsx` (professional UI)
+- ✅ `orasis-frontend/src/features/collections/CollectionPage.jsx`
+- ✅ `orasis-frontend/src/features/collections/components/CollectionCard.jsx`
+- ✅ `orasis-frontend/src/features/collections/components/CollectionModal.jsx`
+- ✅ `orasis-frontend/src/features/collections/components/CollectionDetailModal.jsx`
+- ✅ `orasis-frontend/src/features/design/components/ShowcaseCard.jsx`
+- ✅ `orasis-frontend/src/features/home/components/FilterBar.jsx`
+- ✅ `COLLECTION_TESTING_GUIDE.md`
+
+**Last Commit:** `feat: complete Phase 3 - Collection System with API integration`
+
+**Success Criteria:**
+- ✅ Can create new collection
+- ✅ Can view all user collections
+- ✅ Can update collection name/description
+- ✅ Can delete collection
+- ✅ Can add showcase to collection
+- ✅ Can remove showcase from collection
+- ✅ Collections display properly on CollectionPage
+
 ---
 
-### **FASE 2: Update Frontend Configuration** ⏱️ 5 menit
+### **Phase 4: Showcase Detail Page Integration**
+**Priority:** HIGH | **Estimasi:** 1 sesi
 
-#### Step 2.1: Update .env
-File: `orasis-frontend/.env`
-```env
-VITE_API_URL=http://orasis-backend.test/api
-VITE_BASE_URL=http://orasis-backend.test
+**Goals:**
+- Replace mockData with API calls
+- Display real showcase details from database
+- Show related showcases from API
+- Add "Add to Collection" functionality
+- Display real owner information
+
+**Tasks:**
+1. ⏳ Update DesignDetailPage to fetch from API
+2. ⏳ Implement getById with proper error handling
+3. ⏳ Fetch related showcases from API (by category)
+4. ⏳ Add "Add to Collection" button/modal
+5. ⏳ Display owner info (name, avatar)
+6. ⏳ Add loading and error states
+
+**Files to Update:**
+- `orasis-frontend/src/features/design/DesignDetailPage.jsx`
+
+**Success Criteria:**
+- ✅ Detail page shows data from API
+- ✅ Related showcases are real data
+- ✅ Can add showcase to collection from detail
+- ✅ 404 page shown if showcase not found
+- ✅ Owner information displayed correctly
+
+---
+
+### **Phase 5: Profile & User Dashboard**
+**Priority:** MEDIUM | **Estimasi:** 1-2 sesi
+
+**Goals:**
+- User can view and edit their profile
+- Dashboard showing user's showcases
+- List of user's collections
+- Change password functionality
+
+**Tasks:**
+1. ⏳ Create ProfilePage.jsx
+2. ⏳ Create DashboardPage.jsx  
+3. ⏳ Implement profile update service
+4. ⏳ Add "My Showcases" section
+5. ⏳ Add "My Collections" section
+6. ⏳ Implement change password
+7. ⏳ Add profile routes to App.jsx
+
+**Files to Create:**
+- `orasis-frontend/src/features/profile/ProfilePage.jsx`
+- `orasis-frontend/src/features/profile/DashboardPage.jsx`
+- `orasis-frontend/src/services/user.service.js`
+
+**Success Criteria:**
+- ✅ User can view profile information
+- ✅ User can update name and email
+- ✅ User can change password
+- ✅ Dashboard shows user's showcases
+- ✅ Dashboard shows user's collections
+- ✅ Proper validation and error handling
+
+---
+
+### **Phase 6: Enhanced Search & Filter**
+**Priority:** MEDIUM | **Estimasi:** 1 sesi
+
+**Goals:**
+- Advanced filtering options
+- Multiple sort options
+- Tag-based filtering
+- Better search UX
+
+**Tasks:**
+1. ⏳ Add sort dropdown (newest, popular, title A-Z)
+2. ⏳ Multi-category filter
+3. ⏳ Tag-based filter
+4. ⏳ Status filter (for admin/owner)
+5. ⏳ Update SearchResultPage with filters
+6. ⏳ Add filter persistence (URL params)
+
+**Files to Update:**
+- `orasis-frontend/src/features/home/HomePage.jsx`
+- `orasis-frontend/src/features/design/SearchResultPage.jsx`
+- `orasis-frontend/src/features/home/components/FilterBar.jsx`
+
+**Success Criteria:**
+- ✅ Can sort showcases by different criteria
+- ✅ Can filter by multiple categories
+- ✅ Can filter by tags
+- ✅ Filters persist in URL
+- ✅ Clear filters button works properly
+
+---
+
+### **Phase 7: Admin Dashboard**
+**Priority:** MEDIUM | **Estimasi:** 1-2 sesi
+
+**Goals:**
+- Admin-only pages for management
+- Approve/reject showcase submissions
+- User management
+- Statistics overview
+
+**Tasks:**
+1. ⏳ Create AdminDashboard.jsx
+2. ⏳ Implement admin route protection
+3. ⏳ Build showcase approval interface
+4. ⏳ Create user management table
+5. ⏳ Add statistics cards
+6. ⏳ Implement admin.service.js
+
+**Files to Create:**
+- `orasis-frontend/src/features/admin/AdminDashboard.jsx`
+- `orasis-frontend/src/features/admin/ShowcaseManagement.jsx`
+- `orasis-frontend/src/features/admin/UserManagement.jsx`
+- `orasis-frontend/src/services/admin.service.js`
+- `orasis-frontend/src/components/ProtectedRoute.jsx`
+
+**Success Criteria:**
+- ✅ Only admin can access admin pages
+- ✅ Admin can approve/reject showcases
+- ✅ Admin can view all users
+- ✅ Admin can see statistics
+- ✅ Proper authorization checks
+
+---
+
+### **Phase 8: Image Upload Feature** (Optional)
+**Priority:** LOW | **Estimasi:** 2 sesi
+
+**Goals:**
+- Upload images instead of URL input
+- Image preview before upload
+- File validation
+- Backend storage integration
+
+**Tasks:**
+1. ⏳ Create ImageUpload component
+2. ⏳ Implement file validation (size, type)
+3. ⏳ Add image preview
+4. ⏳ Update backend controller for file upload
+5. ⏳ Configure Laravel storage
+6. ⏳ Update showcase form with upload
+
+**Files to Create/Update:**
+- `orasis-frontend/src/components/ImageUpload.jsx`
+- `orasis-backend/app/Http/Controllers/ShowcaseController.php`
+- `orasis-backend/config/filesystems.php`
+
+**Success Criteria:**
+- ✅ Can upload image files
+- ✅ Image preview works
+- ✅ File size/type validation
+- ✅ Images stored properly on server
+- ✅ URLs generated correctly
+
+---
+
+## 📝 Development Notes
+
+### Current Environment:
+- **Backend:** http://orasis-backend.test (Laragon Apache)
+- **Frontend:** http://localhost:5173 (Vite Dev Server)
+- **Database:** PostgreSQL via Laragon
+- **Total Showcases:** 21 (6 Mobile, 3 each for other categories)
+
+### API Endpoints Available:
+```
+Authentication:
+POST   /api/register
+POST   /api/login
+POST   /api/logout
+
+Showcases:
+GET    /api/showcases (with pagination)
+GET    /api/showcases/{id}
+POST   /api/showcases (auth required)
+PUT    /api/showcases/{id} (auth required, owner/admin only)
+DELETE /api/showcases/{id} (auth required, owner/admin only)
+
+Collections:
+GET    /api/collections (auth required)
+GET    /api/collections/{id} (auth required)
+POST   /api/collections (auth required)
+PUT    /api/collections/{id} (auth required, owner only)
+DELETE /api/collections/{id} (auth required, owner only)
+POST   /api/collections/{id}/showcases/{showcase_id} (auth required)
+DELETE /api/collections/{id}/showcases/{showcase_id} (auth required)
 ```
 
-#### Step 2.2: Update CORS di Backend
-File: `orasis-backend/config/cors.php`
-```php
-'allowed_origins' => [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://orasis-backend.test',
-],
-```
+### Test Credentials:
+- **Admin:** admin@orasis.com / admin123
+- **User:** faris@orasis.com / password
 
-#### Step 2.3: Clear Cache Backend
+---
+
+## 🎯 Quick Start Commands
+
+### Backend (Laragon):
 ```powershell
+# Start Laragon Services
+# Open Laragon → Click "Start All"
+
+# Refresh database (if needed)
 cd C:\laragon\www\orasis-backend
-php artisan config:clear
-php artisan cache:clear
+php artisan migrate:fresh --seed
+php artisan tinker --execute="DB::table('showcases')->update(['status' => 'approved']);"
 ```
 
----
-
-### **FASE 3: Test Homepage Integration** ⏱️ 5 menit
-
-#### Step 3.1: Start Frontend
+### Frontend:
 ```powershell
 cd orasis-frontend
 npm run dev
+# Open http://localhost:5173
 ```
 
-#### Step 3.2: Akses Homepage
-- Buka: `http://localhost:5173`
-- **Expected:**
-  - Loading spinner muncul sebentar
-  - Showcase cards muncul dari API
-  - Console log: "Fetching showcases from API..."
-  - Console log: "API Response:", {data: [...]}
-
-#### Step 3.3: Verifikasi di DevTools
-**Network Tab:**
-- Request: `http://orasis-backend.test/api/showcases`
-- Status: `200 OK`
-- Response: JSON dengan array showcases
-
-**Console Tab:**
-- ✅ Tidak ada error merah
-- ✅ Ada log "API Response"
-- ✅ Tidak ada CORS error
+### Testing:
+- **Test Page:** http://localhost:5173/test-crud
+- **Login:** http://localhost:5173/login
+- **Collections:** http://localhost:5173/collections
 
 ---
 
-### **FASE 4: Buat Test Page untuk CRUD** ⏱️ 15 menit
+## ⚠️ Common Issues & Solutions
 
-#### Step 4.1: Buat ShowcaseTestPage.jsx
-**Lokasi:** `orasis-frontend/src/features/design/ShowcaseTestPage.jsx`
+### Issue: CORS Error
+**Solution:** Check `orasis-backend/config/cors.php` includes `http://localhost:5173`
 
-**Fitur:**
-- Display API URL yang sedang digunakan
-- Button: GET All Showcases
-- Button: GET by ID (dengan input field)
-- Display hasil dalam format JSON readable
-- Display error dengan jelas (jika ada)
+### Issue: 401 Unauthorized
+**Solution:** Check auth token in localStorage, re-login if needed
 
-#### Step 4.2: Add Route
-File: `orasis-frontend/src/App.jsx`
-```jsx
-import ShowcaseTestPage from './features/design/ShowcaseTestPage';
+### Issue: Images not loading
+**Solution:** Verify image_url → imageUrl transformation in HomePage.jsx
 
-// Di dalam Routes:
-<Route path="/test-crud" element={<ShowcaseTestPage />} />
-```
-
-#### Step 4.3: Test GET Operations
-Akses: `http://localhost:5173/test-crud`
-
-**Test Cases:**
-1. ✅ Click "GET All" → Tampil semua showcases
-2. ✅ Click "GET by ID" (ID: 1) → Tampil showcase detail
-3. ✅ Click "GET by ID" (ID: 999) → Error 404 handled with grace
+### Issue: Pagination only shows 10 items
+**Solution:** Check multi-page fetch implementation with `while (hasMorePages)` loop
 
 ---
 
-### **FASE 5: Test CREATE/UPDATE/DELETE** ⏱️ 10 menit
-
-#### Step 5.1: Pahami Requirement Auth
-**Catatan Penting:**
-- CREATE, UPDATE, DELETE **memerlukan authentication**
-- Tanpa token, akan dapat response: `401 Unauthenticated`
-- Ini adalah **behavior yang BENAR**
-
-#### Step 5.2: Test Protected Endpoints (Expected to Fail)
-**Test Cases:**
-1. ❌ Click "CREATE" → Error 401 (Expected)
-2. ❌ Click "UPDATE" → Error 401 (Expected)
-3. ❌ Click "DELETE" → Error 401 (Expected)
-
-**Confirmation:**
-- Error 401 muncul dengan message jelas
-- Tidak ada network error atau CORS error
-- Error dari backend (bukan connection refused)
-
----
-
-### **FASE 6: Implementasi Authentication** ⏱️ 30 menit
-**Note:** Fase ini akan dilakukan SETELAH FASE 1-5 berhasil
-
-#### Step 6.1: Buat Auth Service
-File: `orasis-frontend/src/services/auth.service.js`
-```javascript
-- register()
-- login()
-- logout()
-- getCurrentUser()
-```
-
-#### Step 6.2: Buat AuthContext
-File: `orasis-frontend/src/context/AuthContext.jsx`
-
-#### Step 6.3: Buat Login/Register Pages
-- LoginPage.jsx
-- RegisterPage.jsx
-
-#### Step 6.4: Test Full CRUD dengan Auth Token
-- Login → Dapat token
-- CREATE showcase → Success
-- UPDATE showcase → Success
-- DELETE showcase → Success
-
----
-
-### **FASE 7: Implementasi Collection Service** ⏱️ 20 menit
-
-#### Step 7.1: Buat Collection Service
-File: `orasis-frontend/src/services/collection.service.js`
-
-#### Step 7.2: Update Collection Pages
-- CollectionsPage.jsx
-- CollectionDetailPage.jsx
-
----
-
-## 📊 Success Criteria
-
-### Minimal Success (Fase 1-3):
-- ✅ Backend accessible via Laragon
-- ✅ Frontend dapat fetch data dari API
-- ✅ HomePage menampilkan data real dari database
-- ✅ No CORS errors
-- ✅ Loading states berfungsi
-
-### Complete Success (Fase 1-7):
-- ✅ Semua GET operations berfungsi
-- ✅ Authentication implemented
-- ✅ CREATE/UPDATE/DELETE berfungsi dengan auth
-- ✅ Collection service integrated
-- ✅ Error handling comprehensive
-
----
-
-## 🛠️ Troubleshooting Guide
-
-### Problem: "Unable to connect to remote server"
-**Solution:**
-- Pastikan Laragon Apache running
-- Test manual: `http://orasis-backend.test` di browser
-- Cek Windows hosts file
-
-### Problem: "CORS Error"
-**Solution:**
-- Update `config/cors.php` dengan allowed origin yang benar
-- Run `php artisan config:clear`
-- Restart Apache di Laragon
-
-### Problem: "404 Not Found /api/showcases"
-**Solution:**
-- Cek `routes/api.php` ada route yang benar
-- Pastikan `.htaccess` di folder public
-- Cek Apache mod_rewrite enabled
-
-### Problem: "Database connection error"
-**Solution:**
-- Pastikan PostgreSQL running di Laragon
-- Cek `.env` backend: DB_HOST, DB_PORT, DB_DATABASE
-- Test connection: `psql -U postgres -d orasis`
-
----
-
-## 📝 Next Steps (Sekarang)
-
-1. **Buka Laragon** → Start All
-2. **Test backend**: `http://orasis-backend.test/api/showcases`
-3. **Jika berhasil** → Lanjut update frontend .env
-4. **Jika gagal** → Debug Apache/hosts configuration
-
----
-
-## 🎓 Lessons Learned
-
-### Apa yang TIDAK Berhasil:
-❌ `php artisan serve` - tidak reliable di Windows
-❌ `php -S localhost:8000` - tidak listening properly
-❌ Multiple port changes tanpa diagnose root cause
-
-### Apa yang LEBIH BAIK:
-✅ Gunakan Apache (via Laragon/XAMPP) untuk stability
-✅ Virtual hosts untuk project organization
-✅ Test manual di browser sebelum frontend integration
-✅ Step-by-step verification dengan clear success criteria
-
----
-
-**Created:** 2025-11-22
-**Status:** Ready for Phase 1 Implementation
+**Last Updated:** November 22, 2025  
+**Current Phase:** Phase 3 - Collection System  
+**Next Milestone:** Complete Collection CRUD and Detail Page Integration  
+**Overall Progress:** 40% (Phase 1-2 Complete)

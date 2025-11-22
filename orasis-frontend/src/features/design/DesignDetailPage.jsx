@@ -110,7 +110,7 @@ const DesignDetailPage = () => {
                 >
                     <div className="flex items-end justify-end bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden max-h-[85vh] w-full">
                         <img
-                            src={design.imageUrl}
+                            src={design.image_url || design.imageUrl}
                             alt={design.title}
                             className="h-full object-contain"
                         />

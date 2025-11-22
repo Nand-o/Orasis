@@ -1,19 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+// Categories available in database
 const categories = [
     "Landing Page",
     "SaaS",
     "E-commerce",
-    "Portfolio",
-    "Dashboard",
-    "Agency",
-    "App Landing",
-    "Blog",
-    "Healthcare",
-    "Real Estate",
-    "NFT/Crypto",
-    "Social Media"
+    "Portfolio"
 ];
 
 const FilterBar = ({ activeCategory, onCategoryChange }) => {

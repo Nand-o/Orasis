@@ -32,7 +32,7 @@ const DesignModal = ({ design, onClose }) => {
                             {/* Image Section */}
                             <div className="lg:col-span-2 bg-gray-100 overflow-y-auto p-8 flex items-center justify-center">
                                 <img
-                                    src={design.imageUrl}
+                                    src={design.image_url || design.imageUrl}
                                     alt={design.title}
                                     className="w-full h-auto rounded-lg shadow-2xl"
                                 />

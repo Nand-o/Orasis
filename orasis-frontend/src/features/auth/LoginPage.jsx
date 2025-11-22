@@ -146,14 +146,26 @@ const LoginPage = () => {
                     </div>
                 </div>
 
-                {/* Test Credentials */}
+                {/* Test Credentials with Quick Fill */}
                 <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                     <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 text-sm mb-2">
-                        🔑 Test Credentials
+                        🔑 Test Credentials (Click to Auto-Fill)
                     </h4>
-                    <div className="text-xs text-yellow-800 dark:text-yellow-200 space-y-1">
-                        <p><strong>Admin:</strong> admin@orasis.com / <code className="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">admin123</code></p>
-                        <p><strong>User:</strong> faris@orasis.com / <code className="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">password</code></p>
+                    <div className="space-y-2">
+                        <button
+                            type="button"
+                            onClick={() => setFormData({ email: 'admin@orasis.com', password: 'admin123' })}
+                            className="w-full text-left text-xs text-yellow-800 dark:text-yellow-200 bg-yellow-100 dark:bg-yellow-800/50 hover:bg-yellow-200 dark:hover:bg-yellow-700/50 px-3 py-2 rounded transition-colors"
+                        >
+                            <strong>Admin:</strong> admin@orasis.com / admin123
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setFormData({ email: 'faris@orasis.com', password: 'password' })}
+                            className="w-full text-left text-xs text-yellow-800 dark:text-yellow-200 bg-yellow-100 dark:bg-yellow-800/50 hover:bg-yellow-200 dark:hover:bg-yellow-700/50 px-3 py-2 rounded transition-colors"
+                        >
+                            <strong>User:</strong> faris@orasis.com / password
+                        </button>
                     </div>
                 </div>
             </div>
