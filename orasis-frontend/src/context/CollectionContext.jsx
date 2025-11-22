@@ -60,15 +60,26 @@ export const CollectionProvider = ({ children }) => {
   };
 
   /**
-   * Update collection (rename)
+   * Update collection (rename) - preserve existing showcases data
    */
   const updateCollection = async (id, collectionData) => {
     setLoading(true);
     setError(null);
     try {
       const response = await collectionService.update(id, collectionData);
+      // Merge response with existing collection data to preserve showcases
       setCollections(prev =>
-        prev.map(col => (col.id === id ? response.data : col))
+        prev.map(col => {
+          if (col.id === id) {
+            return {
+              ...col,
+              ...response.data,
+              showcases: col.showcases, // Preserve showcases array
+              showcases_count: col.showcases_count // Preserve count
+            };
+          }
+          return col;
+        })
       );
       return response;
     } catch (err) {
@@ -120,6 +131,15 @@ export const CollectionProvider = ({ children }) => {
    * Add showcase to collection with optimistic update
    */
   const addShowcaseToCollection = async (collectionId, showcaseId) => {
+    // Check if already exists to prevent duplicate adds
+    const collection = collections.find(c => c.id === collectionId);
+    const alreadyExists = collection?.showcases?.some(s => Number(s.id) === Number(showcaseId));
+    
+    if (alreadyExists) {
+      console.log('Showcase already in collection, skipping add');
+      return;
+    }
+
     // Optimistic update - update UI immediately
     setCollections(prev => prev.map(col => {
       if (col.id === collectionId) {
@@ -134,10 +154,10 @@ export const CollectionProvider = ({ children }) => {
 
     setError(null);
     try {
-      const response = await collectionService.addShowcase(collectionId, showcaseId);
-      // Refresh to get full data from backend
-      await fetchCollections();
-      return response;
+      await collectionService.addShowcase(collectionId, showcaseId);
+      // Don't fetch immediately - let UI stay optimistic
+      // Fetch will happen on next page load or manual refresh
+      return { success: true };
     } catch (err) {
       console.error('Error adding showcase to collection:', err);
       setError(err.response?.data?.message || 'Failed to add showcase');
@@ -151,6 +171,15 @@ export const CollectionProvider = ({ children }) => {
    * Remove showcase from collection with optimistic update
    */
   const removeShowcaseFromCollection = async (collectionId, showcaseId) => {
+    // Check if exists before removing
+    const collection = collections.find(c => c.id === collectionId);
+    const exists = collection?.showcases?.some(s => Number(s.id) === Number(showcaseId));
+    
+    if (!exists) {
+      console.log('Showcase not in collection, skipping remove');
+      return;
+    }
+
     // Optimistic update - update UI immediately
     setCollections(prev => prev.map(col => {
       if (col.id === collectionId) {
@@ -165,10 +194,10 @@ export const CollectionProvider = ({ children }) => {
 
     setError(null);
     try {
-      const response = await collectionService.removeShowcase(collectionId, showcaseId);
-      // Refresh to get full data from backend
-      await fetchCollections();
-      return response;
+      await collectionService.removeShowcase(collectionId, showcaseId);
+      // Don't fetch immediately - let UI stay optimistic
+      // Fetch will happen on next page load or manual refresh
+      return { success: true };
     } catch (err) {
       console.error('Error removing showcase from collection:', err);
       setError(err.response?.data?.message || 'Failed to remove showcase');
