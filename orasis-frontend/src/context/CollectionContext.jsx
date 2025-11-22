@@ -117,42 +117,64 @@ export const CollectionProvider = ({ children }) => {
   };
 
   /**
-   * Add showcase to collection
+   * Add showcase to collection with optimistic update
    */
   const addShowcaseToCollection = async (collectionId, showcaseId) => {
-    setLoading(true);
+    // Optimistic update - update UI immediately
+    setCollections(prev => prev.map(col => {
+      if (col.id === collectionId) {
+        return {
+          ...col,
+          showcases: [...(col.showcases || []), { id: showcaseId }],
+          showcases_count: (col.showcases_count || 0) + 1
+        };
+      }
+      return col;
+    }));
+
     setError(null);
     try {
       const response = await collectionService.addShowcase(collectionId, showcaseId);
-      // Refresh collections to update count
+      // Refresh to get full data from backend
       await fetchCollections();
       return response;
     } catch (err) {
       console.error('Error adding showcase to collection:', err);
       setError(err.response?.data?.message || 'Failed to add showcase');
+      // Revert optimistic update on error
+      await fetchCollections();
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
   /**
-   * Remove showcase from collection
+   * Remove showcase from collection with optimistic update
    */
   const removeShowcaseFromCollection = async (collectionId, showcaseId) => {
-    setLoading(true);
+    // Optimistic update - update UI immediately
+    setCollections(prev => prev.map(col => {
+      if (col.id === collectionId) {
+        return {
+          ...col,
+          showcases: (col.showcases || []).filter(s => Number(s.id) !== Number(showcaseId)),
+          showcases_count: Math.max(0, (col.showcases_count || 0) - 1)
+        };
+      }
+      return col;
+    }));
+
     setError(null);
     try {
       const response = await collectionService.removeShowcase(collectionId, showcaseId);
-      // Refresh collections to update count
+      // Refresh to get full data from backend
       await fetchCollections();
       return response;
     } catch (err) {
       console.error('Error removing showcase from collection:', err);
       setError(err.response?.data?.message || 'Failed to remove showcase');
+      // Revert optimistic update on error
+      await fetchCollections();
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

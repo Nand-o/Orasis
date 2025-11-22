@@ -16,9 +16,22 @@ const HomePage = ({ searchValue }) => {
     useEffect(() => {
         document.title = 'Inspiration | Orasis';
         
-        // 🔥 TEST: Fetch data dari API
+        // 🔥 Fetch data with caching
         const fetchShowcases = async () => {
             try {
+                // Check cache first (valid for 5 minutes)
+                const cachedData = sessionStorage.getItem('showcases_cache');
+                const cacheTime = sessionStorage.getItem('showcases_cache_time');
+                const now = Date.now();
+                const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+                
+                if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
+                    console.log('✅ Using cached showcases');
+                    setShowcases(JSON.parse(cachedData));
+                    setLoading(false);
+                    return;
+                }
+                
                 setLoading(true);
                 
                 // Fetch all showcases - use multiple pages if needed
@@ -42,11 +55,16 @@ const HomePage = ({ searchValue }) => {
                 // Transform snake_case to camelCase for compatibility with existing components
                 const transformedData = allShowcases.map(showcase => ({
                     ...showcase,
-                    imageUrl: showcase.image_url, // Add camelCase version
-                    urlWebsite: showcase.url_website, // Add camelCase version
+                    imageUrl: showcase.image_url,
+                    urlWebsite: showcase.url_website,
                 }));
                 
                 console.log(`📊 Loaded ${transformedData.length} showcases`);
+                
+                // Save to cache
+                sessionStorage.setItem('showcases_cache', JSON.stringify(transformedData));
+                sessionStorage.setItem('showcases_cache_time', now.toString());
+                
                 setShowcases(transformedData);
                 setError(null);
             } catch (err) {

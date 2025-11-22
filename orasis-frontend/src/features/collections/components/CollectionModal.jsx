@@ -20,11 +20,16 @@ const CollectionModal = ({ isOpen, onClose, designId }) => {
 
     const toggleDesignInCollection = async (collectionId, showcaseId) => {
         const collection = collections.find(c => c.id === collectionId);
-        if (!collection) return;
+        if (!collection) {
+            console.error('Collection not found:', collectionId);
+            return;
+        }
 
         try {
-            // Check if showcase is already in collection
-            const isInCollection = collection.showcases?.some(s => s.id === showcaseId);
+            // Check if showcase is already in collection (with type coercion)
+            const isInCollection = collection.showcases?.some(s => 
+                Number(s.id) === Number(showcaseId)
+            );
             
             if (isInCollection) {
                 await removeShowcaseFromCollection(collectionId, showcaseId);
@@ -67,7 +72,11 @@ const CollectionModal = ({ isOpen, onClose, designId }) => {
                         ) : (
                             <div className="space-y-3">
                                 {collections.map((collection) => {
-                                    const isInCollection = collection.showcases?.some(s => s.id === designId) || false;
+                                    // Ensure type consistency when comparing IDs
+                                    const isInCollection = collection.showcases?.some(s => 
+                                        Number(s.id) === Number(designId)
+                                    ) || false;
+                                    
                                     return (
                                         <label key={collection.id} className="flex items-center justify-between cursor-pointer group">
                                             <span className="text-gray-700 font-medium group-hover:text-gray-900">

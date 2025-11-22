@@ -62,11 +62,7 @@ class ShowcaseController extends Controller
     // PUBLIC/USER: Lihat detail
     public function show($id)
     {
-        $showcase = Showcase::with(['user', 'tags'])->find($id);
-
-        if (!$showcase) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
+        $showcase = Showcase::with(['user', 'tags'])->findOrFail($id);
 
         // cegah intip status pending kecuali pemilik/admin
         $user = request()->user('sanctum');
@@ -77,7 +73,18 @@ class ShowcaseController extends Controller
             return response()->json(['message' => 'Showcase sedang dimoderasi.'], 403);
         }
 
-        return response()->json(['data' => $showcase]);
+        // Get similar showcases (same category, exclude current, limit 4)
+        $similar = Showcase::with(['user', 'tags'])
+            ->where('category', $showcase->category)
+            ->where('id', '!=', $id)
+            ->where('status', 'approved')
+            ->limit(4)
+            ->get();
+
+        return response()->json([
+            'data' => $showcase,
+            'similar' => $similar
+        ]);
     }
 
     // USER: Update showcase sendiri

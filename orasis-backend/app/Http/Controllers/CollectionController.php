@@ -13,9 +13,7 @@ class CollectionController extends Controller
         $collections = $request->user()
             ->collections()
             ->withCount('showcases')
-            ->with(['showcases' => function ($q) {
-                $q->limit(1);
-            }])
+            ->with(['showcases'])
             ->latest()
             ->get();
 
