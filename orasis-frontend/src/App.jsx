@@ -7,6 +7,7 @@ import DesignDetailPage from './features/design/DesignDetailPage';
 import SearchResultPage from './features/design/SearchResultPage';
 import AboutPage from './features/about/AboutPage';
 import CollectionPage from './features/collections/CollectionPage';
+import ShowcaseTestPage from './features/design/ShowcaseTestPage';
 import { CollectionProvider } from './features/collections/context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -66,6 +67,14 @@ const AnimatedRoutes = ({ searchValue }) => {
           element={
             <PageWrapper>
               <CollectionPage />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/test-crud"
+          element={
+            <PageWrapper>
+              <ShowcaseTestPage />
             </PageWrapper>
           }
         />
