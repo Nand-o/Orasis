@@ -8,8 +8,11 @@ import SearchResultPage from './features/design/SearchResultPage';
 import AboutPage from './features/about/AboutPage';
 import CollectionPage from './features/collections/CollectionPage';
 import ShowcaseTestPage from './features/design/ShowcaseTestPage';
+import LoginPage from './features/auth/LoginPage';
+import RegisterPage from './features/auth/RegisterPage';
 import { CollectionProvider } from './features/collections/context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 
 const PageWrapper = ({ children }) => {
   return (
@@ -78,6 +81,14 @@ const AnimatedRoutes = ({ searchValue }) => {
             </PageWrapper>
           }
         />
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
+        <Route
+          path="/register"
+          element={<RegisterPage />}
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -87,15 +98,17 @@ function App() {
   const [searchValue, setSearchValue] = useState('');
 
   return (
-    <CollectionProvider>
-      <ThemeProvider>
-        <BrowserRouter>
-          <Layout searchValue={searchValue} onSearchChange={(e) => setSearchValue(e.target.value)}>
-            <AnimatedRoutes searchValue={searchValue} />
-          </Layout>
-        </BrowserRouter>
-      </ThemeProvider>
-    </CollectionProvider>
+    <AuthProvider>
+      <CollectionProvider>
+        <ThemeProvider>
+          <BrowserRouter>
+            <Layout searchValue={searchValue} onSearchChange={(e) => setSearchValue(e.target.value)}>
+              <AnimatedRoutes searchValue={searchValue} />
+            </Layout>
+          </BrowserRouter>
+        </ThemeProvider>
+      </CollectionProvider>
+    </AuthProvider>
   );
 }
 

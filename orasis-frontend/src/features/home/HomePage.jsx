@@ -20,9 +20,34 @@ const HomePage = ({ searchValue }) => {
         const fetchShowcases = async () => {
             try {
                 setLoading(true);
-                const data = await showcaseService.getAll();
-                console.log('✅ API Response:', data); // Debug log
-                setShowcases(data.data || []);
+                
+                // Fetch all showcases - use multiple pages if needed
+                let allShowcases = [];
+                let page = 1;
+                let hasMorePages = true;
+                
+                while (hasMorePages) {
+                    const data = await showcaseService.getAll({ page, per_page: 50 });
+                    console.log(`✅ Fetched page ${page}:`, data.data.length, 'items');
+                    
+                    allShowcases = [...allShowcases, ...data.data];
+                    
+                    // Check if there are more pages
+                    hasMorePages = data.current_page < data.last_page;
+                    page++;
+                }
+                
+                console.log(`✅ Total API Response: ${allShowcases.length} showcases`);
+                
+                // Transform snake_case to camelCase for compatibility with existing components
+                const transformedData = allShowcases.map(showcase => ({
+                    ...showcase,
+                    imageUrl: showcase.image_url, // Add camelCase version
+                    urlWebsite: showcase.url_website, // Add camelCase version
+                }));
+                
+                console.log(`📊 Loaded ${transformedData.length} showcases`);
+                setShowcases(transformedData);
                 setError(null);
             } catch (err) {
                 console.error('❌ API Error:', err);
@@ -41,7 +66,7 @@ const HomePage = ({ searchValue }) => {
     const dataSource = showcases.length > 0 ? showcases : MOCK_DESIGNS;
 
     const filteredDesigns = useMemo(() => {
-        return dataSource.filter(design => {
+        const filtered = dataSource.filter(design => {
             let matchesCategory = false;
             if (activeCategory === 'Websites') {
                 matchesCategory = design.category !== 'Mobile';
@@ -57,6 +82,16 @@ const HomePage = ({ searchValue }) => {
                 ));
             return matchesCategory && matchesSearch;
         });
+        
+        // Debug log
+        console.log(`🔍 Filter: "${activeCategory}", Search: "${searchValue}"`);
+        console.log(`📊 Total in dataSource: ${dataSource.length}, Filtered: ${filtered.length}`);
+        if (activeCategory === 'Mobiles') {
+            const mobileCount = dataSource.filter(d => d.category === 'Mobile').length;
+            console.log(`📱 Mobile items in dataSource: ${mobileCount}`);
+        }
+        
+        return filtered;
     }, [dataSource, activeCategory, searchValue]);
 
     // Select popular designs for carousel (first 5)
