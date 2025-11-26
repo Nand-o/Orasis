@@ -160,7 +160,7 @@ const UserOverviewPage = () => {
                                         className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                         onClick={() => window.location.href = `/design/${showcase.id}`}
                                     >
-                                        <div className="w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
+                                        <div className="w-16 h-16 rounded-lg shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
                                             {showcase.image_url ? (
                                                 <img 
                                                     src={showcase.image_url} 
@@ -233,7 +233,7 @@ const UserOverviewPage = () => {
                                         className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                         onClick={() => window.location.href = '/collections'}
                                     >
-                                        <div className="w-10 h-10 bg-black dark:bg-white rounded-lg flex-shrink-0"></div>
+                                        <div className="w-10 h-10 bg-black dark:bg-white rounded-lg shrink-0"></div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="font-medium text-gray-900 dark:text-white truncate">
                                                 {collection.name}

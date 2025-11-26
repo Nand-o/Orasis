@@ -190,7 +190,7 @@ const AdminOverviewPage = () => {
                                     className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                     onClick={() => window.location.href = `/design/${showcase.id}`}
                                 >
-                                    <div className="w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
+                                    <div className="w-16 h-16 rounded-lg shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
                                         {showcase.image_url ? (
                                             <img 
                                                 src={showcase.image_url} 
@@ -240,7 +240,7 @@ const AdminOverviewPage = () => {
                         <div className="space-y-4">
                             {recentActivity.map((activity, index) => (
                                 <div key={index} className="flex gap-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                                         activity.type === 'approved' 
                                             ? 'bg-green-100 dark:bg-green-900/30'
                                             : activity.type === 'rejected'

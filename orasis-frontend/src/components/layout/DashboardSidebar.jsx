@@ -63,13 +63,13 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
             className="fixed left-0 top-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 flex flex-col"
         >
                 {/* Header */}
-                <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-800 gap-3 flex-shrink-0">
+                <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-800 gap-3 shrink-0">
                     {/* Toggle Button - SUPER VISIBLE */}
                     <motion.button
                         onClick={() => setCollapsed(!collapsed)}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className="p-3 bg-black dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-200 rounded-xl transition-all shadow-2xl border-2 border-gray-300 dark:border-gray-700 flex-shrink-0"
+                        className="p-3 bg-black dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-200 rounded-xl transition-all shadow-2xl border-2 border-gray-300 dark:border-gray-700 shrink-0"
                         title={collapsed ? "Buka Sidebar" : "Tutup Sidebar"}
                         style={{ zIndex: 50 }}
                     >
@@ -104,7 +104,7 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="px-4 py-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0"
+                    className="px-4 py-4 border-b border-gray-200 dark:border-gray-800 shrink-0"
                 >
                     {collapsed ? (
                         <div className="flex justify-center">
@@ -152,7 +152,7 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                                     }`}
                                 >
-                                    <Icon className={`w-5 h-5 flex-shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
+                                    <Icon className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
                                     {!collapsed && (
                                         <>
                                             <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
@@ -170,14 +170,14 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                 </nav>
 
                 {/* Bottom Actions */}
-                <div className="border-t border-gray-200 dark:border-gray-800 p-3 space-y-1 flex-shrink-0 bg-white dark:bg-gray-900">
+                <div className="border-t border-gray-200 dark:border-gray-800 p-3 space-y-1 shrink-0 bg-white dark:bg-gray-900">
                     <motion.button
                         onClick={() => navigate('/profile')}
                         whileHover={{ x: collapsed ? 0 : 4 }}
                         whileTap={{ scale: 0.98 }}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        <Settings className={`w-5 h-5 flex-shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
+                        <Settings className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
                         {!collapsed && <span className="text-sm font-medium">Settings</span>}
                     </motion.button>
                     <motion.button
@@ -186,7 +186,7 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                         whileTap={{ scale: 0.98 }}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
-                        <LogOut className={`w-5 h-5 flex-shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
+                        <LogOut className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
                         {!collapsed && <span className="text-sm font-medium">Logout</span>}
                     </motion.button>
                 </div>

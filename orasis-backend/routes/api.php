@@ -21,6 +21,8 @@ Route::get('/showcases/{id}', [ShowcaseController::class, 'show']);
 Route::get('/tags', [TagController::class, 'index']);
 
 
+
+
 // === PROTECTED route ===
 Route::middleware('auth:sanctum')->group(function () {
 

@@ -10,15 +10,38 @@ class ShowcaseController extends Controller
     // PUBLIC: Hanya tampilkan yang APPROVED
     public function index(Request $request)
     {
-        $query = Showcase::with(['user', 'tags'])
-            ->where('status', 'approved')
-            ->latest();
+        // Get sort parameter
+        $sort = $request->get('sort', 'newest');
+        
+        // Start query without eager loading first
+        $query = Showcase::query()->where('status', 'approved');
 
-        if ($category = $request->query('category')) {
+        // Category filter
+        if ($category = $request->get('category')) {
             $query->whereRaw('LOWER(category) = ?', [strtolower($category)]);
         }
 
-        return response()->json($query->paginate(10));
+        // Apply sorting - only 4 options (removed popular)
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'title_asc':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'title_desc':
+                $query->orderBy('title', 'desc');
+                break;
+            default: // newest
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // Get results first, then load relationships
+        $results = $query->paginate(10);
+        $results->load(['user', 'tags']);
+        
+        return response()->json($results);
     }
 
     // USER: Upload showcase baru (Otomatis Pending)

@@ -13,10 +13,22 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
-        $tags = ['UI Design', 'Branding', 'Minimalist', 'Mobile', 'Web', 'Illustration', 'Marketing'];
+        // Tags yang digunakan di FilterBar frontend
+        $tags = [
+            'modern',
+            'minimal', 
+            'dark',
+            'colorful',
+            'professional',
+            'creative',
+            'clean',
+            'responsive',
+            'dashboard',
+            'landing'
+        ];
         
         foreach ($tags as $name) {
-            Tag::create(['name' => $name]);
+            Tag::firstOrCreate(['name' => $name]);
         }
     }
 }

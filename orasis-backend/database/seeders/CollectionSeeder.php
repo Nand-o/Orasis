@@ -20,7 +20,9 @@ class CollectionSeeder extends Seeder
         ];
 
         foreach ($collections as $item) {
-            Collection::create($item);
+            Collection::firstOrCreate(
+                ['user_id' => $item['user_id'], 'name' => $item['name']]
+            );
         }
     }
 }

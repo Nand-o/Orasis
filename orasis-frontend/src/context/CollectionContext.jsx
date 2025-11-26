@@ -34,7 +34,11 @@ export const CollectionProvider = ({ children }) => {
       setCollections(response.data || []);
     } catch (err) {
       console.error('Error fetching collections:', err);
-      setError(err.response?.data?.message || 'Failed to fetch collections');
+      if (err.response?.status === 401) {
+        setCollections([]);
+      } else {
+        setError(err.response?.data?.message || 'Failed to fetch collections');
+      }
     } finally {
       setLoading(false);
     }
@@ -136,7 +140,6 @@ export const CollectionProvider = ({ children }) => {
     const alreadyExists = collection?.showcases?.some(s => Number(s.id) === Number(showcaseId));
     
     if (alreadyExists) {
-      console.log('Showcase already in collection, skipping add');
       return;
     }
 
@@ -176,7 +179,6 @@ export const CollectionProvider = ({ children }) => {
     const exists = collection?.showcases?.some(s => Number(s.id) === Number(showcaseId));
     
     if (!exists) {
-      console.log('Showcase not in collection, skipping remove');
       return;
     }
 

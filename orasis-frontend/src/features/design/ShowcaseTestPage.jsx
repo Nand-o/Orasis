@@ -416,7 +416,7 @@ const ShowcaseTestPage = () => {
             </div>
 
             {/* Info Section */}
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 border border-purple-200 dark:border-gray-600 rounded-lg p-6 mb-6">
+            <div className="bg-linear-to-r from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 border border-purple-200 dark:border-gray-600 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300 mb-3">
                     📚 How to Use This Form
                 </h3>

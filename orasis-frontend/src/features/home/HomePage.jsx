@@ -2,16 +2,25 @@ import React, { useState, useMemo, useEffect } from 'react';
 import HeroSection from './components/HeroSection';
 import FilterBar from './components/FilterBar';
 import ShowcaseCard from '../design/components/ShowcaseCard';
-import { MOCK_DESIGNS } from '../../data/mockData';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
 
 const HomePage = ({ searchValue }) => {
-    const [activeCategory, setActiveCategory] = useState('Websites');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+    
+    // Initialize state from URL params
+    const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'Websites');
+    const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
+    const [selectedTags, setSelectedTags] = useState(
+        searchParams.get('tags') ? searchParams.get('tags').split(',') : []
+    );
+    const [selectedCategories, setSelectedCategories] = useState(
+        searchParams.get('categories') ? searchParams.get('categories').split(',') : []
+    );
     const [showcases, setShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         document.title = 'Inspiration | Orasis';
@@ -26,8 +35,8 @@ const HomePage = ({ searchValue }) => {
                 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
                 
                 if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
-                    console.log('✅ Using cached showcases');
-                    setShowcases(JSON.parse(cachedData));
+                    const cached = JSON.parse(cachedData);
+                    setShowcases(cached);
                     setLoading(false);
                     return;
                 }
@@ -41,7 +50,6 @@ const HomePage = ({ searchValue }) => {
                 
                 while (hasMorePages) {
                     const data = await showcaseService.getAll({ page, per_page: 50 });
-                    console.log(`✅ Fetched page ${page}:`, data.data.length, 'items');
                     
                     allShowcases = [...allShowcases, ...data.data];
                     
@@ -50,16 +58,12 @@ const HomePage = ({ searchValue }) => {
                     page++;
                 }
                 
-                console.log(`✅ Total API Response: ${allShowcases.length} showcases`);
-                
                 // Transform snake_case to camelCase for compatibility with existing components
                 const transformedData = allShowcases.map(showcase => ({
                     ...showcase,
                     imageUrl: showcase.image_url,
                     urlWebsite: showcase.url_website,
                 }));
-                
-                console.log(`📊 Loaded ${transformedData.length} showcases`);
                 
                 // Save to cache
                 sessionStorage.setItem('showcases_cache', JSON.stringify(transformedData));
@@ -69,9 +73,9 @@ const HomePage = ({ searchValue }) => {
                 setError(null);
             } catch (err) {
                 console.error('❌ API Error:', err);
+                console.error('❌ Error details:', err.response || err);
                 setError(err.message || 'Failed to fetch showcases');
-                // Fallback ke mock data jika API gagal
-                setShowcases(MOCK_DESIGNS);
+                setShowcases([]);
             } finally {
                 setLoading(false);
             }
@@ -80,40 +84,87 @@ const HomePage = ({ searchValue }) => {
         fetchShowcases();
     }, []);
 
-    // 🔥 Gunakan data dari API atau fallback ke MOCK
-    const dataSource = showcases.length > 0 ? showcases : MOCK_DESIGNS;
+    // Update URL params when filters change
+    useEffect(() => {
+        const params = {};
+        if (activeCategory !== 'Websites') params.category = activeCategory;
+        if (sortBy !== 'newest') params.sort = sortBy;
+        if (selectedTags.length > 0) params.tags = selectedTags.join(',');
+        if (selectedCategories.length > 0) params.categories = selectedCategories.join(',');
+        
+        setSearchParams(params);
+    }, [activeCategory, sortBy, selectedTags, selectedCategories, setSearchParams]);
 
     const filteredDesigns = useMemo(() => {
-        const filtered = dataSource.filter(design => {
+        let filtered = showcases.filter(design => {
+            // Category filter logic:
+            // 1. If advanced filter has specific categories selected, use those ONLY
+            // 2. Otherwise, use main category toggle (Websites/Mobiles)
             let matchesCategory = false;
-            if (activeCategory === 'Websites') {
-                matchesCategory = design.category !== 'Mobile';
-            } else if (activeCategory === 'Mobiles') {
-                matchesCategory = design.category === 'Mobile';
+            
+            if (selectedCategories.length > 0) {
+                // Advanced filter takes precedence
+                matchesCategory = selectedCategories.includes(design.category);
             } else {
-                matchesCategory = design.category === activeCategory;
+                // Use main category toggle
+                if (activeCategory === 'Websites') {
+                    matchesCategory = design.category !== 'Mobile';
+                } else if (activeCategory === 'Mobiles') {
+                    matchesCategory = design.category === 'Mobile';
+                } else {
+                    matchesCategory = design.category === activeCategory;
+                }
             }
 
+            // Search filter
             const matchesSearch = design.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+                (design.description && design.description.toLowerCase().includes(searchValue.toLowerCase())) ||
                 (design.tags && design.tags.some(tag => 
                     (typeof tag === 'string' ? tag : tag.name).toLowerCase().includes(searchValue.toLowerCase())
                 ));
-            return matchesCategory && matchesSearch;
+
+            // Tag filter
+            const matchesTags = selectedTags.length === 0 || (
+                design.tags && design.tags.some(tag => {
+                    const tagName = typeof tag === 'string' ? tag : tag.name;
+                    return selectedTags.some(selectedTag => 
+                        tagName.toLowerCase().includes(selectedTag.toLowerCase())
+                    );
+                })
+            );
+
+            return matchesCategory && matchesSearch && matchesTags;
+        });
+
+        // Apply sorting
+        filtered = [...filtered].sort((a, b) => {
+            switch (sortBy) {
+                case 'newest':
+                    return new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt);
+                case 'oldest':
+                    return new Date(a.created_at || a.createdAt) - new Date(b.created_at || b.createdAt);
+                case 'title_asc':
+                    return a.title.localeCompare(b.title);
+                case 'title_desc':
+                    return b.title.localeCompare(a.title);
+                default:
+                    return 0;
+            }
         });
         
-        // Debug log
-        console.log(`🔍 Filter: "${activeCategory}", Search: "${searchValue}"`);
-        console.log(`📊 Total in dataSource: ${dataSource.length}, Filtered: ${filtered.length}`);
-        if (activeCategory === 'Mobiles') {
-            const mobileCount = dataSource.filter(d => d.category === 'Mobile').length;
-            console.log(`📱 Mobile items in dataSource: ${mobileCount}`);
-        }
-        
         return filtered;
-    }, [dataSource, activeCategory, searchValue]);
+    }, [showcases, activeCategory, sortBy, selectedTags, selectedCategories, searchValue]);
+
+    // Handle filter clear
+    const handleClearFilters = () => {
+        setActiveCategory('Websites');
+        setSortBy('newest');
+        setSelectedTags([]);
+        setSelectedCategories([]);
+    };
 
     // Select popular designs for carousel (first 5)
-    const popularDesigns = dataSource.slice(0, 5);
+    const popularDesigns = showcases.slice(0, 5);
 
     // 🔥 Loading state
     if (loading) {
@@ -155,26 +206,64 @@ const HomePage = ({ searchValue }) => {
                 <FilterBar
                     activeCategory={activeCategory}
                     onCategoryChange={setActiveCategory}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    selectedTags={selectedTags}
+                    onTagsChange={setSelectedTags}
+                    selectedCategories={selectedCategories}
+                    onCategoriesChange={setSelectedCategories}
+                    onClearFilters={handleClearFilters}
                 />
 
-                {filteredDesigns.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {filteredDesigns.map((design) => (
-                            <ShowcaseCard
-                                key={design.id}
-                                design={design}
-                                onClick={() => navigate(`/design/${design.id}`)}
-                            />
+                {/* Active Filters Display */}
+                {(selectedTags.length > 0 || selectedCategories.length > 0) && (
+                    <div className="flex flex-wrap gap-2 mb-6">
+                        {selectedCategories.map(cat => (
+                            <span key={cat} className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-sm rounded-full flex items-center gap-2">
+                                {cat}
+                                <button onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== cat))}>
+                                    ×
+                                </button>
+                            </span>
+                        ))}
+                        {selectedTags.map(tag => (
+                            <span key={tag} className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-sm rounded-full flex items-center gap-2">
+                                #{tag}
+                                <button onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))}>
+                                    ×
+                                </button>
+                            </span>
                         ))}
                     </div>
+                )}
+
+                {filteredDesigns.length > 0 ? (
+                    <>
+                        <div className="flex items-center justify-between mb-6">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Showing {filteredDesigns.length} {filteredDesigns.length === 1 ? 'showcase' : 'showcases'}
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                            {filteredDesigns.map((design) => (
+                                <ShowcaseCard
+                                    key={design.id}
+                                    design={design}
+                                    onClick={() => navigate(`/design/${design.id}`)}
+                                />
+                            ))}
+                        </div>
+                    </>
                 ) : (
                     <div className="text-center py-20">
-                        <p className="text-gray-500 text-lg">No designs found matching your criteria.</p>
+                        <div className="text-6xl mb-4">🔍</div>
+                        <p className="text-gray-500 text-lg mb-2">No showcases found</p>
+                        <p className="text-gray-400 text-sm mb-6">Try adjusting your filters or search query</p>
                         <button
-                            onClick={() => { setActiveCategory('Websites'); }}
-                            className="mt-4 text-indigo-600 font-medium hover:text-indigo-500"
+                            onClick={handleClearFilters}
+                            className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
                         >
-                            Clear filters
+                            Clear all filters
                         </button>
                     </div>
                 )}

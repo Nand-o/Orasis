@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Showcase;
+use App\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -22,6 +23,9 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Clean and minimalist e-commerce design with focus on products and user experience.',
                 'image_url' => 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=600&fit=crop',
                 'category' => 'E-commerce',
+                'status' => 'approved',
+                'status' => 'approved',
+                'tags' => ['modern', 'minimal', 'clean', 'responsive'],
             ],
             [
                 'user_id' => 2,
@@ -30,6 +34,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Bold and stylish fashion e-commerce platform with immersive product showcases.',
                 'image_url' => 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
                 'category' => 'E-commerce',
+                'status' => 'approved',
+                'tags' => ['colorful', 'modern', 'responsive', 'creative'],
             ],
             [
                 'user_id' => 3,
@@ -38,6 +44,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Modern electronics e-commerce with product comparisons and tech specs.',
                 'image_url' => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop',
                 'category' => 'E-commerce',
+                'status' => 'approved',
+                'tags' => ['modern', 'professional', 'clean', 'responsive'],
             ],
             
             // SaaS Platforms
@@ -48,6 +56,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Comprehensive SaaS dashboard for team collaboration and project tracking.',
                 'image_url' => 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop',
                 'category' => 'SaaS',
+                'status' => 'approved',
+                'tags' => ['dashboard', 'professional', 'modern', 'clean'],
             ],
             [
                 'user_id' => 3,
@@ -56,6 +66,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Data visualization and analytics SaaS platform with real-time insights.',
                 'image_url' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
                 'category' => 'SaaS',
+                'status' => 'approved',
+                'tags' => ['dashboard', 'modern', 'professional', 'dark'],
             ],
             [
                 'user_id' => 2,
@@ -64,6 +76,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Modern help desk and customer support platform for businesses.',
                 'image_url' => 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop',
                 'category' => 'SaaS',
+                'status' => 'approved',
+                'tags' => ['modern', 'clean', 'professional', 'responsive'],
             ],
             
             // Portfolio Websites
@@ -74,6 +88,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Stunning portfolio website showcasing creative design work with smooth animations.',
                 'image_url' => 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
                 'category' => 'Portfolio',
+                'status' => 'approved',
+                'tags' => ['creative', 'colorful', 'modern', 'responsive'],
             ],
             [
                 'user_id' => 3,
@@ -82,6 +98,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Elegant photography portfolio with fullscreen image galleries.',
                 'image_url' => 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&h=600&fit=crop',
                 'category' => 'Portfolio',
+                'status' => 'approved',
+                'tags' => ['minimal', 'clean', 'modern', 'responsive'],
             ],
             [
                 'user_id' => 2,
@@ -90,6 +108,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Minimalist developer portfolio highlighting projects and technical skills.',
                 'image_url' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop',
                 'category' => 'Portfolio',
+                'status' => 'approved',
+                'tags' => ['minimal', 'dark', 'professional', 'clean'],
             ],
             
             // Landing Pages
@@ -100,6 +120,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'High-converting landing page for startup product launch with clear CTAs.',
                 'image_url' => 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
                 'category' => 'Landing Page',
+                'status' => 'approved',
+                'tags' => ['landing', 'modern', 'colorful', 'clean'],
             ],
             [
                 'user_id' => 3,
@@ -108,6 +130,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Engaging mobile app landing page with app screenshots and features.',
                 'image_url' => 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop',
                 'category' => 'Landing Page',
+                'status' => 'approved',
+                'tags' => ['landing', 'modern', 'minimal', 'responsive'],
             ],
             [
                 'user_id' => 2,
@@ -116,6 +140,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Professional SaaS marketing page with pricing tables and testimonials.',
                 'image_url' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
                 'category' => 'Landing Page',
+                'status' => 'approved',
+                'tags' => ['landing', 'professional', 'clean', 'modern'],
             ],
             
             // Dashboard Designs
@@ -126,6 +152,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Comprehensive admin dashboard with charts, tables, and user management.',
                 'image_url' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
                 'category' => 'Dashboard',
+                'status' => 'approved',
+                'tags' => ['dashboard', 'professional', 'modern', 'dark'],
             ],
             [
                 'user_id' => 2,
@@ -134,6 +162,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Feature-rich e-commerce admin panel for managing products and orders.',
                 'image_url' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
                 'category' => 'Dashboard',
+                'status' => 'approved',
+                'tags' => ['dashboard', 'professional', 'clean', 'modern'],
             ],
             [
                 'user_id' => 3,
@@ -142,6 +172,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Modern financial dashboard with revenue tracking and payment analytics.',
                 'image_url' => 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&h=600&fit=crop',
                 'category' => 'Dashboard',
+                'status' => 'approved',
+                'tags' => ['dashboard', 'professional', 'dark', 'modern'],
             ],
             
             // Mobile App Designs
@@ -152,6 +184,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Mobile fitness app with workout tracking, progress charts, and social features.',
                 'image_url' => 'https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=800&h=600&fit=crop',
                 'category' => 'Mobile',
+                'status' => 'approved',
+                'tags' => ['modern', 'colorful', 'clean', 'responsive'],
             ],
             [
                 'user_id' => 2,
@@ -160,6 +194,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Secure mobile banking app with transactions, transfers, and account management.',
                 'image_url' => 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=600&fit=crop',
                 'category' => 'Mobile',
+                'status' => 'approved',
+                'tags' => ['professional', 'dark', 'clean', 'modern'],
             ],
             [
                 'user_id' => 3,
@@ -168,6 +204,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Intuitive food delivery app with restaurant browsing and order tracking.',
                 'image_url' => 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=600&fit=crop',
                 'category' => 'Mobile',
+                'status' => 'approved',
+                'tags' => ['colorful', 'modern', 'clean', 'responsive'],
             ],
             [
                 'user_id' => 1,
@@ -176,6 +214,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Modern social media app with stories, reels, and messaging features.',
                 'image_url' => 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop',
                 'category' => 'Mobile',
+                'status' => 'approved',
+                'tags' => ['colorful', 'modern', 'creative', 'responsive'],
             ],
             [
                 'user_id' => 2,
@@ -184,6 +224,8 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Travel and hotel booking mobile app with interactive maps and reviews.',
                 'image_url' => 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=600&fit=crop',
                 'category' => 'Mobile',
+                'status' => 'approved',
+                'tags' => ['modern', 'clean', 'colorful', 'responsive'],
             ],
             [
                 'user_id' => 3,
@@ -192,11 +234,42 @@ class ShowcaseSeeder extends Seeder
                 'description' => 'Music streaming app with playlists, podcasts, and personalized recommendations.',
                 'image_url' => 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop',
                 'category' => 'Mobile',
+                'status' => 'approved',
+                'tags' => ['dark', 'modern', 'colorful', 'creative'],
             ],
         ];
 
-        foreach ($showcases as $item) {
-            Showcase::create($item);
+        foreach ($showcases as $index => $item) {
+            // Extract tags from item
+            $tags = $item['tags'] ?? [];
+            unset($item['tags']);
+            
+            // Add different timestamps (older to newer, 21 days ago to today)
+            $daysAgo = 21 - $index;
+            $item['created_at'] = now()->subDays($daysAgo);
+            $item['updated_at'] = $item['created_at'];
+            
+            // Create the showcase using firstOrCreate (check by title and user_id)
+            $showcase = Showcase::firstOrCreate(
+                [
+                    'title' => $item['title'],
+                    'user_id' => $item['user_id']
+                ],
+                $item
+            );
+            
+            // Update timestamps even if exists
+            $showcase->update([
+                'created_at' => $item['created_at'],
+                'updated_at' => $item['updated_at']
+            ]);
+            
+            // Attach tags to the showcase (sync to avoid duplicates)
+            if (!empty($tags)) {
+                $tagIds = Tag::whereIn('name', $tags)->pluck('id')->toArray();
+                $showcase->tags()->sync($tagIds);
+            }
         }
     }
 }
+
