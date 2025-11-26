@@ -96,6 +96,16 @@ const authService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    // ===== GET CURRENT USER FROM API =====
+    async getCurrentUserFromAPI() {
+        try {
+            const response = await api.get('/user');
+            return { data: response.data };
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

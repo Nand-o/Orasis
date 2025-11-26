@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Package, Grid, Plus, BarChart3 } from 'lucide-react';
+import { Package, Grid, Plus, BarChart3, Pencil } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
@@ -177,7 +177,7 @@ const DashboardPage = () => {
                                 Your Showcases ({myShowcases.length})
                             </h2>
                             <button
-                                onClick={() => navigate('/test-showcase')}
+                                onClick={() => navigate('/showcase/new')}
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity"
                             >
                                 <Plus className="w-4 h-4" />
@@ -192,13 +192,14 @@ const DashboardPage = () => {
                         ) : myShowcases.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {myShowcases.map((showcase) => (
-                                    <div key={showcase.id} className="relative">
+                                    <div key={showcase.id} className="relative group/card">
                                         <ShowcaseCard
                                             design={showcase}
                                             onClick={() => navigate(`/design/${showcase.id}`)}
+                                            showBookmark={false}
                                         />
                                         {/* Status Badge */}
-                                        <div className="absolute top-4 right-4">
+                                        <div className="absolute top-4 right-4 z-10">
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                                 showcase.status === 'approved'
                                                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
@@ -209,6 +210,17 @@ const DashboardPage = () => {
                                                 {showcase.status}
                                             </span>
                                         </div>
+                                        {/* Edit Button - Replaces Bookmark */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/showcase/edit/${showcase.id}`);
+                                            }}
+                                            className="absolute bottom-16 right-3 z-10 p-2.5 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:scale-110 border border-gray-200 dark:border-gray-700"
+                                            title="Edit showcase"
+                                        >
+                                            <Pencil className="w-5 h-5" />
+                                        </button>
                                     </div>
                                 ))}
                             </div>

@@ -31,7 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user', [ProfileController::class, 'update']);
     Route::put('/user/password', [ProfileController::class, 'changePassword']);
+    Route::put('/user/change-password', [ProfileController::class, 'changePassword']); // NEW endpoint to bypass cache
     Route::get('/user/showcases', [ProfileController::class, 'showcases']);
+    Route::get('/user/stats', [ProfileController::class, 'stats']);
     
     // User Action: Upload, Edit, Hapus Punya Sendiri
     Route::post('/showcases', [ShowcaseController::class, 'store']);

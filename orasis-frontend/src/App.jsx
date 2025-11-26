@@ -9,6 +9,7 @@ import AboutPage from './features/about/AboutPage';
 import CollectionPage from './features/collections/CollectionPage';
 import CollectionTestPage from './features/collections/CollectionTestPage';
 import ShowcaseTestPage from './features/design/ShowcaseTestPage';
+import ShowcaseFormPage from './features/design/ShowcaseFormPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/profile/DashboardPage';
@@ -98,6 +99,22 @@ const AnimatedRoutes = ({ searchValue }) => {
           }
         />
         <Route
+          path="/showcase/new"
+          element={
+            <PageWrapper>
+              <ShowcaseFormPage />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/showcase/edit/:id"
+          element={
+            <PageWrapper>
+              <ShowcaseFormPage />
+            </PageWrapper>
+          }
+        />
+        <Route
           path="/test-crud"
           element={
             <PageWrapper>
@@ -144,9 +161,9 @@ const AnimatedRoutes = ({ searchValue }) => {
         <Route
           path="/profile"
           element={
-            <DashboardLayout>
+            <PageWrapper>
               <ProfilePage />
-            </DashboardLayout>
+            </PageWrapper>
           }
         />
         <Route
@@ -166,10 +183,9 @@ const AnimatedRoutes = ({ searchValue }) => {
 const ConditionalLayout = ({ children, searchValue, onSearchChange }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
-  const isProfileRoute = location.pathname.startsWith('/profile');
   
-  // Dashboard and Profile routes use their own layouts (no main navbar)
-  if (isDashboardRoute || isProfileRoute) {
+  // Only Dashboard routes use their own layout (no main navbar)
+  if (isDashboardRoute) {
     return children;
   }
   

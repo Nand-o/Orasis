@@ -147,9 +147,17 @@ const UserOverviewPage = () => {
                     >
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">My Recent Showcases</h2>
-                            <a href="/dashboard/showcases" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
-                                View all
-                            </a>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => window.location.href = '/showcase/new'}
+                                    className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+                                >
+                                    + Create New
+                                </button>
+                                <a href="/dashboard/showcases" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+                                    View all
+                                </a>
+                            </div>
                         </div>
 
                         {myShowcases.length > 0 ? (
@@ -157,8 +165,7 @@ const UserOverviewPage = () => {
                                 {myShowcases.slice(0, 5).map((showcase) => (
                                     <div
                                         key={showcase.id}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                                        onClick={() => window.location.href = `/design/${showcase.id}`}
+                                        className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     >
                                         <div className="w-16 h-16 rounded-lg shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
                                             {showcase.image_url ? (
@@ -194,6 +201,20 @@ const UserOverviewPage = () => {
                                         }`}>
                                             {showcase.status}
                                         </span>
+                                        <div className="flex gap-2 ml-4">
+                                            <button
+                                                onClick={() => window.location.href = `/design/${showcase.id}`}
+                                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                                            >
+                                                View
+                                            </button>
+                                            <button
+                                                onClick={() => window.location.href = `/showcase/edit/${showcase.id}`}
+                                                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                                            >
+                                                Edit
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -202,7 +223,7 @@ const UserOverviewPage = () => {
                                 <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                                 <p className="text-gray-600 dark:text-gray-400 mb-4">No showcases yet</p>
                                 <button
-                                    onClick={() => window.location.href = '/dashboard/showcases'}
+                                    onClick={() => window.location.href = '/showcase/new'}
                                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
                                 >
                                     Create Your First Showcase

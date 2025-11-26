@@ -21,8 +21,13 @@ const userService = {
    * Change password
    */
   changePassword: async (passwordData) => {
-    const response = await api.put('/user/password', passwordData);
-    return response.data;
+    try {
+      // Use new endpoint to bypass any caching
+      const response = await api.put('/user/change-password', passwordData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -30,6 +35,14 @@ const userService = {
    */
   getMyShowcases: async (params = {}) => {
     const response = await api.get('/user/showcases', { params });
+    return response.data;
+  },
+
+  /**
+   * Get user dashboard statistics
+   */
+  getDashboardStats: async () => {
+    const response = await api.get('/user/stats');
     return response.data;
   },
 };

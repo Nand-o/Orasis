@@ -1,110 +1,140 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Save, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import userService from '../../services/user.service';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfilePage = () => {
-    const { user, setUser } = useAuth();
-    const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'password'
-    
-    // Profile form state
-    const [profileData, setProfileData] = useState({
-        name: user?.name || '',
-        email: user?.email || '',
-    });
-    const [profileLoading, setProfileLoading] = useState(false);
-    const [profileMessage, setProfileMessage] = useState(null);
+    const { user, updateUser } = useAuth();
+    const navigate = useNavigate();
 
-    // Password form state
-    const [passwordData, setPasswordData] = useState({
-        current_password: '',
-        new_password: '',
-        new_password_confirmation: '',
+    // Tab State
+    const [activeTab, setActiveTab] = useState('profile');
+
+    // Profile Form State
+    const [profileForm, setProfileForm] = useState({
+        name: '',
+        email: '',
     });
-    const [passwordLoading, setPasswordLoading] = useState(false);
-    const [passwordMessage, setPasswordMessage] = useState(null);
+
+    // Password Form State
+    const [passwordForm, setPasswordForm] = useState({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    });
+
+    // Password visibility state
     const [showPasswords, setShowPasswords] = useState({
         current: false,
         new: false,
         confirm: false,
     });
 
-    React.useEffect(() => {
-        document.title = 'Profile Settings | Orasis';
-    }, []);
+    // UI State
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+    const [isLoadingPassword, setIsLoadingPassword] = useState(false);
+    const [profileMessage, setProfileMessage] = useState({ type: '', text: '' });
+    const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
 
+    // Load user data on mount
+    useEffect(() => {
+        if (user) {
+            setProfileForm({
+                name: user.name || '',
+                email: user.email || '',
+            });
+        }
+    }, [user]);
+
+    // Handle Profile Update
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
-        setProfileLoading(true);
-        setProfileMessage(null);
+        setIsLoadingProfile(true);
+        setProfileMessage({ type: '', text: '' });
 
         try {
-            const response = await userService.updateProfile(profileData);
-            setUser(response.user || response.data);
+            const response = await userService.updateProfile(profileForm);
+            if (response.data) {
+                updateUser(response.data); // Update user data in AuthContext
+            }
             setProfileMessage({ type: 'success', text: 'Profile updated successfully!' });
         } catch (error) {
             setProfileMessage({
                 type: 'error',
-                text: error.response?.data?.message || 'Failed to update profile'
+                text: error.message || 'Failed to update profile',
             });
         } finally {
-            setProfileLoading(false);
+            setIsLoadingProfile(false);
         }
     };
 
+    // Handle Password Change
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
-        setPasswordLoading(true);
-        setPasswordMessage(null);
+        setIsLoadingPassword(true);
+        setPasswordMessage({ type: '', text: '' });
 
-        // Validation
-        if (passwordData.new_password !== passwordData.new_password_confirmation) {
+        // Validate passwords match
+        if (passwordForm.password !== passwordForm.password_confirmation) {
             setPasswordMessage({ type: 'error', text: 'Passwords do not match' });
-            setPasswordLoading(false);
-            return;
-        }
-
-        if (passwordData.new_password.length < 8) {
-            setPasswordMessage({ type: 'error', text: 'Password must be at least 8 characters' });
-            setPasswordLoading(false);
+            setIsLoadingPassword(false);
             return;
         }
 
         try {
-            await userService.changePassword(passwordData);
+            console.log('🔐 Sending password change request:', passwordForm);
+            await userService.changePassword(passwordForm);
             setPasswordMessage({ type: 'success', text: 'Password changed successfully!' });
-            setPasswordData({
+            // Clear form
+            setPasswordForm({
                 current_password: '',
-                new_password: '',
-                new_password_confirmation: '',
+                password: '',
+                password_confirmation: '',
             });
         } catch (error) {
+            console.error('Password change error:', error);
+            console.error('Error response:', error.response);
+            
+            // Handle validation errors
+            let errorMessage = 'Failed to change password';
+            if (error.response?.data?.errors) {
+                // Laravel validation errors
+                const errors = Object.values(error.response.data.errors).flat();
+                errorMessage = errors.join(', ');
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
             setPasswordMessage({
                 type: 'error',
-                text: error.response?.data?.message || 'Failed to change password'
+                text: errorMessage,
             });
         } finally {
-            setPasswordLoading(false);
+            setIsLoadingPassword(false);
         }
     };
 
     return (
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Header */}
-            <motion.div
-                className="mb-8"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-            >
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Profile Settings
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Manage your account settings and preferences
-                </p>
-            </motion.div>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-16">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
+                <motion.div
+                    className="mb-8"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                >
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                        Profile Settings
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-400">
+                        Manage your account settings and preferences
+                    </p>
+                </motion.div>
 
             {/* Tabs */}
             <motion.div
@@ -159,7 +189,7 @@ const ProfilePage = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
                         <form onSubmit={handleProfileSubmit} className="space-y-6">
                             {/* Message */}
-                            {profileMessage && (
+                            {profileMessage.text && (
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -182,8 +212,8 @@ const ProfilePage = () => {
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type="text"
-                                        value={profileData.name}
-                                        onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                                        value={profileForm.name}
+                                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                                         className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                                         required
                                     />
@@ -199,8 +229,8 @@ const ProfilePage = () => {
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type="email"
-                                        value={profileData.email}
-                                        onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                                        value={profileForm.email}
+                                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                                         className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                                         required
                                     />
@@ -223,10 +253,10 @@ const ProfilePage = () => {
                             {/* Submit Button */}
                             <button
                                 type="submit"
-                                disabled={profileLoading}
+                                disabled={isLoadingProfile}
                                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {profileLoading ? (
+                                {isLoadingProfile ? (
                                     <>
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white dark:border-black"></div>
                                         Saving...
@@ -246,7 +276,7 @@ const ProfilePage = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
                         <form onSubmit={handlePasswordSubmit} className="space-y-6">
                             {/* Message */}
-                            {passwordMessage && (
+                            {passwordMessage.text && (
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -269,8 +299,8 @@ const ProfilePage = () => {
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type={showPasswords.current ? 'text' : 'password'}
-                                        value={passwordData.current_password}
-                                        onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
+                                        value={passwordForm.current_password}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
                                         className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                                         required
                                     />
@@ -293,8 +323,8 @@ const ProfilePage = () => {
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type={showPasswords.new ? 'text' : 'password'}
-                                        value={passwordData.new_password}
-                                        onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                                        value={passwordForm.password}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, password: e.target.value })}
                                         className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                                         required
                                         minLength={8}
@@ -321,8 +351,8 @@ const ProfilePage = () => {
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type={showPasswords.confirm ? 'text' : 'password'}
-                                        value={passwordData.new_password_confirmation}
-                                        onChange={(e) => setPasswordData({ ...passwordData, new_password_confirmation: e.target.value })}
+                                        value={passwordForm.password_confirmation}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, password_confirmation: e.target.value })}
                                         className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                                         required
                                     />
@@ -339,10 +369,10 @@ const ProfilePage = () => {
                             {/* Submit Button */}
                             <button
                                 type="submit"
-                                disabled={passwordLoading}
+                                disabled={isLoadingPassword}
                                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {passwordLoading ? (
+                                {isLoadingPassword ? (
                                     <>
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white dark:border-black"></div>
                                         Changing...
@@ -358,6 +388,7 @@ const ProfilePage = () => {
                     </div>
                 )}
             </motion.div>
+            </div>
         </div>
     );
 };

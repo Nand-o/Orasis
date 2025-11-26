@@ -37,7 +37,6 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
         { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
         { icon: FileText, label: 'My Showcases', path: '/dashboard/showcases' },
         { icon: Grid, label: 'Collections', path: '/dashboard/collections' },
-        { icon: Clock, label: 'Recent Activity', path: '/dashboard/activity' },
     ];
 
     const menuItems = isAdmin ? adminMenuItems : userMenuItems;

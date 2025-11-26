@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import CollectionModal from '../../collections/components/CollectionModal';
 import { useCollection } from '../../../context/CollectionContext';
 
-const ShowcaseCard = ({ design, onClick }) => {
+const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { collections } = useCollection();
 
@@ -56,20 +56,24 @@ const ShowcaseCard = ({ design, onClick }) => {
                     </div>
 
                     {/* Action Icon (Bookmark/Save) */}
-                    <button
-                        className={`transition-colors p-2 ${isSaved ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-indigo-400'}`}
-                        onClick={handleBookmarkClick}
-                    >
-                        <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
-                    </button>
+                    {showBookmark && (
+                        <button
+                            className={`transition-colors p-2 ${isSaved ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-indigo-400'}`}
+                            onClick={handleBookmarkClick}
+                        >
+                            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+                        </button>
+                    )}
                 </div>
             </motion.div>
 
-            <CollectionModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                designId={design.id}
-            />
+            {showBookmark && (
+                <CollectionModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    designId={design.id}
+                />
+            )}
         </>
     );
 };
