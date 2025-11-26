@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
     LayoutDashboard, 
     FileText, 
     Users, 
-    Tag, 
     Settings, 
     LogOut,
     ChevronLeft,
@@ -17,19 +16,51 @@ import {
     XCircle
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import adminService from '../../services/admin.service';
 
 const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const isAdmin = user?.role === 'admin';
+    const [pendingCount, setPendingCount] = useState(0);
+
+    // Fetch pending count for admin
+    useEffect(() => {
+        if (isAdmin) {
+            fetchPendingCount();
+            
+            // Refresh count every 30 seconds
+            const interval = setInterval(() => {
+                fetchPendingCount();
+            }, 30000);
+
+            return () => clearInterval(interval);
+        }
+    }, [isAdmin]);
+
+    // Refresh when navigating to/from pending page
+    useEffect(() => {
+        if (isAdmin && location.pathname === '/dashboard/pending') {
+            fetchPendingCount();
+        }
+    }, [location.pathname, isAdmin]);
+
+    const fetchPendingCount = async () => {
+        try {
+            const response = await adminService.getPendingShowcases();
+            setPendingCount(response.data?.length || 0);
+        } catch (error) {
+            console.error('Failed to fetch pending count:', error);
+            setPendingCount(0);
+        }
+    };
 
     const adminMenuItems = [
         { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
         { icon: FileText, label: 'Showcases', path: '/dashboard/showcases', badge: null },
         { icon: Clock, label: 'Pending Review', path: '/dashboard/pending', badge: 'pending' },
         { icon: Users, label: 'Users', path: '/dashboard/users' },
-        { icon: Tag, label: 'Tags', path: '/dashboard/tags' },
         { icon: TrendingUp, label: 'Analytics', path: '/dashboard/analytics' },
     ];
 
@@ -84,17 +115,12 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
-                            className="flex items-center gap-3"
+                            className="flex flex-col"
                         >
-                            <div className="w-10 h-10 bg-black dark:bg-white rounded-lg flex items-center justify-center shadow-lg">
-                                <span className="text-white dark:text-black font-bold text-lg">O</span>
-                            </div>
-                            <div>
-                                <h2 className="text-base font-bold text-gray-900 dark:text-white">Orasis</h2>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {isAdmin ? 'Admin Panel' : 'Dashboard'}
-                                </p>
-                            </div>
+                            <h2 className="text-base font-bold text-gray-900 dark:text-white">Orasis</h2>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {isAdmin ? 'Admin Panel' : 'User Dashboard'}
+                            </p>
                         </motion.div>
                     )}
                 </div>
@@ -155,9 +181,9 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                                     {!collapsed && (
                                         <>
                                             <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
-                                            {item.badge && (
+                                            {item.badge === 'pending' && pendingCount > 0 && (
                                                 <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-medium rounded-full">
-                                                    3
+                                                    {pendingCount}
                                                 </span>
                                             )}
                                         </>

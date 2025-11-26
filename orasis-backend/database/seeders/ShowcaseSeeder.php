@@ -237,6 +237,58 @@ class ShowcaseSeeder extends Seeder
                 'status' => 'approved',
                 'tags' => ['dark', 'modern', 'colorful', 'creative'],
             ],
+            
+            // PENDING SHOWCASES - Waiting for Admin Review
+            [
+                'user_id' => 2, // Regular user (not admin)
+                'title' => 'Fitness Tracking App Redesign',
+                'url_website' => 'https://www.nike.com/ntc-app',
+                'description' => 'Modern fitness tracking application with workout plans, progress tracking, and social features. Built with React Native and features smooth animations.',
+                'image_url' => 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&h=600&fit=crop',
+                'category' => 'Mobile',
+                'status' => 'pending',
+                'tags' => ['modern', 'clean', 'colorful', 'responsive'],
+            ],
+            [
+                'user_id' => 3, // Regular user
+                'title' => 'Real Estate Marketplace Platform',
+                'url_website' => 'https://www.zillow.com',
+                'description' => 'Comprehensive real estate platform with property listings, 3D tours, mortgage calculator, and agent connections. Features advanced search filters and map integration.',
+                'image_url' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
+                'category' => 'E-commerce',
+                'status' => 'pending',
+                'tags' => ['modern', 'professional', 'clean', 'responsive'],
+            ],
+            [
+                'user_id' => 2, // Regular user
+                'title' => 'Online Learning Platform Dashboard',
+                'url_website' => 'https://www.coursera.org',
+                'description' => 'Interactive e-learning platform with video courses, quizzes, progress tracking, and certificates. Includes instructor dashboard and student analytics.',
+                'image_url' => 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=600&fit=crop',
+                'category' => 'SaaS',
+                'status' => 'pending',
+                'tags' => ['modern', 'clean', 'professional', 'responsive'],
+            ],
+            [
+                'user_id' => 3, // Regular user
+                'title' => 'Cryptocurrency Exchange Interface',
+                'url_website' => 'https://www.coinbase.com',
+                'description' => 'Professional crypto trading platform with real-time charts, order book, portfolio tracking, and secure wallet management. Dark theme optimized for traders.',
+                'image_url' => 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=800&h=600&fit=crop',
+                'category' => 'Dashboard',
+                'status' => 'pending',
+                'tags' => ['dark', 'modern', 'professional', 'dashboard'],
+            ],
+            [
+                'user_id' => 2, // Regular user
+                'title' => 'Restaurant Booking & Menu App',
+                'url_website' => 'https://www.opentable.com',
+                'description' => 'Elegant restaurant discovery and booking app with digital menus, reviews, and reservation management. Features beautiful food photography and smooth UX.',
+                'image_url' => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
+                'category' => 'Mobile',
+                'status' => 'pending',
+                'tags' => ['modern', 'clean', 'colorful', 'responsive'],
+            ],
         ];
 
         foreach ($showcases as $index => $item) {

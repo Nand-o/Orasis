@@ -5,6 +5,7 @@ import { Package, Grid, Plus, BarChart3, Pencil } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
+import adminService from '../../services/admin.service';
 import ShowcaseCard from '../design/components/ShowcaseCard';
 import CollectionCard from '../collections/components/CollectionCard';
 
@@ -15,16 +16,21 @@ const DashboardPage = () => {
     const [myShowcases, setMyShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('showcases'); // 'showcases' | 'collections'
+    const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
-        document.title = 'My Dashboard | Orasis';
+        document.title = isAdmin ? 'All Showcases | Admin' : 'My Dashboard | Orasis';
         fetchMyShowcases();
-    }, []);
+    }, [isAdmin]);
 
     const fetchMyShowcases = async () => {
         try {
             setLoading(true);
-            const response = await userService.getMyShowcases();
+            
+            // If admin, get all showcases, otherwise get user's showcases
+            const response = isAdmin 
+                ? await adminService.getAllShowcases()
+                : await userService.getMyShowcases();
             
             // Transform data
             const transformedData = response.data.map(showcase => ({
@@ -174,15 +180,17 @@ const DashboardPage = () => {
                     <div>
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                Your Showcases ({myShowcases.length})
+                                {isAdmin ? `All Showcases (${myShowcases.length})` : `Your Showcases (${myShowcases.length})`}
                             </h2>
-                            <button
-                                onClick={() => navigate('/showcase/new')}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity"
-                            >
-                                <Plus className="w-4 h-4" />
-                                Create New
-                            </button>
+                            {!isAdmin && (
+                                <button
+                                    onClick={() => navigate('/showcase/new')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Create New
+                                </button>
+                            )}
                         </div>
 
                         {loading ? (
@@ -199,7 +207,7 @@ const DashboardPage = () => {
                                             showBookmark={false}
                                         />
                                         {/* Status Badge */}
-                                        <div className="absolute top-4 right-4 z-10">
+                                        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                                 showcase.status === 'approved'
                                                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
@@ -209,6 +217,11 @@ const DashboardPage = () => {
                                             }`}>
                                                 {showcase.status}
                                             </span>
+                                            {isAdmin && showcase.user && (
+                                                <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium">
+                                                    By {showcase.user.name}
+                                                </span>
+                                            )}
                                         </div>
                                         {/* Edit Button - Replaces Bookmark */}
                                         <button
@@ -217,7 +230,7 @@ const DashboardPage = () => {
                                                 navigate(`/showcase/edit/${showcase.id}`);
                                             }}
                                             className="absolute bottom-16 right-3 z-10 p-2.5 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:scale-110 border border-gray-200 dark:border-gray-700"
-                                            title="Edit showcase"
+                                            title={isAdmin ? "Edit any showcase (Admin)" : "Edit showcase"}
                                         >
                                             <Pencil className="w-5 h-5" />
                                         </button>

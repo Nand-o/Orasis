@@ -15,7 +15,7 @@ import {
     Calendar
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import showcaseService from '../../services/showcase.service';
+import adminService from '../../services/admin.service';
 import { useCollection } from '../../context/CollectionContext';
 
 const AdminOverviewPage = () => {
@@ -42,7 +42,7 @@ const AdminOverviewPage = () => {
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const response = await showcaseService.getAllForAdmin();
+            const response = await adminService.getAllShowcases();
             const showcases = response.data;
 
             setStats({

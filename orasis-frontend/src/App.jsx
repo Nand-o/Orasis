@@ -14,6 +14,9 @@ import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/profile/DashboardPage';
 import AdminDashboardPage from './features/profile/AdminDashboardPage';
+import AdminPendingReviewPage from './features/profile/AdminPendingReviewPage';
+import AdminUsersPage from './features/admin/AdminUsersPage';
+import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
 import ProfilePage from './features/profile/ProfilePage';
 import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -154,7 +157,23 @@ const AnimatedRoutes = ({ searchValue }) => {
           path="/dashboard/pending"
           element={
             <DashboardLayout>
-              <AdminDashboardPage />
+              <AdminPendingReviewPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/users"
+          element={
+            <DashboardLayout>
+              <AdminUsersPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/analytics"
+          element={
+            <DashboardLayout>
+              <AdminAnalyticsPage />
             </DashboardLayout>
           }
         />

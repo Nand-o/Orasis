@@ -50,4 +50,22 @@ class AdminShowcaseController extends Controller
             'data' => $showcase
         ]);
     }
+
+    // bulk update status (untuk multiple showcases sekaligus)
+    public function bulkUpdateStatus(Request $request)
+    {
+        $request->validate([
+            'showcase_ids' => 'required|array',
+            'showcase_ids.*' => 'exists:showcases,id',
+            'status' => 'required|in:approved,rejected'
+        ]);
+
+        $updated = Showcase::whereIn('id', $request->showcase_ids)
+            ->update(['status' => $request->status]);
+
+        return response()->json([
+            'message' => "Successfully updated {$updated} showcases to {$request->status}",
+            'updated_count' => $updated
+        ]);
+    }
 }

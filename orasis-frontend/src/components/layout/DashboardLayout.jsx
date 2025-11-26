@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardSidebar from './DashboardSidebar';
 
 const DashboardLayout = ({ children }) => {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    // Initialize collapsed state based on screen size
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        return window.innerWidth < 1024; // Collapsed on screens smaller than 1024px (tablet and mobile)
+    });
     const sidebarWidth = sidebarCollapsed ? 80 : 280;
+
+    // Handle window resize
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1024) {
+                setSidebarCollapsed(true);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -20,11 +35,18 @@ const DashboardLayout = ({ children }) => {
                 {/* Top Navbar */}
                 <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center px-6 sticky top-0 z-40">
                     <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-4">
-                            <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
-                                <span className="text-white dark:text-black font-bold text-sm">O</span>
-                            </div>
-                            <span className="text-lg font-bold text-gray-900 dark:text-white">Orasis Dashboard</span>
+                        <div className="flex items-center gap-1">
+                            <img 
+                                src="/logo-black.svg" 
+                                alt="Orasis Logo" 
+                                className="w-12 h-12 dark:hidden"
+                            />
+                            <img 
+                                src="/logo-white.svg" 
+                                alt="Orasis Logo" 
+                                className="w-12 h-12 hidden dark:block"
+                            />
+                            <span className="text-lg font-bold text-gray-900 dark:text-white">Dashboard</span>
                         </div>
                         <nav className="flex items-center gap-6">
                             <a href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">

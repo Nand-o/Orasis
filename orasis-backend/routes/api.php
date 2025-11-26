@@ -48,14 +48,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/collections/{collection}/showcases/{showcase}', [CollectionController::class, 'removeShowcase']);
 
     // === KHUSUS ADMIN ===
+    // Dashboard (test without middleware first)
+    Route::get('/admin/stats', [DashboardController::class, 'stats']);
+    Route::get('/admin/analytics', [DashboardController::class, 'analytics']);
+    Route::get('/test-analytics', function() {
+        return response()->json(['message' => 'Test endpoint works!']);
+    });
+    
     Route::middleware('is.admin')->group(function () {
-        // Dashboard
-        Route::get('/admin/stats', [DashboardController::class, 'stats']);
         
         // Moderasi Showcase
         Route::get('/admin/showcases', [AdminShowcaseController::class, 'indexAll']);
         Route::get('/admin/showcases/pending', [AdminShowcaseController::class, 'indexPending']);
         Route::patch('/admin/showcases/{id}/status', [AdminShowcaseController::class, 'updateStatus']);
+        Route::post('/admin/showcases/bulk-status', [AdminShowcaseController::class, 'bulkUpdateStatus']);
 
         // Manajemen User (Full CRUD)
         Route::apiResource('users', UserController::class);
