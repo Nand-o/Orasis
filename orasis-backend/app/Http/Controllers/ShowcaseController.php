@@ -51,11 +51,29 @@ class ShowcaseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'url_website' => 'required|url',
-            'image_url' => 'required|url',
+            'image_url' => 'nullable|url',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // 5MB max
             'category' => 'required|string',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id'
         ]);
+
+        // Handle image upload
+        $imageUrl = $validated['image_url'] ?? null;
+        
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('showcases', $filename, 'public');
+            $imageUrl = asset('storage/' . $path);
+        }
+
+        // Validate that at least one image source is provided
+        if (!$imageUrl) {
+            return response()->json([
+                'message' => 'Either image_url or image_file must be provided'
+            ], 422);
+        }
 
         // Cek role user (jika admin maka langsung approve upload)
         $initialStatus = $request->user()->role === 'admin' ? 'approved' : 'pending';
@@ -65,7 +83,7 @@ class ShowcaseController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'url_website' => $validated['url_website'],
-            'image_url' => $validated['image_url'],
+            'image_url' => $imageUrl,
             'category' => $validated['category'],
             'status' => $initialStatus
         ]);
@@ -123,9 +141,28 @@ class ShowcaseController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
+            'url_website' => 'sometimes|url',
+            'image_url' => 'nullable|url',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'category' => 'sometimes|string',
             'tags' => 'nullable|array'
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image_file')) {
+            // Delete old image if it's stored locally
+            if ($showcase->image_url && str_contains($showcase->image_url, '/storage/showcases/')) {
+                $oldPath = str_replace(asset('storage/'), '', $showcase->image_url);
+                \Storage::disk('public')->delete($oldPath);
+            }
+
+            $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('showcases', $filename, 'public');
+            $validated['image_url'] = asset('storage/' . $path);
+        } elseif ($request->has('image_url')) {
+            $validated['image_url'] = $request->image_url;
+        }
 
         $showcase->update($validated);
 

@@ -33,6 +33,7 @@ const AdminUsersPage = () => {
     const [message, setMessage] = useState({ type: '', text: '' });
 
     useEffect(() => {
+        document.title = 'User Management | Admin | Orasis';
         fetchUsers();
     }, []);
 

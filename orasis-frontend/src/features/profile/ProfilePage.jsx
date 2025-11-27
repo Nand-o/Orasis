@@ -43,6 +43,7 @@ const ProfilePage = () => {
 
     // Load user data on mount
     useEffect(() => {
+        document.title = 'Profile Settings | Orasis';
         if (user) {
             setProfileForm({
                 name: user.name || '',

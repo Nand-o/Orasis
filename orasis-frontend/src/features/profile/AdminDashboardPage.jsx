@@ -20,7 +20,7 @@ const AdminDashboardPage = () => {
     });
 
     useEffect(() => {
-        document.title = 'Admin Dashboard | Orasis';
+        document.title = 'All Showcases | Admin | Orasis';
         fetchDashboardData();
     }, []);
 

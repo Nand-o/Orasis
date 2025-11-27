@@ -20,6 +20,7 @@ const LoginPage = () => {
 
     // Check for success message from registration
     useEffect(() => {
+        document.title = 'Login | Orasis';
         if (location.state?.message) {
             setSuccessMessage(location.state.message);
             // Clear the message from location state

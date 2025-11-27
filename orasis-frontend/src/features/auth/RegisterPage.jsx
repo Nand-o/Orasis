@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Toast from '../../components/ui/Toast';
@@ -9,6 +9,10 @@ const RegisterPage = () => {
     const navigate = useNavigate();
     const { register } = useAuth();
     const { toast, showToast, hideToast } = useToast();
+    
+    useEffect(() => {
+        document.title = 'Register | Orasis';
+    }, []);
     
     const [formData, setFormData] = useState({
         name: '',

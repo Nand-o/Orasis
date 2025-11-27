@@ -19,6 +19,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
 import Spinner from '../../components/ui/Spinner';
+import StatusBadge from '../../components/ui/StatusBadge';
 
 const UserOverviewPage = () => {
     const { user } = useAuth();
@@ -37,6 +38,7 @@ const UserOverviewPage = () => {
     });
 
     useEffect(() => {
+        document.title = 'Dashboard Overview | Orasis';
         fetchMyShowcases();
     }, []);
 
@@ -231,15 +233,7 @@ const UserOverviewPage = () => {
                                                 {new Date(showcase.created_at).toLocaleDateString()}
                                             </p>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                            showcase.status === 'approved' 
-                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                : showcase.status === 'pending'
-                                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                                        }`}>
-                                            {showcase.status}
-                                        </span>
+                                        <StatusBadge status={showcase.status} size="md" />
                                         <div className="flex gap-1.5 ml-2">
                                             <button
                                                 onClick={() => window.location.href = `/showcase/edit/${showcase.id}`}

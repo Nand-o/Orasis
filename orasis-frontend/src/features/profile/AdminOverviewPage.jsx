@@ -37,6 +37,7 @@ const AdminOverviewPage = () => {
     const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
+        document.title = 'Admin Dashboard | Orasis';
         fetchDashboardData();
     }, []);
 

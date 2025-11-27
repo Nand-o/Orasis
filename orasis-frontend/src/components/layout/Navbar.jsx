@@ -152,14 +152,32 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                                 <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                                 Collections
                                             </a>
-                                            <a href="/dashboard/showcases" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                My Submissions
-                                            </a>
-                                            <a href="/showcase/new" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Submit a site
-                                            </a>
+                                            
+                                            {/* Conditional menu items based on user role */}
+                                            {user?.role === 'admin' ? (
+                                                <>
+                                                    <a href="/dashboard/showcases" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        All Submissions
+                                                    </a>
+                                                    <a href="/dashboard/analytics" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Analytics
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <a href="/dashboard/showcases" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        My Submissions
+                                                    </a>
+                                                    <a href="/showcase/new" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Submit a site
+                                                    </a>
+                                                </>
+                                            )}
+                                            
                                             <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
                                             <button 
                                                 onClick={handleLogout}
@@ -267,14 +285,32 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                     <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                     Collections
                                 </a>
-                                <a href="/dashboard" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                    <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                    My Submissions
-                                </a>
-                                <a href="/showcase/new" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                    <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                    Submit a site
-                                </a>
+                                
+                                {/* Conditional mobile menu items based on user role */}
+                                {user?.role === 'admin' ? (
+                                    <>
+                                        <a href="/dashboard/showcases" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            All Submissions
+                                        </a>
+                                        <a href="/dashboard/analytics" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            Analytics
+                                        </a>
+                                    </>
+                                ) : (
+                                    <>
+                                        <a href="/dashboard/showcases" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            My Submissions
+                                        </a>
+                                        <a href="/showcase/new" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            Submit a site
+                                        </a>
+                                    </>
+                                )}
+                                
                                 <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
                                 <button 
                                     onClick={handleLogout}

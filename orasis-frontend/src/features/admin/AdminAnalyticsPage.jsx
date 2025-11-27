@@ -21,6 +21,7 @@ const AdminAnalyticsPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        document.title = 'Analytics | Admin | Orasis';
         fetchAnalytics();
     }, []);
 

@@ -22,9 +22,23 @@ const showcaseService = {
     },
 
     // ===== CREATE SHOWCASE (Auth Required) =====
-    async create(showcaseData) {
+    async create(showcaseData, onUploadProgress = null) {
         try {
-            const response = await api.post('/showcases', showcaseData);
+            const config = {};
+            // If FormData, set appropriate headers
+            if (showcaseData instanceof FormData) {
+                config.headers = {
+                    'Content-Type': 'multipart/form-data',
+                };
+            }
+            // Add upload progress callback if provided
+            if (onUploadProgress) {
+                config.onUploadProgress = (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onUploadProgress(percentCompleted);
+                };
+            }
+            const response = await api.post('/showcases', showcaseData, config);
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -32,10 +46,28 @@ const showcaseService = {
     },
 
     // ===== UPDATE SHOWCASE (Auth Required) =====
-    async update(id, showcaseData) {
+    async update(id, showcaseData, onUploadProgress = null) {
         try {
-            const response = await api.put(`/showcases/${id}`, showcaseData);
-            return response.data;
+            const config = {};
+            // If FormData, set appropriate headers and use POST with _method
+            if (showcaseData instanceof FormData) {
+                showcaseData.append('_method', 'PUT');
+                config.headers = {
+                    'Content-Type': 'multipart/form-data',
+                };
+                // Add upload progress callback if provided
+                if (onUploadProgress) {
+                    config.onUploadProgress = (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        onUploadProgress(percentCompleted);
+                    };
+                }
+                const response = await api.post(`/showcases/${id}`, showcaseData, config);
+                return response.data;
+            } else {
+                const response = await api.put(`/showcases/${id}`, showcaseData);
+                return response.data;
+            }
         } catch (error) {
             throw error.response?.data || error.message;
         }

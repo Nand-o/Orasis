@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import showcaseService from '../../services/showcase.service';
 import { useAuth } from '../../context/AuthContext';
+import ImageUpload from '../../components/ui/ImageUpload';
+import Spinner from '../../components/ui/Spinner';
+import UploadProgressBar from '../../components/ui/UploadProgressBar';
 
 const ShowcaseFormPage = () => {
     const navigate = useNavigate();
@@ -13,6 +16,8 @@ const ShowcaseFormPage = () => {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(isEditMode);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadStatus, setUploadStatus] = useState('uploading'); // uploading, processing, success, error
 
     const [formData, setFormData] = useState({
         title: '',
@@ -22,6 +27,9 @@ const ShowcaseFormPage = () => {
         category: 'Landing Page'
     });
 
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [useUrlMode, setUseUrlMode] = useState(true);
     const [errors, setErrors] = useState({});
 
     const categories = [
@@ -38,6 +46,7 @@ const ShowcaseFormPage = () => {
 
     // Load showcase data if editing
     useEffect(() => {
+        document.title = isEditMode ? 'Edit Showcase | Orasis' : 'Create Showcase | Orasis';
         if (isEditMode && id) {
             loadShowcaseData(id);
         }
@@ -66,6 +75,11 @@ const ShowcaseFormPage = () => {
                 image_url: showcase.image_url,
                 category: showcase.category
             });
+            setImagePreview(showcase.image_url);
+            // If it's a stored image (not external URL), switch to upload mode
+            if (showcase.image_url && !showcase.image_url.startsWith('http')) {
+                setUseUrlMode(false);
+            }
         } catch (error) {
             console.error('Failed to load showcase:', error);
             setMessage({ 
@@ -93,6 +107,19 @@ const ShowcaseFormPage = () => {
         }
     };
 
+    const handleImageUpload = (file, preview) => {
+        setImageFile(file);
+        setImagePreview(preview);
+        setFormData(prev => ({ ...prev, image_url: '' }));
+        // Clear image error - remove the key entirely
+        setErrors(prev => {
+            if (!prev.image) return prev;
+            const newErrors = { ...prev };
+            delete newErrors.image;
+            return newErrors;
+        });
+    };
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -114,10 +141,17 @@ const ShowcaseFormPage = () => {
             newErrors.url_website = 'Please enter a valid URL';
         }
 
-        if (!formData.image_url.trim()) {
-            newErrors.image_url = 'Image URL is required';
-        } else if (!isValidUrl(formData.image_url)) {
-            newErrors.image_url = 'Please enter a valid image URL';
+        // Image validation
+        if (useUrlMode) {
+            if (!formData.image_url.trim()) {
+                newErrors.image = 'Image URL is required';
+            } else if (!isValidUrl(formData.image_url)) {
+                newErrors.image = 'Please enter a valid image URL';
+            }
+        } else {
+            if (!imageFile && !imagePreview) {
+                newErrors.image = 'Please upload an image';
+            }
         }
 
         if (!formData.category) {
@@ -150,28 +184,65 @@ const ShowcaseFormPage = () => {
 
         setLoading(true);
         setMessage({ type: '', text: '' });
+        setUploadProgress(0);
+        setUploadStatus('uploading');
 
         try {
-            const submitData = {
-                title: formData.title.trim(),
-                description: formData.description.trim(),
-                url_website: formData.url_website.trim(),
-                image_url: formData.image_url.trim(),
-                category: formData.category
-            };
+            // Use FormData if image file is present
+            if (imageFile) {
+                const formDataToSend = new FormData();
+                formDataToSend.append('title', formData.title.trim());
+                formDataToSend.append('description', formData.description.trim());
+                formDataToSend.append('url_website', formData.url_website.trim());
+                formDataToSend.append('category', formData.category);
+                formDataToSend.append('image_file', imageFile);
 
-            if (isEditMode) {
-                await showcaseService.update(id, submitData);
-                setMessage({ 
-                    type: 'success', 
-                    text: 'Showcase updated successfully!' 
-                });
+                // Upload progress callback
+                const onProgress = (progress) => {
+                    setUploadProgress(progress);
+                    if (progress === 100) {
+                        setUploadStatus('processing');
+                    }
+                };
+
+                if (isEditMode) {
+                    await showcaseService.update(id, formDataToSend, onProgress);
+                    setUploadStatus('success');
+                    setMessage({ 
+                        type: 'success', 
+                        text: 'Showcase updated successfully!' 
+                    });
+                } else {
+                    await showcaseService.create(formDataToSend, onProgress);
+                    setUploadStatus('success');
+                    setMessage({ 
+                        type: 'success', 
+                        text: 'Showcase created successfully!' 
+                    });
+                }
             } else {
-                await showcaseService.create(submitData);
-                setMessage({ 
-                    type: 'success', 
-                    text: 'Showcase created successfully!' 
-                });
+                // Use JSON if only URL
+                const submitData = {
+                    title: formData.title.trim(),
+                    description: formData.description.trim(),
+                    url_website: formData.url_website.trim(),
+                    image_url: formData.image_url.trim(),
+                    category: formData.category
+                };
+
+                if (isEditMode) {
+                    await showcaseService.update(id, submitData);
+                    setMessage({ 
+                        type: 'success', 
+                        text: 'Showcase updated successfully!' 
+                    });
+                } else {
+                    await showcaseService.create(submitData);
+                    setMessage({ 
+                        type: 'success', 
+                        text: 'Showcase created successfully!' 
+                    });
+                }
             }
 
             // Redirect to dashboard after 1.5 seconds
@@ -180,6 +251,7 @@ const ShowcaseFormPage = () => {
             }, 1500);
 
         } catch (error) {
+            setUploadStatus('error');
             console.error('Form submission error:', error);
             const errorMessage = error.response?.data?.message 
                 || error.message 
@@ -258,6 +330,17 @@ const ShowcaseFormPage = () => {
                                 )}
                                 <span className="font-medium">{message.text}</span>
                             </div>
+                        </motion.div>
+                    )}
+
+                    {/* Upload Progress Bar */}
+                    {loading && imageFile && uploadProgress > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700"
+                        >
+                            <UploadProgressBar progress={uploadProgress} status={uploadStatus} />
                         </motion.div>
                     )}
 
@@ -342,46 +425,92 @@ const ShowcaseFormPage = () => {
                                 )}
                             </div>
 
-                            {/* Image URL */}
+                            {/* Image Upload/URL */}
                             <div>
-                                <label htmlFor="image_url" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Image URL <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Showcase Image <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="url"
-                                    id="image_url"
-                                    name="image_url"
-                                    value={formData.image_url}
-                                    onChange={handleInputChange}
-                                    placeholder="https://example.com/image.jpg"
-                                    className={`w-full px-4 py-3 rounded-lg border ${
-                                        errors.image_url 
-                                            ? 'border-red-500 focus:ring-red-500' 
-                                            : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
-                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
-                                />
-                                {errors.image_url && (
-                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.image_url}</p>
-                                )}
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Use a direct link to your showcase screenshot or preview image
-                                </p>
-                                
-                                {/* Image Preview */}
-                                {formData.image_url && isValidUrl(formData.image_url) && (
-                                    <div className="mt-4">
-                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
-                                        <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
-                                            <img 
-                                                src={formData.image_url} 
-                                                alt="Preview" 
-                                                className="w-full h-64 object-cover"
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none';
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
+
+                                {/* Toggle between URL and Upload */}
+                                <div className="flex items-center gap-4 mb-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setUseUrlMode(true);
+                                            if (errors.image) {
+                                                setErrors(prev => ({ ...prev, image: '' }));
+                                            }
+                                        }}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                                            useUrlMode
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                        }`}
+                                    >
+                                        Use URL
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setUseUrlMode(false);
+                                            if (errors.image) {
+                                                setErrors(prev => ({ ...prev, image: '' }));
+                                            }
+                                        }}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                                            !useUrlMode
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                        }`}
+                                    >
+                                        Upload File
+                                    </button>
+                                </div>
+
+                                {useUrlMode ? (
+                                    <>
+                                        <input
+                                            type="url"
+                                            id="image_url"
+                                            name="image_url"
+                                            value={formData.image_url}
+                                            onChange={handleInputChange}
+                                            placeholder="https://example.com/image.jpg"
+                                            className={`w-full px-4 py-3 rounded-lg border ${
+                                                errors.image 
+                                                    ? 'border-red-500 focus:ring-red-500' 
+                                                    : 'border-gray-300 dark:border-gray-600 focus:ring-indigo-500'
+                                            } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
+                                        />
+                                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                            Use a direct link to your showcase screenshot or preview image
+                                        </p>
+                                        
+                                        {/* URL Image Preview */}
+                                        {formData.image_url && isValidUrl(formData.image_url) && (
+                                            <div className="mt-4">
+                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
+                                                <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                                                    <img 
+                                                        src={formData.image_url} 
+                                                        alt="Preview" 
+                                                        className="w-full h-64 object-cover"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <ImageUpload
+                                        value={imagePreview}
+                                        onChange={handleImageUpload}
+                                        error={errors.image}
+                                        maxSize={5}
+                                        acceptedFormats={['image/jpeg', 'image/png', 'image/jpg', 'image/webp']}
+                                    />
                                 )}
                             </div>
 

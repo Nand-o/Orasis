@@ -9,6 +9,7 @@ import adminService from '../../services/admin.service';
 import ShowcaseCard from '../design/components/ShowcaseCard';
 import CollectionCard from '../collections/components/CollectionCard';
 import Spinner from '../../components/ui/Spinner';
+import StatusBadge from '../../components/ui/StatusBadge';
 
 const DashboardPage = () => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const DashboardPage = () => {
     const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
-        document.title = isAdmin ? 'All Showcases | Admin' : 'My Dashboard | Orasis';
+        document.title = isAdmin ? 'All Showcases | Admin | Orasis' : 'My Showcases | Orasis';
         fetchMyShowcases();
     }, [isAdmin]);
 
@@ -240,16 +241,8 @@ const DashboardPage = () => {
                                             showBookmark={false}
                                         />
                                         {/* Status Badge */}
-                                        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                showcase.status === 'approved'
-                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                                    : showcase.status === 'pending'
-                                                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                            }`}>
-                                                {showcase.status}
-                                            </span>
+                                        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
+                                            <StatusBadge status={showcase.status} size="md" />
                                             {isAdmin && showcase.user && (
                                                 <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium">
                                                     By {showcase.user.name}
