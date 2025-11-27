@@ -6,6 +6,11 @@
     html {
     @apply text-gray-900 dark:text-white;
     }
+    
+    /* Prevent horizontal scrollbar from animations */
+    body {
+    @apply overflow-x-hidden;
+    }
 }
 
 @theme {

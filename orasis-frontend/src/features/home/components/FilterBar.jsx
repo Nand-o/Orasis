@@ -65,17 +65,17 @@ const FilterBar = ({
     const hasActiveFilters = selectedTags.length > 0 || selectedCategories.length > 0 || sortBy !== 'newest';
 
     return (
-        <div className="mb-6 relative z-20">
+        <div className="mb-6 relative z-20 overflow-hidden">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4">
-                <div className="flex items-center overflow-x-auto scrollbar-hide">
-                    <div className="flex items-center space-x-6 min-w-0">
+                <div className="flex items-center overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
+                    <div className="flex items-center space-x-4 sm:space-x-6 min-w-0">
                     {/* Primary Filters: Websites & Mobiles (Segmented Control) */}
                     <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-full relative shrink-0">
                         {["Websites", "Mobiles"].map((tab) => (
                             <motion.button
                                 key={tab}
                                 onClick={() => onCategoryChange(tab)}
-                                className={`relative px-5 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 z-10 ${activeCategory === tab
+                                className={`relative px-3 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 z-10 ${activeCategory === tab
                                     ? 'text-white dark:text-black'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                                     }`}
@@ -101,7 +101,7 @@ const FilterBar = ({
                         <motion.button
                             key={category}
                             onClick={() => onCategoryChange(category)}
-                            className={`text-sm font-medium transition-colors duration-200 relative py-1 shrink-0 ${activeCategory === category
+                            className={`text-xs sm:text-sm font-medium transition-colors duration-200 relative py-1 shrink-0 whitespace-nowrap ${activeCategory === category
                                 ? 'text-gray-900 dark:text-white'
                                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                                 }`}
@@ -113,7 +113,12 @@ const FilterBar = ({
                                 <motion.span
                                     layoutId="activeCategoryLine"
                                     className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900 dark:bg-white rounded-full"
-                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                    transition={{ 
+                                        type: "spring", 
+                                        stiffness: 380, 
+                                        damping: 35,
+                                        mass: 0.5
+                                    }}
                                 />
                             )}
                         </motion.button>

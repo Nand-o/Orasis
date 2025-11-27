@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Package, Grid, Plus, BarChart3, Pencil } from 'lucide-react';
+import { Package, Grid, Plus, BarChart3, Pencil, Trash2, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
 import adminService from '../../services/admin.service';
 import ShowcaseCard from '../design/components/ShowcaseCard';
 import CollectionCard from '../collections/components/CollectionCard';
+import Spinner from '../../components/ui/Spinner';
 
 const DashboardPage = () => {
     const navigate = useNavigate();
@@ -16,6 +17,8 @@ const DashboardPage = () => {
     const [myShowcases, setMyShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('showcases'); // 'showcases' | 'collections'
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, showcase: null });
+    const [deleting, setDeleting] = useState(false);
     const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
@@ -45,6 +48,35 @@ const DashboardPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDeleteClick = (showcase, e) => {
+        e.stopPropagation();
+        setDeleteModal({ isOpen: true, showcase });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteModal.showcase) return;
+
+        try {
+            setDeleting(true);
+            await userService.deleteShowcase(deleteModal.showcase.id);
+            
+            // Remove from local state
+            setMyShowcases(prev => prev.filter(s => s.id !== deleteModal.showcase.id));
+            
+            // Close modal
+            setDeleteModal({ isOpen: false, showcase: null });
+        } catch (error) {
+            console.error('Failed to delete showcase:', error);
+            alert('Failed to delete showcase. Please try again.');
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteModal({ isOpen: false, showcase: null });
     };
 
     const getCollectionPreviews = (showcases) => {
@@ -194,8 +226,9 @@ const DashboardPage = () => {
                         </div>
 
                         {loading ? (
-                            <div className="flex items-center justify-center py-20">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
+                            <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                <Spinner size="xl" color="gray" />
+                                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading your showcases...</p>
                             </div>
                         ) : myShowcases.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -223,17 +256,26 @@ const DashboardPage = () => {
                                                 </span>
                                             )}
                                         </div>
-                                        {/* Edit Button - Replaces Bookmark */}
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate(`/showcase/edit/${showcase.id}`);
-                                            }}
-                                            className="absolute bottom-16 right-3 z-10 p-2.5 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:scale-110 border border-gray-200 dark:border-gray-700"
-                                            title={isAdmin ? "Edit any showcase (Admin)" : "Edit showcase"}
-                                        >
-                                            <Pencil className="w-5 h-5" />
-                                        </button>
+                                        {/* Action Buttons */}
+                                        <div className="absolute bottom-16 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/showcase/edit/${showcase.id}`);
+                                                }}
+                                                className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-110 border border-gray-200 dark:border-gray-700"
+                                                title={isAdmin ? "Edit showcase (Admin)" : "Edit showcase"}
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDeleteClick(showcase, e)}
+                                                className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:scale-110 border border-gray-200 dark:border-gray-700"
+                                                title="Delete showcase"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -247,7 +289,7 @@ const DashboardPage = () => {
                                     Create your first showcase to get started
                                 </p>
                                 <button
-                                    onClick={() => navigate('/test-showcase')}
+                                    onClick={() => navigate('/showcase/new')}
                                     className="inline-flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity"
                                 >
                                     <Plus className="w-5 h-5" />
@@ -306,6 +348,95 @@ const DashboardPage = () => {
                     </div>
                 )}
             </motion.div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteModal.isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={handleDeleteCancel}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ type: 'spring', duration: 0.3 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+                        >
+                            {/* Header */}
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                        <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                            Delete Showcase
+                                        </h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            This action cannot be undone
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleDeleteCancel}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="mb-6">
+                                <p className="text-gray-600 dark:text-gray-300 mb-3">
+                                    Are you sure you want to delete{' '}
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        "{deleteModal.showcase?.title}"
+                                    </span>
+                                    ?
+                                </p>
+                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                                    <p className="text-sm text-red-800 dark:text-red-300">
+                                        ⚠️ This will permanently remove the showcase from your account and all collections.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleDeleteCancel}
+                                    disabled={deleting}
+                                    className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteConfirm}
+                                    disabled={deleting}
+                                    className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {deleting ? (
+                                        <>
+                                            <Spinner size="sm" color="white" />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Trash2 className="w-4 h-4" />
+                                            Delete Showcase
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

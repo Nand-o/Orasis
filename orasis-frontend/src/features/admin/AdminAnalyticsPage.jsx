@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Spinner from '../../components/ui/Spinner';
 import { 
     TrendingUp, 
     Users, 
@@ -40,8 +41,9 @@ const AdminAnalyticsPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+            <div className="flex flex-col justify-center items-center min-h-[60vh] gap-4">
+                <Spinner size="xl" color="gray" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading analytics data...</p>
             </div>
         );
     }

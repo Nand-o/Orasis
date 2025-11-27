@@ -33,22 +33,28 @@ const DashboardLayout = ({ children }) => {
                 className="flex-1 min-h-screen flex flex-col"
             >
                 {/* Top Navbar */}
-                <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center px-6 sticky top-0 z-40">
+                <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center px-4 sm:px-6 sticky top-0 z-40">
                     <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-1">
+                        {/* Logo & Dashboard text - Logo clickable to home on mobile */}
+                        <a href="/" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
                             <img 
                                 src="/logo-black.svg" 
                                 alt="Orasis Logo" 
-                                className="w-12 h-12 dark:hidden"
+                                className="w-10 h-10 sm:w-12 sm:h-12 dark:hidden"
                             />
                             <img 
                                 src="/logo-white.svg" 
                                 alt="Orasis Logo" 
-                                className="w-12 h-12 hidden dark:block"
+                                className="w-10 h-10 sm:w-12 sm:h-12 hidden dark:block"
                             />
-                            <span className="text-lg font-bold text-gray-900 dark:text-white">Dashboard</span>
-                        </div>
-                        <nav className="flex items-center gap-6">
+                            <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                                <span className="md:hidden">Back to Homepage</span>
+                                <span className="hidden md:inline">Dashboard</span>
+                            </span>
+                        </a>
+                        
+                        {/* Navigation - Hidden on mobile, visible on tablet+ */}
+                        <nav className="hidden md:flex items-center gap-4 lg:gap-6">
                             <a href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                                 Home
                             </a>

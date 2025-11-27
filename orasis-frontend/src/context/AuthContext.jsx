@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/auth.service';
+import Spinner from '../components/ui/Spinner';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -37,8 +38,8 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const response = await authService.register(userData);
-            setUser(response.user);
-            setIsAuthenticated(true);
+            // Do NOT set user or isAuthenticated
+            // User must login after registration
             return response;
         } catch (error) {
             throw error;
@@ -81,24 +82,23 @@ export const AuthProvider = ({ children }) => {
         checkAuth
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-        );
-    }
-
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {loading ? (
+                <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+                    <Spinner size="xl" color="gray" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">Loading application...</p>
+                </div>
+            ) : (
+                children
+            )}
         </AuthContext.Provider>
     );
 };
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) {
+    if (context === undefined) {
         throw new Error('useAuth must be used within AuthProvider');
     }
     return context;

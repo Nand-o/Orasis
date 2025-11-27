@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Button from '../../components/ui/Button';
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { login } = useAuth();
     
     const [formData, setFormData] = useState({
@@ -13,17 +15,61 @@ const LoginPage = () => {
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [successMessage, setSuccessMessage] = useState(null);
+
+    // Check for success message from registration
+    useEffect(() => {
+        if (location.state?.message) {
+            setSuccessMessage(location.state.message);
+            // Clear the message from location state
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
+
+    const validateForm = () => {
+        const errors = {};
+        
+        // Email validation
+        if (!formData.email) {
+            errors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            errors.email = 'Please enter a valid email address';
+        }
+        
+        // Password validation
+        if (!formData.password) {
+            errors.password = 'Password is required';
+        } else if (formData.password.length < 8) {
+            errors.password = 'Password must be at least 8 characters';
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         });
-        setError(null); // Clear error when user types
+        // Clear errors for this field
+        setError(null);
+        setFieldErrors(prev => ({
+            ...prev,
+            [name]: ''
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate form
+        if (!validateForm()) {
+            return;
+        }
+        
         setLoading(true);
         setError(null);
 
@@ -55,6 +101,15 @@ const LoginPage = () => {
                 {/* Login Form */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Success Message from Registration */}
+                        {successMessage && (
+                            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                                <p className="text-green-800 dark:text-green-200 text-sm">
+                                    ✅ {successMessage}
+                                </p>
+                            </div>
+                        )}
+
                         {/* Error Message */}
                         {error && (
                             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -67,7 +122,7 @@ const LoginPage = () => {
                         {/* Email Field */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Email Address
+                                Email Address *
                             </label>
                             <input
                                 type="email"
@@ -76,15 +131,22 @@ const LoginPage = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                className={`w-full px-4 py-3 rounded-lg border ${
+                                    fieldErrors.email 
+                                        ? 'border-red-500 focus:ring-red-500' 
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+                                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
                                 placeholder="your@email.com"
                             />
+                            {fieldErrors.email && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+                            )}
                         </div>
 
                         {/* Password Field */}
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Password
+                                Password *
                             </label>
                             <input
                                 type="password"
@@ -93,26 +155,29 @@ const LoginPage = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                minLength="8"
+                                className={`w-full px-4 py-3 rounded-lg border ${
+                                    fieldErrors.password 
+                                        ? 'border-red-500 focus:ring-red-500' 
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+                                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
                                 placeholder="••••••••"
                             />
+                            {fieldErrors.password && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>
+                            )}
                         </div>
 
                         {/* Submit Button */}
-                        <button
+                        <Button
                             type="submit"
-                            disabled={loading}
-                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                            isLoading={loading}
+                            variant="primary"
+                            size="lg"
+                            className="w-full"
                         >
-                            {loading ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    Logging in...
-                                </>
-                            ) : (
-                                'Login'
-                            )}
-                        </button>
+                            {loading ? 'Logging in...' : 'Login'}
+                        </Button>
                     </form>
 
                     {/* Divider */}

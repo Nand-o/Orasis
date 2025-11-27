@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, Eye, Calendar, User as UserIcon, ExternalLink, AlertCircle, Square, CheckSquare } from 'lucide-react';
 import adminService from '../../services/admin.service';
 import { useAuth } from '../../context/AuthContext';
+import Spinner from '../../components/ui/Spinner';
 
 const AdminPendingReviewPage = () => {
     const { user } = useAuth();
@@ -126,9 +127,9 @@ const AdminPendingReviewPage = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-black dark:border-white mx-auto mb-4"></div>
-                    <p className="text-gray-600 dark:text-gray-400">Loading pending showcases...</p>
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                    <Spinner size="xl" color="gray" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">Loading pending reviews...</p>
                 </div>
             </div>
         );

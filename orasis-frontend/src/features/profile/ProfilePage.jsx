@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import userService from '../../services/user.service';
 import { useAuth } from '../../context/AuthContext';
+import Spinner from '../../components/ui/Spinner';
 
 const ProfilePage = () => {
     const { user, updateUser } = useAuth();
@@ -37,6 +38,8 @@ const ProfilePage = () => {
     const [isLoadingPassword, setIsLoadingPassword] = useState(false);
     const [profileMessage, setProfileMessage] = useState({ type: '', text: '' });
     const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
+    const [profileFieldErrors, setProfileFieldErrors] = useState({});
+    const [passwordFieldErrors, setPasswordFieldErrors] = useState({});
 
     // Load user data on mount
     useEffect(() => {
@@ -48,9 +51,34 @@ const ProfilePage = () => {
         }
     }, [user]);
 
+    // Validate Profile Form
+    const validateProfileForm = () => {
+        const errors = {};
+        
+        if (!profileForm.name) {
+            errors.name = 'Name is required';
+        } else if (profileForm.name.length < 3) {
+            errors.name = 'Name must be at least 3 characters';
+        }
+        
+        if (!profileForm.email) {
+            errors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileForm.email)) {
+            errors.email = 'Please enter a valid email address';
+        }
+        
+        setProfileFieldErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     // Handle Profile Update
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!validateProfileForm()) {
+            return;
+        }
+        
         setIsLoadingProfile(true);
         setProfileMessage({ type: '', text: '' });
 
@@ -70,18 +98,42 @@ const ProfilePage = () => {
         }
     };
 
+    // Validate Password Form
+    const validatePasswordForm = () => {
+        const errors = {};
+        
+        if (!passwordForm.current_password) {
+            errors.current_password = 'Current password is required';
+        }
+        
+        if (!passwordForm.password) {
+            errors.password = 'New password is required';
+        } else if (passwordForm.password.length < 8) {
+            errors.password = 'Password must be at least 8 characters';
+        } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordForm.password)) {
+            errors.password = 'Password must contain uppercase, lowercase, and number';
+        }
+        
+        if (!passwordForm.password_confirmation) {
+            errors.password_confirmation = 'Password confirmation is required';
+        } else if (passwordForm.password !== passwordForm.password_confirmation) {
+            errors.password_confirmation = 'Passwords do not match';
+        }
+        
+        setPasswordFieldErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     // Handle Password Change
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
-        setIsLoadingPassword(true);
-        setPasswordMessage({ type: '', text: '' });
-
-        // Validate passwords match
-        if (passwordForm.password !== passwordForm.password_confirmation) {
-            setPasswordMessage({ type: 'error', text: 'Passwords do not match' });
-            setIsLoadingPassword(false);
+        
+        if (!validatePasswordForm()) {
             return;
         }
+        
+        setIsLoadingPassword(true);
+        setPasswordMessage({ type: '', text: '' });
 
         try {
             console.log('🔐 Sending password change request:', passwordForm);
@@ -206,35 +258,56 @@ const ProfilePage = () => {
                             {/* Name Field */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Full Name
+                                    Full Name *
                                 </label>
                                 <div className="relative">
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type="text"
                                         value={profileForm.name}
-                                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+                                        onChange={(e) => {
+                                            setProfileForm({ ...profileForm, name: e.target.value });
+                                            setProfileFieldErrors(prev => ({ ...prev, name: '' }));
+                                        }}
+                                        className={`w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border ${
+                                            profileFieldErrors.name 
+                                                ? 'border-red-500 focus:ring-red-500' 
+                                                : 'border-gray-200 dark:border-gray-700 focus:ring-indigo-500'
+                                        } rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white`}
                                         required
+                                        minLength={3}
                                     />
                                 </div>
+                                {profileFieldErrors.name && (
+                                    <p className="text-red-500 text-sm mt-1">{profileFieldErrors.name}</p>
+                                )}
                             </div>
 
                             {/* Email Field */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Email Address
+                                    Email Address *
                                 </label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type="email"
                                         value={profileForm.email}
-                                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+                                        onChange={(e) => {
+                                            setProfileForm({ ...profileForm, email: e.target.value });
+                                            setProfileFieldErrors(prev => ({ ...prev, email: '' }));
+                                        }}
+                                        className={`w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border ${
+                                            profileFieldErrors.email 
+                                                ? 'border-red-500 focus:ring-red-500' 
+                                                : 'border-gray-200 dark:border-gray-700 focus:ring-indigo-500'
+                                        } rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white`}
                                         required
                                     />
                                 </div>
+                                {profileFieldErrors.email && (
+                                    <p className="text-red-500 text-sm mt-1">{profileFieldErrors.email}</p>
+                                )}
                             </div>
 
                             {/* Role (Read-only) */}
@@ -258,7 +331,7 @@ const ProfilePage = () => {
                             >
                                 {isLoadingProfile ? (
                                     <>
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white dark:border-black"></div>
+                                        <Spinner size="sm" color="white" />
                                         Saving...
                                     </>
                                 ) : (
@@ -293,15 +366,22 @@ const ProfilePage = () => {
                             {/* Current Password */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Current Password
+                                    Current Password *
                                 </label>
                                 <div className="relative">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type={showPasswords.current ? 'text' : 'password'}
                                         value={passwordForm.current_password}
-                                        onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
-                                        className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+                                        onChange={(e) => {
+                                            setPasswordForm({ ...passwordForm, current_password: e.target.value });
+                                            setPasswordFieldErrors(prev => ({ ...prev, current_password: '' }));
+                                        }}
+                                        className={`w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border ${
+                                            passwordFieldErrors.current_password 
+                                                ? 'border-red-500 focus:ring-red-500' 
+                                                : 'border-gray-200 dark:border-gray-700 focus:ring-indigo-500'
+                                        } rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white`}
                                         required
                                     />
                                     <button
@@ -312,20 +392,30 @@ const ProfilePage = () => {
                                         {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
+                                {passwordFieldErrors.current_password && (
+                                    <p className="text-red-500 text-sm mt-1">{passwordFieldErrors.current_password}</p>
+                                )}
                             </div>
 
                             {/* New Password */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    New Password
+                                    New Password *
                                 </label>
                                 <div className="relative">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type={showPasswords.new ? 'text' : 'password'}
                                         value={passwordForm.password}
-                                        onChange={(e) => setPasswordForm({ ...passwordForm, password: e.target.value })}
-                                        className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+                                        onChange={(e) => {
+                                            setPasswordForm({ ...passwordForm, password: e.target.value });
+                                            setPasswordFieldErrors(prev => ({ ...prev, password: '' }));
+                                        }}
+                                        className={`w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border ${
+                                            passwordFieldErrors.password 
+                                                ? 'border-red-500 focus:ring-red-500' 
+                                                : 'border-gray-200 dark:border-gray-700 focus:ring-indigo-500'
+                                        } rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white`}
                                         required
                                         minLength={8}
                                     />
@@ -337,23 +427,33 @@ const ProfilePage = () => {
                                         {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
+                                {passwordFieldErrors.password && (
+                                    <p className="text-red-500 text-sm mt-1">{passwordFieldErrors.password}</p>
+                                )}
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Minimum 8 characters
+                                    Min 8 characters, must include uppercase, lowercase, and number
                                 </p>
                             </div>
 
                             {/* Confirm Password */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Confirm New Password
+                                    Confirm New Password *
                                 </label>
                                 <div className="relative">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type={showPasswords.confirm ? 'text' : 'password'}
                                         value={passwordForm.password_confirmation}
-                                        onChange={(e) => setPasswordForm({ ...passwordForm, password_confirmation: e.target.value })}
-                                        className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+                                        onChange={(e) => {
+                                            setPasswordForm({ ...passwordForm, password_confirmation: e.target.value });
+                                            setPasswordFieldErrors(prev => ({ ...prev, password_confirmation: '' }));
+                                        }}
+                                        className={`w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border ${
+                                            passwordFieldErrors.password_confirmation 
+                                                ? 'border-red-500 focus:ring-red-500' 
+                                                : 'border-gray-200 dark:border-gray-700 focus:ring-indigo-500'
+                                        } rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white`}
                                         required
                                     />
                                     <button
@@ -364,6 +464,9 @@ const ProfilePage = () => {
                                         {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
+                                {passwordFieldErrors.password_confirmation && (
+                                    <p className="text-red-500 text-sm mt-1">{passwordFieldErrors.password_confirmation}</p>
+                                )}
                             </div>
 
                             {/* Submit Button */}
@@ -374,8 +477,8 @@ const ProfilePage = () => {
                             >
                                 {isLoadingPassword ? (
                                     <>
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white dark:border-black"></div>
-                                        Changing...
+                                        <Spinner size="sm" color="white" />
+                                        Changing Password...
                                     </>
                                 ) : (
                                     <>

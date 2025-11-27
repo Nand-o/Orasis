@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart3, Users, FileText, Clock, CheckCircle, XCircle, Edit, Trash2, Eye } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import showcaseService from '../../services/showcase.service';
+import Spinner from '../../components/ui/Spinner';
 
 const AdminDashboardPage = () => {
     const { user } = useAuth();
@@ -85,8 +86,9 @@ const AdminDashboardPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <Spinner size="xl" color="gray" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading dashboard data...</p>
             </div>
         );
     }

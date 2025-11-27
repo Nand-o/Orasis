@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import HeroSection from './components/HeroSection';
 import FilterBar from './components/FilterBar';
 import ShowcaseCard from '../design/components/ShowcaseCard';
+import Pagination from '../../components/ui/Pagination';
+import { ShowcaseCardSkeleton } from '../../components/ui/Skeleton';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
 
@@ -21,6 +23,8 @@ const HomePage = ({ searchValue }) => {
     const [showcases, setShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 50; // Items per page
 
     useEffect(() => {
         document.title = 'Inspiration | Orasis';
@@ -155,24 +159,54 @@ const HomePage = ({ searchValue }) => {
         return filtered;
     }, [showcases, activeCategory, sortBy, selectedTags, selectedCategories, searchValue]);
 
+    // Rename for clarity
+    const filteredShowcases = filteredDesigns;
+
+    // Pagination logic
+    const totalPages = Math.ceil(filteredShowcases.length / itemsPerPage);
+    const paginatedShowcases = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredShowcases.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredShowcases, currentPage, itemsPerPage]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeCategory, sortBy, selectedTags, selectedCategories, searchValue]);
+
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     // Handle filter clear
     const handleClearFilters = () => {
         setActiveCategory('Websites');
         setSortBy('newest');
         setSelectedTags([]);
         setSelectedCategories([]);
+        setCurrentPage(1);
     };
 
     // Select popular designs for carousel (first 5)
     const popularDesigns = showcases.slice(0, 5);
 
-    // 🔥 Loading state
+    // 🔥 Loading state with skeleton
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading showcases...</p>
+            <div className="space-y-12">
+                {/* Hero skeleton */}
+                <div className="h-96 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
+                
+                {/* Filter bar skeleton */}
+                <div className="h-16 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                
+                {/* Showcase cards skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                        <ShowcaseCardSkeleton key={index} />
+                    ))}
                 </div>
             </div>
         );
@@ -237,15 +271,15 @@ const HomePage = ({ searchValue }) => {
                     </div>
                 )}
 
-                {filteredDesigns.length > 0 ? (
+                {paginatedShowcases.length > 0 ? (
                     <>
                         <div className="flex items-center justify-between mb-6">
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Showing {filteredDesigns.length} {filteredDesigns.length === 1 ? 'showcase' : 'showcases'}
+                                Showing {filteredShowcases.length} {filteredShowcases.length === 1 ? 'showcase' : 'showcases'}
                             </p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                            {filteredDesigns.map((design) => (
+                            {paginatedShowcases.map((design) => (
                                 <ShowcaseCard
                                     key={design.id}
                                     design={design}
@@ -253,6 +287,15 @@ const HomePage = ({ searchValue }) => {
                                 />
                             ))}
                         </div>
+
+                        {/* Pagination */}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                            itemsPerPage={itemsPerPage}
+                            totalItems={filteredShowcases.length}
+                        />
                     </>
                 ) : (
                     <div className="text-center py-20">

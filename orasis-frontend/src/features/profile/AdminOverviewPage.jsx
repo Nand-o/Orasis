@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
+import Spinner from '../../components/ui/Spinner';
 import { useCollection } from '../../context/CollectionContext';
 
 const AdminOverviewPage = () => {
@@ -119,8 +120,9 @@ const AdminOverviewPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <Spinner size="xl" color="gray" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading admin dashboard...</p>
             </div>
         );
     }

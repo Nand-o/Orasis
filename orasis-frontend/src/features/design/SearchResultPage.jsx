@@ -5,6 +5,7 @@ import ShowcaseCard from './components/ShowcaseCard';
 import FilterBar from '../home/components/FilterBar';
 import { useNavigate } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
+import Spinner from '../../components/ui/Spinner';
 
 const SearchResultPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -139,11 +140,9 @@ const SearchResultPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600 dark:text-gray-400">Searching...</p>
-                </div>
+            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+                <Spinner size="xl" color="gray" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Searching showcases...</p>
             </div>
         );
     }

@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Toast from '../../components/ui/Toast';
+import { useToast } from '../../hooks/useToast';
+import Button from '../../components/ui/Button';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const { register } = useAuth();
+    const { toast, showToast, hideToast } = useToast();
     
     const [formData, setFormData] = useState({
         name: '',
@@ -15,6 +19,8 @@ const RegisterPage = () => {
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -22,26 +28,86 @@ const RegisterPage = () => {
             [e.target.name]: e.target.value
         });
         setError(null);
+        // Clear field error when user types
+        setFieldErrors({
+            ...fieldErrors,
+            [e.target.name]: ''
+        });
+    };
+
+    const validateForm = () => {
+        const errors = {};
+        
+        // Name validation
+        if (!formData.name.trim()) {
+            errors.name = 'Name is required';
+        } else if (formData.name.trim().length < 3) {
+            errors.name = 'Name must be at least 3 characters';
+        }
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email) {
+            errors.email = 'Email is required';
+        } else if (!emailRegex.test(formData.email)) {
+            errors.email = 'Please enter a valid email address';
+        }
+        
+        // Password validation
+        if (!formData.password) {
+            errors.password = 'Password is required';
+        } else if (formData.password.length < 8) {
+            errors.password = 'Password must be at least 8 characters';
+        } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+            errors.password = 'Password must contain uppercase, lowercase, and number';
+        }
+        
+        // Password confirmation
+        if (!formData.password_confirmation) {
+            errors.password_confirmation = 'Please confirm your password';
+        } else if (formData.password !== formData.password_confirmation) {
+            errors.password_confirmation = 'Passwords do not match';
+        }
+        
+        return errors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setFieldErrors({});
 
-        // Validate password match
-        if (formData.password !== formData.password_confirmation) {
-            setError('Passwords do not match');
+        // Validate form
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setError('Please fix the errors below');
             setLoading(false);
             return;
         }
 
         try {
-            await register(formData);
-            navigate('/');
+            const response = await register(formData);
+            console.log('✅ Registration successful:', response);
+            
+            // Show success message
+            setSuccess(true);
+            showToast('Account created successfully! Redirecting to login...', 'success');
+            
+            // Redirect to login page after 2 seconds
+            setTimeout(() => {
+                navigate('/login', { 
+                    state: { 
+                        message: 'Account created successfully! Please login with your credentials.' 
+                    } 
+                });
+            }, 2000);
         } catch (err) {
-            console.error('Registration error:', err);
-            setError(err.message || 'Registration failed. Please try again.');
+            console.error('❌ Registration error:', err);
+            const errorMessage = err.message || 'Registration failed. Please try again.';
+            setError(errorMessage);
+            showToast(errorMessage, 'error');
         } finally {
             setLoading(false);
         }
@@ -63,6 +129,15 @@ const RegisterPage = () => {
                 {/* Register Form */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Success Message */}
+                        {success && (
+                            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                                <p className="text-green-800 dark:text-green-200 text-sm">
+                                    ✅ Account created successfully! Redirecting to login page...
+                                </p>
+                            </div>
+                        )}
+
                         {/* Error Message */}
                         {error && (
                             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -75,7 +150,7 @@ const RegisterPage = () => {
                         {/* Name Field */}
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Full Name
+                                Full Name *
                             </label>
                             <input
                                 type="text"
@@ -84,15 +159,23 @@ const RegisterPage = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                                minLength={3}
+                                className={`w-full px-4 py-3 rounded-lg border ${
+                                    fieldErrors.name 
+                                        ? 'border-red-500 focus:ring-red-500' 
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
+                                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
                                 placeholder="John Doe"
                             />
+                            {fieldErrors.name && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+                            )}
                         </div>
 
                         {/* Email Field */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Email Address
+                                Email Address *
                             </label>
                             <input
                                 type="email"
@@ -101,15 +184,22 @@ const RegisterPage = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                                className={`w-full px-4 py-3 rounded-lg border ${
+                                    fieldErrors.email 
+                                        ? 'border-red-500 focus:ring-red-500' 
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
+                                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
                                 placeholder="your@email.com"
                             />
+                            {fieldErrors.email && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+                            )}
                         </div>
 
                         {/* Password Field */}
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Password
+                                Password *
                             </label>
                             <input
                                 type="password"
@@ -119,18 +209,25 @@ const RegisterPage = () => {
                                 onChange={handleChange}
                                 required
                                 minLength="8"
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                                className={`w-full px-4 py-3 rounded-lg border ${
+                                    fieldErrors.password 
+                                        ? 'border-red-500 focus:ring-red-500' 
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
+                                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
                                 placeholder="••••••••"
                             />
+                            {fieldErrors.password && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>
+                            )}
                             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                Minimum 8 characters
+                                Min 8 characters, must include uppercase, lowercase, and number
                             </p>
                         </div>
 
                         {/* Confirm Password Field */}
                         <div>
                             <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Confirm Password
+                                Confirm Password *
                             </label>
                             <input
                                 type="password"
@@ -139,26 +236,28 @@ const RegisterPage = () => {
                                 value={formData.password_confirmation}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                                className={`w-full px-4 py-3 rounded-lg border ${
+                                    fieldErrors.password_confirmation 
+                                        ? 'border-red-500 focus:ring-red-500' 
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
+                                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
                                 placeholder="••••••••"
                             />
+                            {fieldErrors.password_confirmation && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.password_confirmation}</p>
+                            )}
                         </div>
 
                         {/* Submit Button */}
-                        <button
+                        <Button
                             type="submit"
-                            disabled={loading}
-                            className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mt-6"
+                            isLoading={loading}
+                            variant="primary"
+                            size="lg"
+                            className="w-full mt-6"
                         >
-                            {loading ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    Creating Account...
-                                </>
-                            ) : (
-                                'Create Account'
-                            )}
-                        </button>
+                            {loading ? 'Creating Account...' : 'Create Account'}
+                        </Button>
                     </form>
 
                     {/* Divider */}
@@ -192,6 +291,14 @@ const RegisterPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={hideToast}
+            />
         </div>
     );
 };

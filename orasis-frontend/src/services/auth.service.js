@@ -6,12 +6,9 @@ const authService = {
         try {
             const response = await api.post('/register', userData);
             
-            // Save token and user data to localStorage
-            const token = response.data.access_token || response.data.token;
-            if (token) {
-                localStorage.setItem('auth_token', token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-            }
+            // Registration does NOT auto-login
+            // User must login manually after successful registration
+            // This is better for security and user awareness
             
             return response.data;
         } catch (error) {

@@ -3,6 +3,7 @@ import { Bookmark } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CollectionModal from '../../collections/components/CollectionModal';
 import { useCollection } from '../../../context/CollectionContext';
+import LazyImage from '../../../components/ui/LazyImage';
 
 const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,11 +29,10 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                 {/* Image Container - The "Box" */}
                 <div className="relative aspect-4/3 bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden mb-4 p-12 transition-colors duration-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-700">
                     <div className="w-full h-full rounded-lg overflow-hidden shadow-sm relative">
-                        <img
+                        <LazyImage
                             src={design.image_url || design.imageUrl}
                             alt={design.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            loading="lazy"
+                            className="w-full h-full transition-transform duration-500 group-hover:scale-105"
                         />
                         {/* Optional: Subtle overlay on hover */}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors duration-300" />

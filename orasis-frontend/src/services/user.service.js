@@ -45,6 +45,14 @@ const userService = {
     const response = await api.get('/user/stats');
     return response.data;
   },
+
+  /**
+   * Delete a showcase
+   */
+  deleteShowcase: async (showcaseId) => {
+    const response = await api.delete(`/showcases/${showcaseId}`);
+    return response.data;
+  },
 };
 
 export default userService;

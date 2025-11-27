@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
     FileText, 
     Grid, 
@@ -10,17 +10,23 @@ import {
     TrendingUp,
     Eye,
     Heart,
-    Calendar
+    Calendar,
+    Trash2,
+    Pencil,
+    X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
+import Spinner from '../../components/ui/Spinner';
 
 const UserOverviewPage = () => {
     const { user } = useAuth();
     const { collections } = useCollection();
     const [loading, setLoading] = useState(true);
     const [myShowcases, setMyShowcases] = useState([]);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, showcase: null });
+    const [deleting, setDeleting] = useState(false);
     const [stats, setStats] = useState({
         total: 0,
         approved: 0,
@@ -54,6 +60,37 @@ const UserOverviewPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteModal.showcase) return;
+
+        try {
+            setDeleting(true);
+            await userService.deleteShowcase(deleteModal.showcase.id);
+            
+            // Remove from local state
+            setMyShowcases(prev => prev.filter(s => s.id !== deleteModal.showcase.id));
+            
+            // Update stats
+            setStats(prev => ({
+                ...prev,
+                total: prev.total - 1,
+                [deleteModal.showcase.status]: prev[deleteModal.showcase.status] - 1
+            }));
+            
+            // Close modal
+            setDeleteModal({ isOpen: false, showcase: null });
+        } catch (error) {
+            console.error('Failed to delete showcase:', error);
+            alert('Failed to delete showcase. Please try again.');
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteModal({ isOpen: false, showcase: null });
     };
 
     const statCards = [
@@ -93,8 +130,9 @@ const UserOverviewPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+                <Spinner size="xl" color="gray" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading your overview...</p>
             </div>
         );
     }
@@ -145,16 +183,16 @@ const UserOverviewPage = () => {
                         transition={{ delay: 0.4 }}
                         className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800"
                     >
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">My Recent Showcases</h2>
-                            <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-6">
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">My Recent Showcases</h2>
+                            <div className="flex items-center gap-2 sm:gap-3">
                                 <button
                                     onClick={() => window.location.href = '/showcase/new'}
-                                    className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+                                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:opacity-90 transition-opacity text-xs sm:text-sm font-medium whitespace-nowrap"
                                 >
                                     + Create New
                                 </button>
-                                <a href="/dashboard/showcases" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+                                <a href="/dashboard/showcases" className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 hover:underline whitespace-nowrap">
                                     View all
                                 </a>
                             </div>
@@ -165,14 +203,15 @@ const UserOverviewPage = () => {
                                 {myShowcases.slice(0, 5).map((showcase) => (
                                     <div
                                         key={showcase.id}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        onClick={() => window.location.href = `/design/${showcase.id}`}
+                                        className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
                                     >
                                         <div className="w-16 h-16 rounded-lg shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
                                             {showcase.image_url ? (
                                                 <img 
                                                     src={showcase.image_url} 
                                                     alt={showcase.title}
-                                                    className="w-full h-full object-cover"
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                                                     onError={(e) => {
                                                         e.target.style.display = 'none';
                                                         e.target.parentElement.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-purple-600');
@@ -185,7 +224,7 @@ const UserOverviewPage = () => {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                                            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                                 {showcase.title}
                                             </h3>
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -201,18 +240,23 @@ const UserOverviewPage = () => {
                                         }`}>
                                             {showcase.status}
                                         </span>
-                                        <div className="flex gap-2 ml-4">
-                                            <button
-                                                onClick={() => window.location.href = `/design/${showcase.id}`}
-                                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                                            >
-                                                View
-                                            </button>
+                                        <div className="flex gap-1.5 ml-2">
                                             <button
                                                 onClick={() => window.location.href = `/showcase/edit/${showcase.id}`}
-                                                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                                                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                                                title="Edit showcase"
                                             >
-                                                Edit
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setDeleteModal({ isOpen: true, showcase });
+                                                }}
+                                                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                                                title="Delete showcase"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
                                     </div>
@@ -310,6 +354,95 @@ const UserOverviewPage = () => {
                         </button>
                     </div>
                 </motion.div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteModal.isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={handleDeleteCancel}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ type: 'spring', duration: 0.3 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+                        >
+                            {/* Header */}
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                        <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                            Delete Showcase
+                                        </h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            This action cannot be undone
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleDeleteCancel}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="mb-6">
+                                <p className="text-gray-600 dark:text-gray-300 mb-3">
+                                    Are you sure you want to delete{' '}
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        "{deleteModal.showcase?.title}"
+                                    </span>
+                                    ?
+                                </p>
+                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                                    <p className="text-sm text-red-800 dark:text-red-300">
+                                        ⚠️ This will permanently remove the showcase from your account and all collections.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleDeleteCancel}
+                                    disabled={deleting}
+                                    className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteConfirm}
+                                    disabled={deleting}
+                                    className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {deleting ? (
+                                        <>
+                                            <Spinner size="sm" color="white" />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Trash2 className="w-4 h-4" />
+                                            Delete Showcase
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
