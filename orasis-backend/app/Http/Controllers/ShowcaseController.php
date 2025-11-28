@@ -10,8 +10,12 @@ class ShowcaseController extends Controller
     // PUBLIC: Hanya tampilkan yang APPROVED
     public function index(Request $request)
     {
-        // Get sort parameter
+        // Get parameters
         $sort = $request->get('sort', 'newest');
+        $perPage = (int) $request->get('per_page', 10); // Accept custom per_page
+        
+        // Validate per_page (max 100 to prevent abuse)
+        $perPage = min($perPage, 100);
         
         // Start query without eager loading first
         $query = Showcase::query()->where('status', 'approved');
@@ -38,7 +42,7 @@ class ShowcaseController extends Controller
         }
 
         // Get results first, then load relationships
-        $results = $query->paginate(10);
+        $results = $query->paginate($perPage);
         $results->load(['user', 'tags']);
         
         return response()->json($results);

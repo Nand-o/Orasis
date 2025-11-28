@@ -65,7 +65,7 @@ const FilterBar = ({
     const hasActiveFilters = selectedTags.length > 0 || selectedCategories.length > 0 || sortBy !== 'newest';
 
     return (
-        <div className="mb-6 relative z-20 overflow-hidden">
+        <div className="mb-6 relative z-50">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4">
                 <div className="flex items-center overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
                     <div className="flex items-center space-x-4 sm:space-x-6 min-w-0">

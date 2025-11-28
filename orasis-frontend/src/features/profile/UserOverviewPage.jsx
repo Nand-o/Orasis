@@ -20,6 +20,7 @@ import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
 import Spinner from '../../components/ui/Spinner';
 import StatusBadge from '../../components/ui/StatusBadge';
+import cacheManager from '../../utils/cacheManager';
 
 const UserOverviewPage = () => {
     const { user } = useAuth();
@@ -70,6 +71,9 @@ const UserOverviewPage = () => {
         try {
             setDeleting(true);
             await userService.deleteShowcase(deleteModal.showcase.id);
+            
+            // Clear cache after deletion
+            cacheManager.clearShowcases();
             
             // Remove from local state
             setMyShowcases(prev => prev.filter(s => s.id !== deleteModal.showcase.id));

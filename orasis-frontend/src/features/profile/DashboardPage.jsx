@@ -10,6 +10,7 @@ import ShowcaseCard from '../design/components/ShowcaseCard';
 import CollectionCard from '../collections/components/CollectionCard';
 import Spinner from '../../components/ui/Spinner';
 import StatusBadge from '../../components/ui/StatusBadge';
+import cacheManager from '../../utils/cacheManager';
 
 const DashboardPage = () => {
     const navigate = useNavigate();
@@ -65,6 +66,9 @@ const DashboardPage = () => {
             
             // Remove from local state
             setMyShowcases(prev => prev.filter(s => s.id !== deleteModal.showcase.id));
+            
+            // Clear showcase cache
+            cacheManager.clearShowcases();
             
             // Close modal
             setDeleteModal({ isOpen: false, showcase: null });

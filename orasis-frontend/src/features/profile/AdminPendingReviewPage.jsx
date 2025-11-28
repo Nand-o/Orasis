@@ -4,6 +4,7 @@ import { Clock, CheckCircle, XCircle, Eye, Calendar, User as UserIcon, ExternalL
 import adminService from '../../services/admin.service';
 import { useAuth } from '../../context/AuthContext';
 import Spinner from '../../components/ui/Spinner';
+import cacheManager from '../../utils/cacheManager';
 
 const AdminPendingReviewPage = () => {
     const { user } = useAuth();
@@ -37,6 +38,9 @@ const AdminPendingReviewPage = () => {
         try {
             setActionLoading(showcaseId);
             await adminService.updateShowcaseStatus(showcaseId, newStatus);
+            
+            // Clear cache after status update
+            cacheManager.clearShowcases();
             
             // Remove from pending list
             setPendingShowcases(prev => prev.filter(s => s.id !== showcaseId));
@@ -77,6 +81,9 @@ const AdminPendingReviewPage = () => {
         try {
             setBulkActionLoading(true);
             await adminService.bulkUpdateStatus(selectedIds, status);
+            
+            // Clear cache after bulk status update
+            cacheManager.clearShowcases();
             
             // Remove from pending list
             setPendingShowcases(prev => prev.filter(s => !selectedIds.includes(s.id)));

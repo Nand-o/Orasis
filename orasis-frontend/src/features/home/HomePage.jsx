@@ -6,6 +6,7 @@ import Pagination from '../../components/ui/Pagination';
 import { ShowcaseCardSkeleton } from '../../components/ui/Skeleton';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
+import cacheManager from '../../utils/cacheManager';
 
 const HomePage = ({ searchValue }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -32,15 +33,11 @@ const HomePage = ({ searchValue }) => {
         // 🔥 Fetch data with caching
         const fetchShowcases = async () => {
             try {
-                // Check cache first (valid for 5 minutes)
-                const cachedData = sessionStorage.getItem('showcases_cache');
-                const cacheTime = sessionStorage.getItem('showcases_cache_time');
-                const now = Date.now();
-                const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+                // Check cache first using cache manager
+                const cachedData = cacheManager.getShowcases();
                 
-                if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
-                    const cached = JSON.parse(cachedData);
-                    setShowcases(cached);
+                if (cachedData) {
+                    setShowcases(cachedData);
                     setLoading(false);
                     return;
                 }
@@ -69,9 +66,8 @@ const HomePage = ({ searchValue }) => {
                     urlWebsite: showcase.url_website,
                 }));
                 
-                // Save to cache
-                sessionStorage.setItem('showcases_cache', JSON.stringify(transformedData));
-                sessionStorage.setItem('showcases_cache_time', now.toString());
+                // Save to cache using cache manager
+                cacheManager.setShowcases(transformedData);
                 
                 setShowcases(transformedData);
                 setError(null);

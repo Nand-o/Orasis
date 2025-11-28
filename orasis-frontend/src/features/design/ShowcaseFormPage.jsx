@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import ImageUpload from '../../components/ui/ImageUpload';
 import Spinner from '../../components/ui/Spinner';
 import UploadProgressBar from '../../components/ui/UploadProgressBar';
+import cacheManager from '../../utils/cacheManager';
 
 const ShowcaseFormPage = () => {
     const navigate = useNavigate();
@@ -244,6 +245,9 @@ const ShowcaseFormPage = () => {
                     });
                 }
             }
+
+            // Clear showcase cache after create/update
+            cacheManager.clearShowcases();
 
             // Redirect to dashboard after 1.5 seconds
             setTimeout(() => {
