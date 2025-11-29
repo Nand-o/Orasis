@@ -101,18 +101,20 @@ const HomePage = ({ searchValue }) => {
             // 1. If advanced filter has specific categories selected, use those ONLY
             // 2. Otherwise, use main category toggle (Websites/Mobiles)
             let matchesCategory = false;
+            const categoryName = design.category?.name || '';
             
             if (selectedCategories.length > 0) {
                 // Advanced filter takes precedence
-                matchesCategory = selectedCategories.includes(design.category);
+                matchesCategory = selectedCategories.includes(categoryName);
             } else {
                 // Use main category toggle
                 if (activeCategory === 'Websites') {
-                    matchesCategory = design.category !== 'Mobile';
+                    matchesCategory = categoryName !== 'Mobile';
                 } else if (activeCategory === 'Mobiles') {
-                    matchesCategory = design.category === 'Mobile';
+                    // Match plural 'Mobiles' with singular 'Mobile' category
+                    matchesCategory = categoryName === 'Mobile';
                 } else {
-                    matchesCategory = design.category === activeCategory;
+                    matchesCategory = categoryName === activeCategory;
                 }
             }
 

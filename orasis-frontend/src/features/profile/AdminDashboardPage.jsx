@@ -250,7 +250,7 @@ const AdminDashboardPage = () => {
                                                     </span>
                                                 </td>
                                                 <td className="py-4 px-4 text-gray-600 dark:text-gray-400">
-                                                    {showcase.category || 'N/A'}
+                                                    {showcase.category?.name || 'N/A'}
                                                 </td>
                                                 <td className="py-4 px-4 text-gray-600 dark:text-gray-400 text-sm">
                                                     {new Date(showcase.created_at).toLocaleDateString()}

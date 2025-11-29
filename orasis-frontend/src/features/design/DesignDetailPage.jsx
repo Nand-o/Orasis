@@ -250,7 +250,7 @@ const DesignDetailPage = () => {
                         <div>
                             <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Category</h3>
                             <div className="text-gray-900 dark:text-white text-sm">
-                                {design.category}
+                                {design.category?.name || 'N/A'}
                             </div>
                         </div>
 

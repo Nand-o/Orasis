@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminShowcaseController;
@@ -15,10 +16,11 @@ use App\Http\Controllers\ProfileController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Lihat Showcase (yang approved) & Tag
+// Lihat Showcase (yang approved) & Tag & Categories
 Route::get('/showcases', [ShowcaseController::class, 'index']);
 Route::get('/showcases/{id}', [ShowcaseController::class, 'show']);
 Route::get('/tags', [TagController::class, 'index']);
+Route::get('/categories', [CategoryController::class, 'index']);
 
 
 
@@ -30,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) { return $request->user(); });
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user', [ProfileController::class, 'update']);
+    Route::post('/user', [ProfileController::class, 'update']); // For file uploads with _method=PUT
     Route::put('/user/password', [ProfileController::class, 'changePassword']);
     Route::put('/user/change-password', [ProfileController::class, 'changePassword']); // NEW endpoint to bypass cache
     Route::get('/user/showcases', [ProfileController::class, 'showcases']);
@@ -70,5 +73,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/tags', [TagController::class, 'store']);
         Route::put('/tags/{id}', [TagController::class, 'update']);
         Route::delete('/tags/{id}', [TagController::class, 'destroy']);
+
+        // Manajemen Category (Create/Update/Delete hanya admin)
+        Route::post('/categories', [CategoryController::class, 'store']);
+        Route::put('/categories/{id}', [CategoryController::class, 'update']);
+        Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
     });
 });

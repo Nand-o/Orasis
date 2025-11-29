@@ -65,7 +65,7 @@ const UploadProgressBar = ({ progress, status = 'uploading' }) => {
                                 repeat: Infinity,
                                 ease: 'linear',
                             }}
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                            className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent"
                         />
                     )}
                 </motion.div>

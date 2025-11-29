@@ -10,7 +10,7 @@ class AdminShowcaseController extends Controller
     // melihat SEMUA showcase untuk admin dashboard (tanpa pagination)
     public function indexAll()
     {
-        $showcases = Showcase::with(['user', 'tags'])
+        $showcases = Showcase::with(['user', 'tags', 'category'])
             ->latest()
             ->get();
 
@@ -24,7 +24,7 @@ class AdminShowcaseController extends Controller
     // melihat daftar showcase yang MENUNGGU persetujuan
     public function indexPending()
     {
-        $pendingShowcases = Showcase::with(['user', 'tags'])
+        $pendingShowcases = Showcase::with(['user', 'tags', 'category'])
             ->where('status', 'pending')
             ->latest()
             ->get();

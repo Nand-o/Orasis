@@ -227,10 +227,10 @@ const AdminAnalyticsPage = () => {
                         {top_contributors.map((user, index) => (
                             <div key={user.id} className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white font-bold text-sm">
+                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-linear-to-br from-yellow-400 to-orange-500 text-white font-bold text-sm">
                                         {index + 1}
                                     </div>
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                                         <span className="text-white font-semibold">
                                             {user.name.charAt(0).toUpperCase()}
                                         </span>
@@ -268,7 +268,7 @@ const AdminAnalyticsPage = () => {
                             return (
                                 <div key={index}>
                                     <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 dark:text-gray-400">{item.category}</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{item.category || 'N/A'}</span>
                                         <span className="font-semibold text-gray-900 dark:text-white">{item.count}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -301,7 +301,7 @@ const AdminAnalyticsPage = () => {
                         <motion.div
                             key={tag.id}
                             whileHover={{ scale: 1.05 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 rounded-full"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 rounded-full"
                         >
                             <span className="font-medium text-gray-900 dark:text-white">{tag.name}</span>
                             <span className="px-2 py-0.5 bg-white dark:bg-gray-800 rounded-full text-xs font-bold text-gray-700 dark:text-gray-300">

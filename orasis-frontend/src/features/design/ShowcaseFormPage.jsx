@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import showcaseService from '../../services/showcase.service';
+import tagService from '../../services/tag.service';
+import categoryService from '../../services/category.service';
 import { useAuth } from '../../context/AuthContext';
 import ImageUpload from '../../components/ui/ImageUpload';
 import Spinner from '../../components/ui/Spinner';
@@ -25,33 +27,56 @@ const ShowcaseFormPage = () => {
         description: '',
         url_website: '',
         image_url: '',
-        category: 'Landing Page'
+        category_id: '',
+        tags: []
     });
 
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [useUrlMode, setUseUrlMode] = useState(true);
     const [errors, setErrors] = useState({});
-
-    const categories = [
-        'Landing Page',
-        'SaaS',
-        'E-commerce',
-        'Portfolio',
-        'Dashboard',
-        'Blog',
-        'Web Design',
-        'App Design',
-        'Other'
-    ];
+    const [availableTags, setAvailableTags] = useState([]);
+    const [loadingTags, setLoadingTags] = useState(true);
+    const [categories, setCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
 
     // Load showcase data if editing
     useEffect(() => {
         document.title = isEditMode ? 'Edit Showcase | Orasis' : 'Create Showcase | Orasis';
+        loadAvailableTags();
+        loadCategories();
         if (isEditMode && id) {
             loadShowcaseData(id);
         }
     }, [id, isEditMode]);
+
+    const loadAvailableTags = async () => {
+        try {
+            setLoadingTags(true);
+            const tags = await tagService.getAll();
+            setAvailableTags(tags);
+        } catch (error) {
+            console.error('Failed to load tags:', error);
+        } finally {
+            setLoadingTags(false);
+        }
+    };
+
+    const loadCategories = async () => {
+        try {
+            setLoadingCategories(true);
+            const cats = await categoryService.getAll();
+            setCategories(cats);
+            // Set first category as default if creating new showcase
+            if (!isEditMode && cats.length > 0) {
+                setFormData(prev => ({ ...prev, category_id: cats[0].id }));
+            }
+        } catch (error) {
+            console.error('Failed to load categories:', error);
+        } finally {
+            setLoadingCategories(false);
+        }
+    };
 
     const loadShowcaseData = async (showcaseId) => {
         try {
@@ -74,7 +99,8 @@ const ShowcaseFormPage = () => {
                 description: showcase.description,
                 url_website: showcase.url_website,
                 image_url: showcase.image_url,
-                category: showcase.category
+                category_id: showcase.category_id || showcase.category?.id || '',
+                tags: showcase.tags ? showcase.tags.map(tag => tag.id) : []
             });
             setImagePreview(showcase.image_url);
             // If it's a stored image (not external URL), switch to upload mode
@@ -121,6 +147,15 @@ const ShowcaseFormPage = () => {
         });
     };
 
+    const handleTagToggle = (tagId) => {
+        setFormData(prev => ({
+            ...prev,
+            tags: prev.tags.includes(tagId)
+                ? prev.tags.filter(id => id !== tagId)
+                : [...prev.tags, tagId]
+        }));
+    };
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -155,7 +190,7 @@ const ShowcaseFormPage = () => {
             }
         }
 
-        if (!formData.category) {
+        if (!formData.category_id) {
             newErrors.category = 'Category is required';
         }
 
@@ -195,8 +230,12 @@ const ShowcaseFormPage = () => {
                 formDataToSend.append('title', formData.title.trim());
                 formDataToSend.append('description', formData.description.trim());
                 formDataToSend.append('url_website', formData.url_website.trim());
-                formDataToSend.append('category', formData.category);
+                formDataToSend.append('category_id', formData.category_id);
                 formDataToSend.append('image_file', imageFile);
+                // Add tags array
+                formData.tags.forEach((tagId, index) => {
+                    formDataToSend.append(`tags[${index}]`, tagId);
+                });
 
                 // Upload progress callback
                 const onProgress = (progress) => {
@@ -228,7 +267,8 @@ const ShowcaseFormPage = () => {
                     description: formData.description.trim(),
                     url_website: formData.url_website.trim(),
                     image_url: formData.image_url.trim(),
-                    category: formData.category
+                    category_id: formData.category_id,
+                    tags: formData.tags
                 };
 
                 if (isEditMode) {
@@ -518,25 +558,74 @@ const ShowcaseFormPage = () => {
                                 )}
                             </div>
 
+                            {/* Tags */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Tags (Optional)
+                                </label>
+                                {loadingTags ? (
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                                        <Spinner size="sm" color="gray" />
+                                        <span className="text-sm">Loading tags...</span>
+                                    </div>
+                                ) : availableTags.length > 0 ? (
+                                    <div className="max-h-64 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                            {availableTags.map((tag) => (
+                                                <label
+                                                    key={tag.id}
+                                                    className="flex items-center gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-gray-700 bg-white dark:bg-gray-800 transition-colors"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.tags.includes(tag.id)}
+                                                        onChange={() => handleTagToggle(tag.id)}
+                                                        className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 dark:focus:ring-purple-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                    />
+                                                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                                                        {tag.name}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                        No tags available yet.
+                                    </p>
+                                )}
+                                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    Select tags that best describe your showcase ({formData.tags.length} selected)
+                                </p>
+                            </div>
+
                             {/* Category */}
                             <div>
-                                <label htmlFor="category" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                <label htmlFor="category_id" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     Category <span className="text-red-500">*</span>
                                 </label>
                                 <select
-                                    id="category"
-                                    name="category"
-                                    value={formData.category}
+                                    id="category_id"
+                                    name="category_id"
+                                    value={formData.category_id}
                                     onChange={handleInputChange}
+                                    disabled={loadingCategories}
                                     className={`w-full px-4 py-3 rounded-lg border ${
                                         errors.category 
                                             ? 'border-red-500 focus:ring-red-500' 
                                             : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
-                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
+                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                                 >
-                                    {categories.map(cat => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
+                                    {loadingCategories ? (
+                                        <option>Loading categories...</option>
+                                    ) : (
+                                        <>
+                                            <option value="">Select a category</option>
+                                            {categories.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                            ))}
+                                        </>
+                                    )}
                                 </select>
                                 {errors.category && (
                                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>

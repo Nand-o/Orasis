@@ -25,10 +25,11 @@ const CollectionDetailModal = ({ isOpen, onClose, collection }) => {
     const filteredDesigns = useMemo(() => {
         if (!searchQuery.trim()) return designs;
         const query = searchQuery.toLowerCase();
-        return designs.filter(design =>
-            design.title.toLowerCase().includes(query) ||
-            design.category.toLowerCase().includes(query)
-        );
+        return designs.filter(design => {
+            const categoryName = design.category?.name || '';
+            return design.title.toLowerCase().includes(query) ||
+                categoryName.toLowerCase().includes(query);
+        });
     }, [designs, searchQuery]);
 
     const handleRemove = async (designId) => {
@@ -139,7 +140,7 @@ const CollectionDetailModal = ({ isOpen, onClose, collection }) => {
                                                         <h3 className="font-semibold text-gray-900 group-hover/title:text-indigo-600 transition-colors truncate">
                                                             {design.title}
                                                         </h3>
-                                                        <p className="text-sm text-gray-500 truncate">{design.category}</p>
+                                                        <p className="text-sm text-gray-500 truncate">{design.category?.name || 'N/A'}</p>
                                                     </button>
                                                 </div>
 

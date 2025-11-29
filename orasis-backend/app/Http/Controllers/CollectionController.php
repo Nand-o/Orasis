@@ -13,7 +13,9 @@ class CollectionController extends Controller
         $collections = $request->user()
             ->collections()
             ->withCount('showcases')
-            ->with(['showcases'])
+            ->with(['showcases' => function($q) {
+                $q->with(['user', 'category']);
+            }])
             ->latest()
             ->get();
 
@@ -43,7 +45,7 @@ class CollectionController extends Controller
         // Cari koleksi milik user (jika bukan milik user, otomatis 404)
         $collection = $request->user()->collections()
             ->with(['showcases' => function($q) {
-                $q->with('user');
+                $q->with(['user', 'category']);
             }])
             ->findOrFail($id);
 

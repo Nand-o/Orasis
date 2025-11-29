@@ -325,9 +325,11 @@ const AdminPendingReviewPage = () => {
                                                     {showcase.description}
                                                 </p>
                                                 <div className="flex flex-wrap gap-2 mb-3">
-                                                    <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-lg text-xs font-medium">
-                                                        {showcase.category}
-                                                    </span>
+                                                    {showcase.category && (
+                                                        <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-lg text-xs font-medium">
+                                                            {showcase.category.name}
+                                                        </span>
+                                                    )}
                                                     {showcase.tags?.map(tag => (
                                                         <span 
                                                             key={tag.id}

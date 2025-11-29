@@ -302,7 +302,7 @@ const ImageUpload = ({
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-2 flex items-start gap-2 text-red-600 dark:text-red-400 text-sm"
                 >
-                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                     <span>{error || uploadError}</span>
                 </motion.div>
             )}

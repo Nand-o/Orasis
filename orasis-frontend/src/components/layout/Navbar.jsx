@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark, LayoutDashboard, LogIn } from 'lucide-react';
+import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark, LayoutDashboard, LogIn, Users, BarChart3, Clock, Folder, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchBar from '../ui/SearchBar';
 import { useTheme } from '../../context/ThemeContext';
@@ -104,13 +104,18 @@ const Navbar = ({ searchValue, onSearchChange }) => {
 
                                     <AnimatePresence>
                                         {isProfileOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50"
-                                    >
+                                    <>
+                                        <div 
+                                            className="fixed inset-0 z-70" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-70"
+                                        >
                                         <div className="px-4 py-2">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="text-sm font-semibold text-gray-900 dark:text-white">Theme</span>
@@ -156,12 +161,28 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                             {/* Conditional menu items based on user role */}
                                             {user?.role === 'admin' ? (
                                                 <>
+                                                    <a href="/dashboard/pending" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Clock className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Pending Review
+                                                    </a>
                                                     <a href="/dashboard/showcases" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
                                                         <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                                         All Submissions
                                                     </a>
+                                                    <a href="/dashboard/users" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Users className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        User Management
+                                                    </a>
+                                                    <a href="/dashboard/categories" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Folder className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Categories
+                                                    </a>
+                                                    <a href="/dashboard/tags" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Tag className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Tags
+                                                    </a>
                                                     <a href="/dashboard/analytics" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                        <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        <BarChart3 className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                                         Analytics
                                                     </a>
                                                 </>
@@ -187,7 +208,8 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                                 Log out
                                             </button>
                                         </div>
-                                    </motion.div>
+                                        </motion.div>
+                                    </>
                                         )}
                                     </AnimatePresence>
                                 </>

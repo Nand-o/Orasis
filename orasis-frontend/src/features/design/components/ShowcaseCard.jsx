@@ -51,7 +51,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                             <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                 {design.title}
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-medium">{design.category}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-medium">{design.category?.name || 'N/A'}</p>
                         </div>
                     </div>
 

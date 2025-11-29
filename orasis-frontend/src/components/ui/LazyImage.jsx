@@ -75,7 +75,7 @@ const LazyImage = ({
         <div ref={imgRef} className={`relative overflow-hidden ${className}`}>
             {/* Loading placeholder */}
             {isLoading && !isError && (
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse">
+                <div className="absolute inset-0 bg-linear-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse">
                     <div className="absolute inset-0 flex items-center justify-center">
                         <svg
                             className="w-12 h-12 text-gray-300 dark:text-gray-600"

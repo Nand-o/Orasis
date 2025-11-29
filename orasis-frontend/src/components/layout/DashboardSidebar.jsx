@@ -13,7 +13,9 @@ import {
     TrendingUp,
     Clock,
     CheckCircle,
-    XCircle
+    XCircle,
+    Tag,
+    Folder
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
@@ -61,6 +63,8 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
         { icon: FileText, label: 'Showcases', path: '/dashboard/showcases', badge: null },
         { icon: Clock, label: 'Pending Review', path: '/dashboard/pending', badge: 'pending' },
         { icon: Users, label: 'Users', path: '/dashboard/users' },
+        { icon: Folder, label: 'Categories', path: '/dashboard/categories' },
+        { icon: Tag, label: 'Tags', path: '/dashboard/tags' },
         { icon: TrendingUp, label: 'Analytics', path: '/dashboard/analytics' },
     ];
 
@@ -133,18 +137,34 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                 >
                     {collapsed ? (
                         <div className="flex justify-center">
-                            <div className="w-10 h-10 bg-black dark:bg-white rounded-full flex items-center justify-center shadow-lg">
-                                <span className="text-white dark:text-black font-semibold text-sm">
-                                    {user?.name?.charAt(0).toUpperCase()}
-                                </span>
+                            <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                                {user?.profile_picture_url ? (
+                                    <img 
+                                        src={user.profile_picture_url} 
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-white font-semibold text-sm">
+                                        {user?.name?.charAt(0).toUpperCase()}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     ) : (
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-black dark:bg-white rounded-full flex items-center justify-center shadow-lg">
-                                <span className="text-white dark:text-black font-semibold text-base">
-                                    {user?.name?.charAt(0).toUpperCase()}
-                                </span>
+                            <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                                {user?.profile_picture_url ? (
+                                    <img 
+                                        src={user.profile_picture_url} 
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-white font-semibold text-base">
+                                        {user?.name?.charAt(0).toUpperCase()}
+                                    </span>
+                                )}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-gray-900 dark:text-white truncate">

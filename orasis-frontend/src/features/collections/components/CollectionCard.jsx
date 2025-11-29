@@ -79,14 +79,13 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
         >
             <div className="aspect-square rounded-3xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-3 relative border border-gray-100 dark:border-gray-800">
                 {hasImages ? (
-                    <div className={`grid h-full w-full gap-0.5 ${images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                        {images.map((img, index) => (
+                    <div className={`grid h-full w-full gap-0.5 ${images.length === 1 ? 'grid-cols-1 grid-rows-1' : 'grid-cols-2 grid-rows-2'}`}>
+                        {images.slice(0, 4).map((img, index) => (
                             <img
                                 key={index}
                                 src={img}
                                 alt=""
-                                className={`w-full h-full object-cover ${images.length === 3 && index === 0 ? 'row-span-2' : ''
-                                    }`}
+                                className="w-full h-full object-cover"
                             />
                         ))}
                         {/* Fill remaining spots with gray if needed */}

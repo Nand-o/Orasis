@@ -75,9 +75,11 @@ const SearchResultPage = () => {
 
     const filteredResults = useMemo(() => {
         let filtered = showcases.filter(design => {
+            const categoryName = design.category?.name || '';
+            
             // Search query filter
             const matchesQuery = design.title.toLowerCase().includes(query.toLowerCase()) ||
-                design.category.toLowerCase().includes(query.toLowerCase()) ||
+                categoryName.toLowerCase().includes(query.toLowerCase()) ||
                 (design.description && design.description.toLowerCase().includes(query.toLowerCase())) ||
                 (design.tags && design.tags.some(tag => 
                     (typeof tag === 'string' ? tag : tag.name).toLowerCase().includes(query.toLowerCase())
@@ -86,16 +88,16 @@ const SearchResultPage = () => {
             // Main category filter
             let matchesMainCategory = false;
             if (activeCategory === 'Websites') {
-                matchesMainCategory = design.category !== 'Mobile';
+                matchesMainCategory = categoryName !== 'Mobile';
             } else if (activeCategory === 'Mobiles') {
-                matchesMainCategory = design.category === 'Mobile';
+                matchesMainCategory = categoryName === 'Mobile';
             } else {
-                matchesMainCategory = design.category === activeCategory;
+                matchesMainCategory = categoryName === activeCategory;
             }
 
             // Multi-category filter
             const matchesAdvancedCategory = selectedCategories.length === 0 || 
-                selectedCategories.includes(design.category);
+                selectedCategories.includes(categoryName);
 
             // Tag filter
             const matchesTags = selectedTags.length === 0 || (

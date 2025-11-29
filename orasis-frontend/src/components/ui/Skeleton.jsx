@@ -82,6 +82,17 @@ export const CollectionCardSkeleton = () => {
 };
 
 /**
+ * BadgeSkeleton - Skeleton loader for badge/tag items
+ */
+export const BadgeSkeleton = () => {
+    return (
+        <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded-full" style={{ width: `${Math.random() * 40 + 80}px` }}></div>
+        </div>
+    );
+};
+
+/**
  * PageLoader - Full page loading overlay
  */
 export const PageLoader = () => {

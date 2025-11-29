@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff, Camera } from 'lucide-react';
 import userService from '../../services/user.service';
 import { useAuth } from '../../context/AuthContext';
 import Spinner from '../../components/ui/Spinner';
+import CircularImageCropper from '../../components/ui/CircularImageCropper';
 
 const ProfilePage = () => {
     const { user, updateUser } = useAuth();
@@ -18,6 +19,11 @@ const ProfilePage = () => {
         name: '',
         email: '',
     });
+
+    // Profile Picture State
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [profilePicturePreview, setProfilePicturePreview] = useState(null);
+    const [showCropper, setShowCropper] = useState(false);
 
     // Password Form State
     const [passwordForm, setPasswordForm] = useState({
@@ -72,6 +78,12 @@ const ProfilePage = () => {
         return Object.keys(errors).length === 0;
     };
 
+    // Handle Profile Picture Crop
+    const handleCropComplete = (croppedFile, previewUrl) => {
+        setProfilePicture(croppedFile);
+        setProfilePicturePreview(previewUrl);
+    };
+
     // Handle Profile Update
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
@@ -84,11 +96,27 @@ const ProfilePage = () => {
         setProfileMessage({ type: '', text: '' });
 
         try {
-            const response = await userService.updateProfile(profileForm);
-            if (response.data) {
-                updateUser(response.data); // Update user data in AuthContext
+            // Use FormData if profile picture is present
+            if (profilePicture) {
+                const formData = new FormData();
+                formData.append('_method', 'PUT'); // Laravel method spoofing
+                formData.append('name', profileForm.name);
+                formData.append('email', profileForm.email);
+                formData.append('profile_picture', profilePicture);
+                
+                const response = await userService.updateProfileWithFile(formData);
+                if (response.data) {
+                    updateUser(response.data);
+                }
+            } else {
+                const response = await userService.updateProfile(profileForm);
+                if (response.data) {
+                    updateUser(response.data);
+                }
             }
+            
             setProfileMessage({ type: 'success', text: 'Profile updated successfully!' });
+            setProfilePicture(null); // Clear after successful upload
         } catch (error) {
             setProfileMessage({
                 type: 'error',
@@ -241,6 +269,33 @@ const ProfilePage = () => {
                 {activeTab === 'profile' && (
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
                         <form onSubmit={handleProfileSubmit} className="space-y-6">
+                            {/* Profile Picture */}
+                            <div className="flex flex-col items-center mb-8">
+                                <div className="relative group">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold">
+                                        {profilePicturePreview || user?.profile_picture_url ? (
+                                            <img
+                                                src={profilePicturePreview || user.profile_picture_url}
+                                                alt={user?.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                        )}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCropper(true)}
+                                        className="absolute bottom-0 right-0 p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg transition-colors group-hover:scale-110 transform"
+                                    >
+                                        <Camera className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
+                                    Click camera icon to change profile picture
+                                </p>
+                            </div>
+
                             {/* Message */}
                             {profileMessage.text && (
                                 <motion.div
@@ -492,6 +547,13 @@ const ProfilePage = () => {
                     </div>
                 )}
             </motion.div>
+            
+            {/* Circular Image Cropper Modal */}
+            <CircularImageCropper
+                isOpen={showCropper}
+                onClose={() => setShowCropper(false)}
+                onCropComplete={handleCropComplete}
+            />
             </div>
         </div>
     );

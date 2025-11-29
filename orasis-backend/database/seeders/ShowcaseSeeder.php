@@ -6,9 +6,19 @@ use App\Models\Showcase;
 use App\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ShowcaseSeeder extends Seeder
 {
+    /**
+     * Get category ID by name
+     */
+    private function getCategoryId($categoryName)
+    {
+        $category = DB::table('categories')->where('name', $categoryName)->first();
+        return $category ? $category->id : null;
+    }
+
     /**
      * Run the database seeds.
      */
@@ -295,6 +305,12 @@ class ShowcaseSeeder extends Seeder
             // Extract tags from item
             $tags = $item['tags'] ?? [];
             unset($item['tags']);
+            
+            // Convert category name to category_id
+            if (isset($item['category'])) {
+                $item['category_id'] = $this->getCategoryId($item['category']);
+                unset($item['category']);
+            }
             
             // Add different timestamps (older to newer, 21 days ago to today)
             $daysAgo = 21 - $index;

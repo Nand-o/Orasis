@@ -59,11 +59,21 @@ class DashboardController extends Controller
             ->values();
 
             // Showcases by category
-            $showcasesByCategory = Showcase::select('category', DB::raw('COUNT(*) as count'))
+            $showcasesByCategory = Showcase::with('category')
                 ->where('status', 'approved')
-                ->groupBy('category')
-                ->orderBy('count', 'desc')
-                ->get();
+                ->whereNotNull('category_id')
+                ->get()
+                ->groupBy(function($item) {
+                    return $item->category ? $item->category->name : 'Uncategorized';
+                })
+                ->map(function($items, $categoryName) {
+                    return [
+                        'category' => $categoryName,
+                        'count' => $items->count()
+                    ];
+                })
+                ->sortByDesc('count')
+                ->values();
 
             // Most used tags - Get all then count in PHP
             $popularTags = Tag::with('showcases')->get()

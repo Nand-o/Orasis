@@ -15,10 +15,28 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // 5MB max
         ]);
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if it exists
+            if ($user->profile_picture) {
+                $oldPath = str_replace(url('/storage/'), '', $user->profile_picture);
+                if (\Storage::disk('public')->exists($oldPath)) {
+                    \Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            $file = $request->file('profile_picture');
+            $filename = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('profiles', $filename, 'public');
+            $user->profile_picture = url('/storage/' . $path);
+        }
+
         $user->save();
 
         return response()->json([
@@ -88,7 +106,7 @@ class ProfileController extends Controller
         $user = $request->user();
         
         $showcases = $user->showcases()
-            ->with('tags')
+            ->with(['tags', 'category'])
             ->latest()
             ->get();
 

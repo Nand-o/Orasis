@@ -17,6 +17,8 @@ import AdminDashboardPage from './features/profile/AdminDashboardPage';
 import AdminPendingReviewPage from './features/profile/AdminPendingReviewPage';
 import AdminUsersPage from './features/admin/AdminUsersPage';
 import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
+import CategoryManagementPage from './features/admin/CategoryManagementPage';
+import TagManagementPage from './features/admin/TagManagementPage';
 import ProfilePage from './features/profile/ProfilePage';
 import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -166,6 +168,22 @@ const AnimatedRoutes = ({ searchValue }) => {
           element={
             <DashboardLayout>
               <AdminUsersPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/categories"
+          element={
+            <DashboardLayout>
+              <CategoryManagementPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/tags"
+          element={
+            <DashboardLayout>
+              <TagManagementPage />
             </DashboardLayout>
           }
         />

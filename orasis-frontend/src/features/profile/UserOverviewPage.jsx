@@ -240,7 +240,10 @@ const UserOverviewPage = () => {
                                         <StatusBadge status={showcase.status} size="md" />
                                         <div className="flex gap-1.5 ml-2">
                                             <button
-                                                onClick={() => window.location.href = `/showcase/edit/${showcase.id}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    window.location.href = `/showcase/edit/${showcase.id}`;
+                                                }}
                                                 className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                                                 title="Edit showcase"
                                             >

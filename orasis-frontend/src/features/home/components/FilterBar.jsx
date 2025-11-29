@@ -65,7 +65,7 @@ const FilterBar = ({
     const hasActiveFilters = selectedTags.length > 0 || selectedCategories.length > 0 || sortBy !== 'newest';
 
     return (
-        <div className="mb-6 relative z-50">
+        <div className="mb-6 relative z-40">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4">
                 <div className="flex items-center overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
                     <div className="flex items-center space-x-4 sm:space-x-6 min-w-0">
@@ -144,14 +144,14 @@ const FilterBar = ({
                             {showSortDropdown && (
                                 <>
                                     <div 
-                                        className="fixed inset-0 z-30" 
+                                        className="fixed inset-0 z-55" 
                                         onClick={() => setShowSortDropdown(false)}
                                     />
                                     <motion.div
                                         initial={{ opacity: 0, y: -10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -10 }}
-                                        className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-full sm:w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-40 overflow-hidden max-w-xs sm:max-w-none"
+                                        className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-full sm:w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-56 overflow-hidden max-w-xs sm:max-w-none"
                                     >
                                         {sortOptions.map((option) => (
                                             <button
@@ -260,7 +260,7 @@ const FilterBar = ({
                                             onClick={() => toggleTag(tag)}
                                             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                                                 selectedTags.includes(tag)
-                                                    ? 'bg-indigo-600 text-white'
+                                                    ? 'bg-black dark:bg-white text-white dark:text-black'
                                                     : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                                             }`}
                                         >
@@ -278,7 +278,7 @@ const FilterBar = ({
                                             onClearFilters();
                                             setShowAdvancedFilters(false);
                                         }}
-                                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors text-sm font-medium"
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-colors text-sm font-semibold"
                                     >
                                         <X className="w-4 h-4" />
                                         Clear All Filters

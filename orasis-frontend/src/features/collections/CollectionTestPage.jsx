@@ -588,7 +588,7 @@ const CollectionTestPage = () => {
                         </div>
                         <div className="mt-2">
                           <span className="inline-block text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
-                            {showcase.category}
+                            {showcase.category?.name || 'N/A'}
                           </span>
                         </div>
                       </div>

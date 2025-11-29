@@ -18,6 +18,18 @@ const userService = {
   },
 
   /**
+   * Update user profile with file upload (uses POST with _method spoofing)
+   */
+  updateProfileWithFile: async (formData) => {
+    const response = await api.post('/user', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+    return response.data;
+  },
+
+  /**
    * Change password
    */
   changePassword: async (passwordData) => {

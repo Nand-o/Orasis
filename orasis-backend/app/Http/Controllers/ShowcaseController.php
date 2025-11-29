@@ -20,9 +20,11 @@ class ShowcaseController extends Controller
         // Start query without eager loading first
         $query = Showcase::query()->where('status', 'approved');
 
-        // Category filter
+        // Category filter (now uses category relationship)
         if ($category = $request->get('category')) {
-            $query->whereRaw('LOWER(category) = ?', [strtolower($category)]);
+            $query->whereHas('category', function($q) use ($category) {
+                $q->whereRaw('LOWER(name) = ?', [strtolower($category)]);
+            });
         }
 
         // Apply sorting - only 4 options (removed popular)
@@ -43,7 +45,7 @@ class ShowcaseController extends Controller
 
         // Get results first, then load relationships
         $results = $query->paginate($perPage);
-        $results->load(['user', 'tags']);
+        $results->load(['user', 'tags', 'category']);
         
         return response()->json($results);
     }
@@ -57,7 +59,7 @@ class ShowcaseController extends Controller
             'url_website' => 'required|url',
             'image_url' => 'nullable|url',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // 5MB max
-            'category' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id'
         ]);
@@ -88,7 +90,7 @@ class ShowcaseController extends Controller
             'description' => $validated['description'],
             'url_website' => $validated['url_website'],
             'image_url' => $imageUrl,
-            'category' => $validated['category'],
+            'category_id' => $validated['category_id'],
             'status' => $initialStatus
         ]);
 
@@ -107,7 +109,7 @@ class ShowcaseController extends Controller
     // PUBLIC/USER: Lihat detail
     public function show($id)
     {
-        $showcase = Showcase::with(['user', 'tags'])->findOrFail($id);
+        $showcase = Showcase::with(['user', 'tags', 'category'])->findOrFail($id);
 
         // cegah intip status pending kecuali pemilik/admin
         $user = request()->user('sanctum');
@@ -119,8 +121,8 @@ class ShowcaseController extends Controller
         }
 
         // Get similar showcases (same category, exclude current, limit 4)
-        $similar = Showcase::with(['user', 'tags'])
-            ->where('category', $showcase->category)
+        $similar = Showcase::with(['user', 'tags', 'category'])
+            ->where('category_id', $showcase->category_id)
             ->where('id', '!=', $id)
             ->where('status', 'approved')
             ->limit(4)
@@ -148,7 +150,7 @@ class ShowcaseController extends Controller
             'url_website' => 'sometimes|url',
             'image_url' => 'nullable|url',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'category' => 'sometimes|string',
+            'category_id' => 'sometimes|exists:categories,id',
             'tags' => 'nullable|array'
         ]);
 

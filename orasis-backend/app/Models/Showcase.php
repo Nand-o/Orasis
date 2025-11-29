@@ -15,7 +15,7 @@ class Showcase extends Model
         'description',
         'url_website',
         'image_url',
-        'category',
+        'category_id',
         'status',
     ];
 
@@ -23,6 +23,12 @@ class Showcase extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relasi ke Category
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     // Showcase punya banyak Tag (many-to-many)
