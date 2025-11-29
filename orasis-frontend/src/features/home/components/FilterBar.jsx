@@ -21,6 +21,7 @@ const categories = [
 const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
+    { value: 'most_viewed', label: 'Most Viewed' },
     { value: 'title_asc', label: 'Title A-Z' },
     { value: 'title_desc', label: 'Title Z-A' }
 ];

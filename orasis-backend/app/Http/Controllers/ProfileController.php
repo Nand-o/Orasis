@@ -119,12 +119,16 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         
+        // Calculate total views from all user's showcases
+        $totalViews = $user->showcases()->sum('views_count');
+        
         $stats = [
             'total_showcases' => $user->showcases()->count(),
             'approved_showcases' => $user->showcases()->where('status', 'approved')->count(),
             'pending_showcases' => $user->showcases()->where('status', 'pending')->count(),
             'rejected_showcases' => $user->showcases()->where('status', 'rejected')->count(),
             'total_collections' => $user->collections()->count(),
+            'total_views' => $totalViews,
         ];
 
         return response()->json([

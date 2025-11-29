@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import HeroSection from './components/HeroSection';
 import FilterBar from './components/FilterBar';
 import ShowcaseCard from '../design/components/ShowcaseCard';
@@ -27,13 +27,11 @@ const HomePage = ({ searchValue }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 50; // Items per page
 
-    useEffect(() => {
-        document.title = 'Inspiration | Orasis';
-        
-        // 🔥 Fetch data with caching
-        const fetchShowcases = async () => {
-            try {
-                // Check cache first using cache manager
+    // Function to fetch showcases (wrapped in useCallback to avoid recreating on each render)
+    const fetchShowcases = useCallback(async (forceRefresh = false) => {
+        try {
+            // Check cache first using cache manager (skip if force refresh)
+            if (!forceRefresh) {
                 const cachedData = cacheManager.getShowcases();
                 
                 if (cachedData) {
@@ -41,48 +39,67 @@ const HomePage = ({ searchValue }) => {
                     setLoading(false);
                     return;
                 }
+            }
+            
+            setLoading(true);
+            
+            // Fetch all showcases - use multiple pages if needed
+            let allShowcases = [];
+            let page = 1;
+            let hasMorePages = true;
+            
+            while (hasMorePages) {
+                const data = await showcaseService.getAll({ page, per_page: 50 });
                 
-                setLoading(true);
+                allShowcases = [...allShowcases, ...data.data];
                 
-                // Fetch all showcases - use multiple pages if needed
-                let allShowcases = [];
-                let page = 1;
-                let hasMorePages = true;
-                
-                while (hasMorePages) {
-                    const data = await showcaseService.getAll({ page, per_page: 50 });
-                    
-                    allShowcases = [...allShowcases, ...data.data];
-                    
-                    // Check if there are more pages
-                    hasMorePages = data.current_page < data.last_page;
-                    page++;
-                }
-                
-                // Transform snake_case to camelCase for compatibility with existing components
-                const transformedData = allShowcases.map(showcase => ({
-                    ...showcase,
-                    imageUrl: showcase.image_url,
-                    urlWebsite: showcase.url_website,
-                }));
-                
-                // Save to cache using cache manager
-                cacheManager.setShowcases(transformedData);
-                
-                setShowcases(transformedData);
-                setError(null);
-            } catch (err) {
-                console.error('❌ API Error:', err);
-                console.error('❌ Error details:', err.response || err);
-                setError(err.message || 'Failed to fetch showcases');
-                setShowcases([]);
-            } finally {
-                setLoading(false);
+                // Check if there are more pages
+                hasMorePages = data.current_page < data.last_page;
+                page++;
+            }
+            
+            // Transform snake_case to camelCase for compatibility with existing components
+            const transformedData = allShowcases.map(showcase => ({
+                ...showcase,
+                imageUrl: showcase.image_url,
+                urlWebsite: showcase.url_website,
+            }));
+            
+            // Save to cache using cache manager
+            cacheManager.setShowcases(transformedData);
+            
+            setShowcases(transformedData);
+            setError(null);
+        } catch (err) {
+            console.error('❌ API Error:', err);
+            console.error('❌ Error details:', err.response || err);
+            setError(err.message || 'Failed to fetch showcases');
+            setShowcases([]);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        document.title = 'Inspiration | Orasis';
+        
+        // Always fetch fresh data when component mounts (user navigates to homepage)
+        // This ensures view counts are always up-to-date
+        fetchShowcases(true); // Force refresh to bypass cache
+        
+        // Also listen for visibility changes (tab switching)
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchShowcases(true);
             }
         };
 
-        fetchShowcases();
-    }, []);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [fetchShowcases]);
 
     // Update URL params when filters change
     useEffect(() => {
@@ -145,6 +162,8 @@ const HomePage = ({ searchValue }) => {
                     return new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt);
                 case 'oldest':
                     return new Date(a.created_at || a.createdAt) - new Date(b.created_at || b.createdAt);
+                case 'most_viewed':
+                    return (b.views_count || 0) - (a.views_count || 0);
                 case 'title_asc':
                     return a.title.localeCompare(b.title);
                 case 'title_desc':
@@ -187,8 +206,12 @@ const HomePage = ({ searchValue }) => {
         setCurrentPage(1);
     };
 
-    // Select popular designs for carousel (first 5)
-    const popularDesigns = showcases.slice(0, 5);
+    // Select most viewed designs for hero carousel (top 5 by views_count)
+    const popularDesigns = useMemo(() => {
+        return [...showcases]
+            .sort((a, b) => (b.views_count || 0) - (a.views_count || 0))
+            .slice(0, 5);
+    }, [showcases]);
 
     // 🔥 Loading state with skeleton
     if (loading) {

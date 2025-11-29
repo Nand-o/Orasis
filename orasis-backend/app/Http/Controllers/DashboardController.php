@@ -96,6 +96,24 @@ class DashboardController extends Controller
                 return ['month' => $month, 'count' => $items->count()];
             })->values();
 
+            // View trends (last 30 days)
+            $viewTrends = DB::table('showcase_views')
+                ->select(DB::raw('DATE(viewed_at) as date'), DB::raw('COUNT(*) as views'))
+                ->where('viewed_at', '>=', now()->subDays(30))
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            // Top viewed showcases
+            $topViewedShowcases = Showcase::with(['user', 'category'])
+                ->where('status', 'approved')
+                ->orderBy('views_count', 'desc')
+                ->limit(10)
+                ->get();
+
+            // Total views
+            $totalViews = DB::table('showcase_views')->count();
+
             return response()->json([
                 'data' => [
                     'overview' => [
@@ -104,12 +122,15 @@ class DashboardController extends Controller
                         'approved_showcases' => $approvedShowcases,
                         'pending_showcases' => $pendingShowcases,
                         'rejected_showcases' => $rejectedShowcases,
+                        'total_views' => $totalViews,
                     ],
                     'showcases_per_month' => $showcasesPerMonth,
                     'users_per_month' => $usersPerMonth,
                     'top_contributors' => $topContributors,
                     'showcases_by_category' => $showcasesByCategory,
                     'popular_tags' => $popularTags,
+                    'view_trends' => $viewTrends,
+                    'top_viewed_showcases' => $topViewedShowcases,
                 ]
             ]);
         } catch (\Exception $e) {

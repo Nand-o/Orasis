@@ -11,7 +11,8 @@ import {
     Tag,
     Award,
     BarChart3,
-    PieChart
+    PieChart,
+    Eye
 } from 'lucide-react';
 import adminService from '../../services/admin.service';
 
@@ -69,7 +70,7 @@ const AdminAnalyticsPage = () => {
         );
     }
 
-    const { overview, showcases_per_month, users_per_month, top_contributors, showcases_by_category, popular_tags } = analytics;
+    const { overview, showcases_per_month, users_per_month, top_contributors, showcases_by_category, popular_tags, top_viewed_showcases } = analytics;
 
     const StatCard = ({ icon: Icon, label, value, color, subtitle }) => (
         <motion.div
@@ -141,6 +142,35 @@ const AdminAnalyticsPage = () => {
                     color="red"
                 />
             </div>
+
+            {/* Total Views Card */}
+            {overview.total_views !== undefined && (
+                <div className="mb-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-8 text-white"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Eye className="w-8 h-8" />
+                                    <h3 className="text-xl font-semibold">Total Views</h3>
+                                </div>
+                                <p className="text-5xl font-bold mb-2">
+                                    {overview.total_views?.toLocaleString() || 0}
+                                </p>
+                                <p className="text-white/80 text-sm">
+                                    Across all approved showcases
+                                </p>
+                            </div>
+                            <div className="hidden md:block">
+                                <TrendingUp className="w-24 h-24 opacity-20" />
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Showcases Per Month */}
@@ -285,6 +315,58 @@ const AdminAnalyticsPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Top Viewed Showcases */}
+            {top_viewed_showcases && top_viewed_showcases.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            Most Viewed Showcases
+                        </h3>
+                    </div>
+                    <div className="space-y-4">
+                        {top_viewed_showcases.map((showcase, index) => (
+                            <motion.div
+                                key={showcase.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: index * 0.05 }}
+                                className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                            >
+                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white font-bold text-sm shrink-0">
+                                    {index + 1}
+                                </div>
+                                <img 
+                                    src={showcase.image_url} 
+                                    alt={showcase.title}
+                                    className="w-20 h-16 object-cover rounded-lg shrink-0"
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                        {showcase.title}
+                                    </p>
+                                    <div className="flex items-center gap-3 mt-1">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {showcase.category?.name || 'N/A'}
+                                        </p>
+                                        <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {showcase.user?.name || 'Unknown'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 shrink-0">
+                                    <Eye className="w-4 h-4" />
+                                    <span className="font-bold text-lg">{showcase.views_count?.toLocaleString() || 0}</span>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Popular Tags */}
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">

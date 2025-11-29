@@ -18,6 +18,8 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Lihat Showcase (yang approved) & Tag & Categories
 Route::get('/showcases', [ShowcaseController::class, 'index']);
+Route::get('/showcases/trending', [ShowcaseController::class, 'trending']);
+Route::get('/showcases/popular', [ShowcaseController::class, 'popular']);
 Route::get('/showcases/{id}', [ShowcaseController::class, 'show']);
 Route::get('/tags', [TagController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);

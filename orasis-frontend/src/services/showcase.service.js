@@ -114,6 +114,26 @@ const showcaseService = {
             throw error.response?.data || error.message;
         }
     },
+
+    // ===== GET TRENDING SHOWCASES =====
+    async getTrending() {
+        try {
+            const response = await api.get('/showcases/trending');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // ===== GET POPULAR SHOWCASES =====
+    async getPopular() {
+        try {
+            const response = await api.get('/showcases/popular');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
 };
 
 export default showcaseService;

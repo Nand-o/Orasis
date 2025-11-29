@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Heart, Share2, Bookmark } from 'lucide-react';
+import { ArrowUpRight, Heart, Share2, Bookmark, Eye } from 'lucide-react';
 import showcaseService from '../../services/showcase.service';
 import ShowcaseCard from './components/ShowcaseCard';
 import CollectionModal from '../collections/components/CollectionModal';
@@ -240,6 +240,14 @@ const DesignDetailPage = () => {
 
                     {/* Metadata */}
                     <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div>
+                            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Views</h3>
+                            <div className="flex items-center gap-2 text-gray-900 dark:text-white text-sm">
+                                <Eye className="w-4 h-4" />
+                                <span className="font-semibold">{design.views_count?.toLocaleString() || 0}</span>
+                            </div>
+                        </div>
+
                         <div>
                             <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Published</h3>
                             <div className="text-gray-900 dark:text-white text-sm">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Showcase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ShowcaseController extends Controller
 {
@@ -27,10 +28,13 @@ class ShowcaseController extends Controller
             });
         }
 
-        // Apply sorting - only 4 options (removed popular)
+        // Apply sorting
         switch ($sort) {
             case 'oldest':
                 $query->orderBy('created_at', 'asc');
+                break;
+            case 'most_viewed':
+                $query->orderBy('views_count', 'desc');
                 break;
             case 'title_asc':
                 $query->orderBy('title', 'asc');
@@ -120,11 +124,17 @@ class ShowcaseController extends Controller
             return response()->json(['message' => 'Showcase sedang dimoderasi.'], 403);
         }
 
-        // Get similar showcases (same category, exclude current, limit 4)
+        // Track view (if not owner and not admin)
+        if (!$isOwner && !$isAdmin) {
+            $this->trackView($showcase);
+        }
+
+        // Get similar showcases (same category, exclude current, limit 4, order by views)
         $similar = Showcase::with(['user', 'tags', 'category'])
             ->where('category_id', $showcase->category_id)
             ->where('id', '!=', $id)
             ->where('status', 'approved')
+            ->orderBy('views_count', 'desc')
             ->limit(4)
             ->get();
 
@@ -132,6 +142,48 @@ class ShowcaseController extends Controller
             'data' => $showcase,
             'similar' => $similar
         ]);
+    }
+
+    /**
+     * Track showcase view (prevent duplicate within 1 hour per showcase)
+     */
+    private function trackView($showcase)
+    {
+        $userId = auth('sanctum')->id();
+        $ipAddress = request()->ip();
+        $userAgent = request()->userAgent();
+        
+        // Check if this SPECIFIC showcase was already viewed in last 1 hour (prevent spam/double-calls)
+        // Each showcase has independent cooldown - user can view multiple showcases
+        $existingView = DB::table('showcase_views')
+            ->where('showcase_id', $showcase->id) // IMPORTANT: Check for THIS showcase only
+            ->where('viewed_at', '>', now()->subHour()) // 1 hour cooldown per showcase
+            ->where(function($query) use ($userId, $ipAddress) {
+                if ($userId) {
+                    // For logged-in users, check by user_id
+                    $query->where('user_id', $userId);
+                } else {
+                    // For guests, check by IP address
+                    $query->where('ip_address', $ipAddress);
+                }
+            })
+            ->exists();
+        
+        if (!$existingView) {
+            // Insert view record
+            DB::table('showcase_views')->insert([
+                'showcase_id' => $showcase->id,
+                'user_id' => $userId,
+                'ip_address' => $ipAddress,
+                'user_agent' => $userAgent,
+                'viewed_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            
+            // Increment views_count
+            $showcase->increment('views_count');
+        }
     }
 
     // USER: Update showcase sendiri
@@ -197,5 +249,34 @@ class ShowcaseController extends Controller
 
         $showcase->delete();
         return response()->json(['message' => 'Showcase deleted'], 200);
+    }
+
+    /**
+     * Get trending showcases (most viewed in last 7 days)
+     */
+    public function trending()
+    {
+        $showcases = Showcase::with(['user', 'tags', 'category'])
+            ->where('status', 'approved')
+            ->where('created_at', '>', now()->subDays(7))
+            ->orderBy('views_count', 'desc')
+            ->limit(12)
+            ->get();
+
+        return response()->json(['data' => $showcases]);
+    }
+
+    /**
+     * Get popular showcases (all time most viewed)
+     */
+    public function popular()
+    {
+        $showcases = Showcase::with(['user', 'tags', 'category'])
+            ->where('status', 'approved')
+            ->orderBy('views_count', 'desc')
+            ->limit(12)
+            ->get();
+
+        return response()->json(['data' => $showcases]);
     }
 }

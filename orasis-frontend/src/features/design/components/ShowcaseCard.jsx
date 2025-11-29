@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CollectionModal from '../../collections/components/CollectionModal';
 import { useCollection } from '../../../context/CollectionContext';
@@ -47,11 +47,16 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                             <span className="text-sm font-bold">{design.title.charAt(0)}</span>
                         </div>
 
-                        <div>
-                            <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                                 {design.title}
                             </h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-medium">{design.category?.name || 'N/A'}</p>
+                            {/* View Count */}
+                            <div className="flex items-center gap-1 mt-1 text-xs text-gray-400 dark:text-gray-500">
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>{design.views_count?.toLocaleString() || 0} views</span>
+                            </div>
                         </div>
                     </div>
 
