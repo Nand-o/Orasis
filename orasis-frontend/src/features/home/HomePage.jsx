@@ -30,15 +30,18 @@ const HomePage = ({ searchValue }) => {
     // Function to fetch showcases (wrapped in useCallback to avoid recreating on each render)
     const fetchShowcases = useCallback(async (forceRefresh = false) => {
         try {
-            // Check cache first using cache manager (skip if force refresh)
-            if (!forceRefresh) {
-                const cachedData = cacheManager.getShowcases();
+            // Check cache first using cache manager
+            const cachedData = cacheManager.getShowcases();
+            
+            if (cachedData && !forceRefresh) {
+                // Show cached data immediately (optimistic UI)
+                setShowcases(cachedData);
+                setLoading(false);
                 
-                if (cachedData) {
-                    setShowcases(cachedData);
-                    setLoading(false);
-                    return;
-                }
+                // Still fetch fresh data in background to update views counter
+                // This runs silently without blocking UI
+                fetchFreshDataInBackground();
+                return;
             }
             
             setLoading(true);
@@ -80,17 +83,52 @@ const HomePage = ({ searchValue }) => {
         }
     }, []);
 
+    // Background fetch function - updates data silently without showing loading
+    const fetchFreshDataInBackground = useCallback(async () => {
+        try {
+            let allShowcases = [];
+            let page = 1;
+            let hasMorePages = true;
+            
+            while (hasMorePages) {
+                const data = await showcaseService.getAll({ page, per_page: 50 });
+                allShowcases = [...allShowcases, ...data.data];
+                hasMorePages = data.current_page < data.last_page;
+                page++;
+            }
+            
+            const transformedData = allShowcases.map(showcase => ({
+                ...showcase,
+                imageUrl: showcase.image_url,
+                urlWebsite: showcase.url_website,
+            }));
+            
+            // Update cache and state silently
+            cacheManager.setShowcases(transformedData);
+            setShowcases(transformedData);
+        } catch (err) {
+            // Fail silently - user still sees cached data
+            console.log('Background refresh failed, using cached data');
+        }
+    }, []);
+
     useEffect(() => {
         document.title = 'Inspiration | Orasis';
         
-        // Always fetch fresh data when component mounts (user navigates to homepage)
-        // This ensures view counts are always up-to-date
-        fetchShowcases(true); // Force refresh to bypass cache
+        // Fetch showcases with cache-first strategy
+        // This will show cached data instantly, then refresh in background
+        fetchShowcases(false);
         
         // Also listen for visibility changes (tab switching)
         const handleVisibilityChange = () => {
             if (!document.hidden) {
-                fetchShowcases(true);
+                // When user returns to tab, refresh data in background
+                const cachedData = cacheManager.getShowcases();
+                if (cachedData) {
+                    fetchFreshDataInBackground();
+                } else {
+                    fetchShowcases(false);
+                }
             }
         };
 

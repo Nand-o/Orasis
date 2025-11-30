@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     SlidersHorizontal, 
@@ -8,14 +8,8 @@ import {
     ArrowUpDown,
     Tag as TagIcon
 } from 'lucide-react';
-
-// Categories available in database
-const categories = [
-    "Landing Page",
-    "SaaS",
-    "E-commerce",
-    "Portfolio"
-];
+import categoryService from '../../../services/category.service';
+import tagService from '../../../services/tag.service';
 
 // Sort options
 const sortOptions = [
@@ -24,12 +18,6 @@ const sortOptions = [
     { value: 'most_viewed', label: 'Most Viewed' },
     { value: 'title_asc', label: 'Title A-Z' },
     { value: 'title_desc', label: 'Title Z-A' }
-];
-
-// Common tags (will be populated from API data)
-const commonTags = [
-    'modern', 'minimal', 'dark', 'colorful', 'professional',
-    'creative', 'clean', 'responsive', 'dashboard', 'landing'
 ];
 
 const FilterBar = ({ 
@@ -46,6 +34,55 @@ const FilterBar = ({
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
+    
+    // State for categories and tags from database
+    // Initialize with cached or default values for instant render
+    const [categories, setCategories] = useState(() => {
+        const cached = sessionStorage.getItem('orasis_categories');
+        return cached ? JSON.parse(cached) : ['Landing Page', 'SaaS', 'E-commerce', 'Portfolio'];
+    });
+    const [availableTags, setAvailableTags] = useState(() => {
+        const cached = sessionStorage.getItem('orasis_tags');
+        return cached ? JSON.parse(cached) : ['modern', 'minimal', 'dark', 'colorful', 'professional', 'creative', 'clean', 'responsive'];
+    });
+    const [loadingCategories, setLoadingCategories] = useState(false);
+    const [loadingTags, setLoadingTags] = useState(false);
+
+    // Fetch categories and tags from database (background refresh)
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                // Fetch fresh data (no loading state since we have initial values)
+                const cats = await categoryService.getAll();
+                const filteredCategories = cats.filter(cat => cat.name !== 'Mobile').map(cat => cat.name);
+                
+                // Update cache and state silently
+                sessionStorage.setItem('orasis_categories', JSON.stringify(filteredCategories));
+                setCategories(filteredCategories);
+            } catch (error) {
+                console.error('Failed to load categories:', error);
+                // Keep existing state (from cache or default)
+            }
+        };
+
+        const fetchTags = async () => {
+            try {
+                // Fetch fresh data (no loading state since we have initial values)
+                const tags = await tagService.getAll();
+                const tagNames = tags.map(tag => tag.name);
+                
+                // Update cache and state silently
+                sessionStorage.setItem('orasis_tags', JSON.stringify(tagNames));
+                setAvailableTags(tagNames);
+            } catch (error) {
+                console.error('Failed to load tags:', error);
+                // Keep existing state (from cache or default)
+            }
+        };
+
+        fetchCategories();
+        fetchTags();
+    }, []);
 
     const toggleTag = (tag) => {
         if (selectedTags.includes(tag)) {
@@ -255,7 +292,7 @@ const FilterBar = ({
                                     )}
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    {commonTags.map((tag) => (
+                                    {availableTags.map((tag) => (
                                         <button
                                             key={tag}
                                             onClick={() => toggleTag(tag)}
