@@ -1124,67 +1124,6 @@ APP_URL=http://localhost:8000
 
 ---
 
-## 🧪 Testing
-
-### Manual Testing Checklist
-
-#### Authentication Flow
-- [ ] Register new user
-- [ ] Login dengan valid credentials
-- [ ] Login dengan invalid credentials (error handling)
-- [ ] Logout functionality
-- [ ] Protected routes redirect when not authenticated
-- [ ] Admin routes redirect for non-admin users
-
-#### Public Features
-- [ ] Browse showcases (homepage)
-- [ ] Search showcases
-- [ ] Filter by category
-- [ ] Filter by tags (multiple)
-- [ ] Sort showcases (newest, oldest, most viewed, title)
-- [ ] View showcase detail
-- [ ] Views counter increments
-- [ ] Dark mode toggle persists
-
-#### User Features
-- [ ] Upload new showcase
-- [ ] Edit own showcase (pending/rejected only)
-- [ ] Delete own showcase
-- [ ] Create collection
-- [ ] Add showcase to collection
-- [ ] Remove showcase from collection
-- [ ] Delete collection
-- [ ] Edit profile
-- [ ] Change password
-- [ ] View dashboard stats
-
-#### Admin Features
-- [ ] View admin dashboard analytics
-- [ ] View all users
-- [ ] Edit user details
-- [ ] Delete user
-- [ ] Change user role (admin ↔ user)
-- [ ] View pending showcases
-- [ ] Approve showcase
-- [ ] Reject showcase dengan reason
-- [ ] Bulk approve multiple showcases
-- [ ] Bulk reject multiple showcases
-- [ ] View all showcases (filter by status)
-
-### Automated Testing (Future)
-
-```bash
-# Backend (PHPUnit)
-cd orasis-backend
-php artisan test
-
-# Frontend (Vitest)
-cd orasis-frontend
-npm run test
-```
-
----
-
 ## 📝 Development Workflow & Git Guidelines
 
 ### Branch Strategy
@@ -1394,8 +1333,8 @@ npm run build
 | Name | Role | GitHub |
 |------|------|--------|
 | **Ernando Febrian** | Frontend Developer | [@Nand-o](https://github.com/Nand-o) |
-| **Faris Maulana** | Database & Integration Specialist | [@faris](https://github.com/faris) |
-| **Candra Afriansyah** | Backend Developer | [@candra](https://github.com/candra) |
+| **Faris Maulana** | Database & Integration Specialist | [@faris](https://github.com/farismlna) |
+| **Candra Afriansyah** | Backend Developer | [@candra](https://github.com/CanLikez) |
 
 ---
 
@@ -1455,31 +1394,6 @@ Terima kasih kepada:
 - **Database Tables:** 8 tables dengan relationships
 - **Development Time:** 2 bulan (November - Desember 2024)
 - **Contributors:** 3 developers
-
----
-
-## 🔮 Future Roadmap
-
-### Phase 1 (Current)
-- ✅ Basic CRUD operations
-- ✅ Authentication & authorization
-- ✅ Showcase upload & moderation
-- ✅ Collections feature
-- ✅ Admin dashboard
-
-### Phase 2 (Future)
-- [ ] User profile customization
-- [ ] Showcase likes & favorites
-- [ ] Comment system
-- [ ] Follow/unfollow users
-- [ ] Notifications system
-- [ ] Email verification
-- [ ] Real-time chat/messaging
-- [ ] Advanced analytics (charts)
-- [ ] Export collections to PDF
-- [ ] Public API for developers
-- [ ] Mobile app (React Native)
-- [ ] PWA support
 
 ---
 
