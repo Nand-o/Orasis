@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
 import Spinner from '../../components/ui/Spinner';
 
-const SearchResultPage = () => {
+const ShowcaseSearchPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const query = searchParams.get('q') || '';
     const navigate = useNavigate();
@@ -253,4 +253,4 @@ const SearchResultPage = () => {
     );
 };
 
-export default SearchResultPage;
+export default ShowcaseSearchPage;

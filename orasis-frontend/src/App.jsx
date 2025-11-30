@@ -3,16 +3,16 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Layout from './components/layout/Layout';
 import HomePage from './features/home/HomePage';
-import DesignDetailPage from './features/design/DesignDetailPage';
-import SearchResultPage from './features/design/SearchResultPage';
+import ShowcaseDetailPage from './features/showcase/ShowcaseDetailPage';
+import ShowcaseSearchPage from './features/showcase/ShowcaseSearchPage';
 import AboutPage from './features/about/AboutPage';
 import CollectionPage from './features/collections/CollectionPage';
-import ShowcaseFormPage from './features/design/ShowcaseFormPage';
+import ShowcaseFormPage from './features/showcase/ShowcaseFormPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/profile/DashboardPage';
-import AdminDashboardPage from './features/profile/AdminDashboardPage';
-import AdminPendingReviewPage from './features/profile/AdminPendingReviewPage';
+import AdminDashboardPage from './features/admin/AdminDashboardPage';
+import AdminPendingReviewPage from './features/admin/AdminPendingReviewPage';
 import AdminUsersPage from './features/admin/AdminUsersPage';
 import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
 import CategoryManagementPage from './features/admin/CategoryManagementPage';
@@ -36,7 +36,7 @@ const PageWrapper = ({ children }) => {
 };
 
 // Import Overview Pages and Dashboard Layout
-import AdminOverviewPage from './features/profile/AdminOverviewPage';
+import AdminOverviewPage from './features/admin/AdminOverviewPage';
 import UserOverviewPage from './features/profile/UserOverviewPage';
 import DashboardLayout from './components/layout/DashboardLayout';
 
@@ -73,7 +73,7 @@ const AnimatedRoutes = ({ searchValue }) => {
           path="/design/:id"
           element={
             <PageWrapper>
-              <DesignDetailPage />
+              <ShowcaseDetailPage />
             </PageWrapper>
           }
         />
@@ -81,7 +81,7 @@ const AnimatedRoutes = ({ searchValue }) => {
           path="/search"
           element={
             <PageWrapper>
-              <SearchResultPage />
+              <ShowcaseSearchPage />
             </PageWrapper>
           }
         />

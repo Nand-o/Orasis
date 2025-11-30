@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import HeroSection from './components/HeroSection';
 import FilterBar from './components/FilterBar';
-import ShowcaseCard from '../design/components/ShowcaseCard';
+import ShowcaseCard from '../showcase/components/ShowcaseCard';
 import Pagination from '../../components/ui/Pagination';
 import { ShowcaseCardSkeleton } from '../../components/ui/Skeleton';
 import { useNavigate, useSearchParams } from 'react-router-dom';

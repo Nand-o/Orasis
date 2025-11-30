@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCollection } from '../../context/CollectionContext';
 import userService from '../../services/user.service';
 import adminService from '../../services/admin.service';
-import ShowcaseCard from '../design/components/ShowcaseCard';
+import ShowcaseCard from '../showcase/components/ShowcaseCard';
 import CollectionCard from '../collections/components/CollectionCard';
 import Spinner from '../../components/ui/Spinner';
 import StatusBadge from '../../components/ui/StatusBadge';

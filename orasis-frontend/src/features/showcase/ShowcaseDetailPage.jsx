@@ -7,7 +7,7 @@ import ShowcaseCard from './components/ShowcaseCard';
 import CollectionModal from '../collections/components/CollectionModal';
 import { useCollection } from '../../context/CollectionContext';
 
-const DesignDetailPage = () => {
+const ShowcaseDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [design, setDesign] = useState(null);
@@ -364,4 +364,4 @@ const DesignDetailPage = () => {
     );
 };
 
-export default DesignDetailPage;
+export default ShowcaseDetailPage;
