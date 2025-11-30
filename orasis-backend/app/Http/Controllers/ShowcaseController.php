@@ -63,6 +63,8 @@ class ShowcaseController extends Controller
             'url_website' => 'required|url',
             'image_url' => 'nullable|url',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // 5MB max
+            'logo_url' => 'nullable|url',
+            'logo_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048', // 2MB max for logo
             'category_id' => 'required|exists:categories,id',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id'
@@ -85,6 +87,16 @@ class ShowcaseController extends Controller
             ], 422);
         }
 
+        // Handle logo upload (optional)
+        $logoUrl = $validated['logo_url'] ?? null;
+        
+        if ($request->hasFile('logo_file')) {
+            $logoFile = $request->file('logo_file');
+            $logoFilename = 'logo_' . time() . '_' . uniqid() . '.' . $logoFile->getClientOriginalExtension();
+            $logoPath = $logoFile->storeAs('logos', $logoFilename, 'public');
+            $logoUrl = asset('storage/' . $logoPath);
+        }
+
         // Cek role user (jika admin maka langsung approve upload)
         $initialStatus = $request->user()->role === 'admin' ? 'approved' : 'pending';
 
@@ -94,6 +106,7 @@ class ShowcaseController extends Controller
             'description' => $validated['description'],
             'url_website' => $validated['url_website'],
             'image_url' => $imageUrl,
+            'logo_url' => $logoUrl,
             'category_id' => $validated['category_id'],
             'status' => $initialStatus
         ]);
@@ -186,6 +199,31 @@ class ShowcaseController extends Controller
         }
     }
 
+    /**
+     * Public endpoint untuk track view (dipanggil terpisah dari show)
+     * Ini memungkinkan tracking view bahkan ketika data diambil dari cache
+     */
+    public function trackViewEndpoint($id)
+    {
+        $showcase = Showcase::findOrFail($id);
+
+        // cegah intip status pending kecuali pemilik/admin
+        $user = request()->user('sanctum');
+        $isOwner = $user && $user->id === $showcase->user_id;
+        $isAdmin = $user && $user->role === 'admin';
+
+        if ($showcase->status !== 'approved' && !$isOwner && !$isAdmin) {
+            return response()->json(['message' => 'Showcase tidak ditemukan.'], 404);
+        }
+
+        // Track view (if not owner and not admin)
+        if (!$isOwner && !$isAdmin) {
+            $this->trackView($showcase);
+        }
+
+        return response()->json(['message' => 'View tracked successfully'], 200);
+    }
+
     // USER: Update showcase sendiri
     public function update(Request $request, $id)
     {
@@ -202,6 +240,8 @@ class ShowcaseController extends Controller
             'url_website' => 'sometimes|url',
             'image_url' => 'nullable|url',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'logo_url' => 'nullable|url',
+            'logo_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
             'category_id' => 'sometimes|exists:categories,id',
             'tags' => 'nullable|array'
         ]);
@@ -220,6 +260,22 @@ class ShowcaseController extends Controller
             $validated['image_url'] = asset('storage/' . $path);
         } elseif ($request->has('image_url')) {
             $validated['image_url'] = $request->image_url;
+        }
+
+        // Handle logo upload
+        if ($request->hasFile('logo_file')) {
+            // Delete old logo if it's stored locally
+            if ($showcase->logo_url && str_contains($showcase->logo_url, '/storage/logos/')) {
+                $oldLogoPath = str_replace(asset('storage/'), '', $showcase->logo_url);
+                \Storage::disk('public')->delete($oldLogoPath);
+            }
+
+            $logoFile = $request->file('logo_file');
+            $logoFilename = 'logo_' . time() . '_' . uniqid() . '.' . $logoFile->getClientOriginalExtension();
+            $logoPath = $logoFile->storeAs('logos', $logoFilename, 'public');
+            $validated['logo_url'] = asset('storage/' . $logoPath);
+        } elseif ($request->has('logo_url')) {
+            $validated['logo_url'] = $request->logo_url;
         }
 
         $showcase->update($validated);

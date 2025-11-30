@@ -31,7 +31,6 @@ const AdminAnalyticsPage = () => {
             setLoading(true);
             setError(null);
             const response = await adminService.getAnalytics();
-            console.log('Analytics response:', response);
             setAnalytics(response.data);
         } catch (error) {
             console.error('Failed to fetch analytics:', error);
@@ -149,7 +148,7 @@ const AdminAnalyticsPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-8 text-white"
+                        className="bg-linear-to-br from-purple-500 to-indigo-600 rounded-2xl p-8 text-white"
                     >
                         <div className="flex items-center justify-between">
                             <div>
@@ -336,7 +335,7 @@ const AdminAnalyticsPage = () => {
                                 transition={{ duration: 0.3, delay: index * 0.05 }}
                                 className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                             >
-                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white font-bold text-sm shrink-0">
+                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-linear-to-br from-purple-500 to-indigo-600 text-white font-bold text-sm shrink-0">
                                     {index + 1}
                                 </div>
                                 <img 

@@ -165,7 +165,6 @@ const ProfilePage = () => {
         setPasswordMessage({ type: '', text: '' });
 
         try {
-            console.log('🔐 Sending password change request:', passwordForm);
             await userService.changePassword(passwordForm);
             setPasswordMessage({ type: 'success', text: 'Password changed successfully!' });
             // Clear form

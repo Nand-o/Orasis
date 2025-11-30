@@ -93,7 +93,6 @@ const RegisterPage = () => {
 
         try {
             const response = await register(formData);
-            console.log('✅ Registration successful:', response);
             
             // Show success message
             setSuccess(true);

@@ -134,6 +134,18 @@ const showcaseService = {
             throw error.response?.data || error.message;
         }
     },
+
+    // ===== TRACK VIEW (Separate endpoint for cache compatibility) =====
+    async trackView(id) {
+        try {
+            const response = await api.post(`/showcases/${id}/track-view`);
+            return response.data;
+        } catch (error) {
+            // Silently fail - view tracking shouldn't break user experience
+            console.warn('Failed to track view:', error);
+            return null;
+        }
+    },
 };
 
 export default showcaseService;

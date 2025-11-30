@@ -33,12 +33,14 @@ const DesignDetailPage = () => {
                 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
                 
                 if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
-                    console.log(`✅ Using cached detail for showcase ${id}`);
                     const cached = JSON.parse(cachedData);
                     setDesign(cached.design);
                     setSimilarDesigns(cached.similar);
                     document.title = `${cached.design.title} | Orasis`;
                     setLoading(false);
+                    
+                    // Track view even when using cache
+                    showcaseService.trackView(id);
                     return;
                 }
                 

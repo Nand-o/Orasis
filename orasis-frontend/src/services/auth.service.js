@@ -19,18 +19,14 @@ const authService = {
     // ===== LOGIN =====
     async login(credentials) {
         try {
-            console.log('🔐 Attempting login with:', credentials.email);
             const response = await api.post('/login', credentials);
-            console.log('✅ Login response:', response.data);
             
             // Save token and user data to localStorage
             const token = response.data.access_token || response.data.token;
-            console.log('🎫 Token received:', token ? 'Yes' : 'No');
             
             if (token) {
                 localStorage.setItem('auth_token', token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
-                console.log('💾 Saved to localStorage - User:', response.data.user.name);
             }
             
             return response.data;

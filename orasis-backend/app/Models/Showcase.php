@@ -15,6 +15,7 @@ class Showcase extends Model
         'description',
         'url_website',
         'image_url',
+        'logo_url',
         'category_id',
         'status',
         'views_count',

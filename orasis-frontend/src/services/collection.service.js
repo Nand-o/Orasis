@@ -11,9 +11,6 @@ const getAuthToken = () => {
 // Helper: Get authorization headers
 const getAuthHeaders = () => {
   const token = getAuthToken();
-  if (!token) {
-    console.warn('⚠️ No auth token found in localStorage');
-  }
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
@@ -29,11 +26,9 @@ const collectionService = {
   getAll: async () => {
     try {
       const headers = getAuthHeaders();
-      console.log('📦 Fetching collections with headers:', headers);
       const response = await axios.get(`${API_URL}/collections`, {
         headers
       });
-      console.log('✅ Collections fetched:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching collections:', error.response?.data || error.message);

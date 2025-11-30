@@ -27,13 +27,17 @@ const ShowcaseFormPage = () => {
         description: '',
         url_website: '',
         image_url: '',
+        logo_url: '',
         category_id: '',
         tags: []
     });
 
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [logoFile, setLogoFile] = useState(null);
+    const [logoPreview, setLogoPreview] = useState(null);
     const [useUrlMode, setUseUrlMode] = useState(true);
+    const [useLogoUrlMode, setUseLogoUrlMode] = useState(true);
     const [errors, setErrors] = useState({});
     const [availableTags, setAvailableTags] = useState([]);
     const [loadingTags, setLoadingTags] = useState(true);
@@ -99,13 +103,18 @@ const ShowcaseFormPage = () => {
                 description: showcase.description,
                 url_website: showcase.url_website,
                 image_url: showcase.image_url,
+                logo_url: showcase.logo_url || '',
                 category_id: showcase.category_id || showcase.category?.id || '',
                 tags: showcase.tags ? showcase.tags.map(tag => tag.id) : []
             });
             setImagePreview(showcase.image_url);
+            setLogoPreview(showcase.logo_url);
             // If it's a stored image (not external URL), switch to upload mode
             if (showcase.image_url && !showcase.image_url.startsWith('http')) {
                 setUseUrlMode(false);
+            }
+            if (showcase.logo_url && !showcase.logo_url.startsWith('http')) {
+                setUseLogoUrlMode(false);
             }
         } catch (error) {
             console.error('Failed to load showcase:', error);
@@ -143,6 +152,19 @@ const ShowcaseFormPage = () => {
             if (!prev.image) return prev;
             const newErrors = { ...prev };
             delete newErrors.image;
+            return newErrors;
+        });
+    };
+
+    const handleLogoUpload = (file, preview) => {
+        setLogoFile(file);
+        setLogoPreview(preview);
+        setFormData(prev => ({ ...prev, logo_url: '' }));
+        // Clear logo error if any
+        setErrors(prev => {
+            if (!prev.logo) return prev;
+            const newErrors = { ...prev };
+            delete newErrors.logo;
             return newErrors;
         });
     };
@@ -224,14 +246,28 @@ const ShowcaseFormPage = () => {
         setUploadStatus('uploading');
 
         try {
-            // Use FormData if image file is present
-            if (imageFile) {
+            // Use FormData if image file or logo file is present
+            if (imageFile || logoFile) {
                 const formDataToSend = new FormData();
                 formDataToSend.append('title', formData.title.trim());
                 formDataToSend.append('description', formData.description.trim());
                 formDataToSend.append('url_website', formData.url_website.trim());
                 formDataToSend.append('category_id', formData.category_id);
-                formDataToSend.append('image_file', imageFile);
+                
+                // Add image (file or URL)
+                if (imageFile) {
+                    formDataToSend.append('image_file', imageFile);
+                } else if (formData.image_url) {
+                    formDataToSend.append('image_url', formData.image_url.trim());
+                }
+                
+                // Add logo (file or URL) - optional
+                if (logoFile) {
+                    formDataToSend.append('logo_file', logoFile);
+                } else if (formData.logo_url) {
+                    formDataToSend.append('logo_url', formData.logo_url.trim());
+                }
+                
                 // Add tags array
                 formData.tags.forEach((tagId, index) => {
                     formDataToSend.append(`tags[${index}]`, tagId);
@@ -267,6 +303,7 @@ const ShowcaseFormPage = () => {
                     description: formData.description.trim(),
                     url_website: formData.url_website.trim(),
                     image_url: formData.image_url.trim(),
+                    logo_url: formData.logo_url ? formData.logo_url.trim() : '',
                     category_id: formData.category_id,
                     tags: formData.tags
                 };
@@ -554,6 +591,82 @@ const ShowcaseFormPage = () => {
                                         error={errors.image}
                                         maxSize={5}
                                         acceptedFormats={['image/jpeg', 'image/png', 'image/jpg', 'image/webp']}
+                                    />
+                                )}
+                            </div>
+
+                            {/* Logo Upload/URL */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Website Logo <span className="text-gray-400 text-xs font-normal">(Optional)</span>
+                                </label>
+
+                                {/* Toggle between URL and Upload */}
+                                <div className="flex items-center gap-4 mb-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setUseLogoUrlMode(true)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                                            useLogoUrlMode
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                        }`}
+                                    >
+                                        Use URL
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setUseLogoUrlMode(false)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                                            !useLogoUrlMode
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                        }`}
+                                    >
+                                        Upload File
+                                    </button>
+                                </div>
+
+                                {useLogoUrlMode ? (
+                                    <>
+                                        <input
+                                            type="url"
+                                            id="logo_url"
+                                            name="logo_url"
+                                            value={formData.logo_url}
+                                            onChange={handleInputChange}
+                                            placeholder="https://example.com/logo.png"
+                                            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                                        />
+                                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                            Add a logo to personalize your showcase card
+                                        </p>
+                                        
+                                        {/* URL Logo Preview */}
+                                        {formData.logo_url && isValidUrl(formData.logo_url) && (
+                                            <div className="mt-4">
+                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
+                                                <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-4">
+                                                    <img 
+                                                        src={formData.logo_url} 
+                                                        alt="Logo Preview" 
+                                                        className="w-full h-full object-contain"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <ImageUpload
+                                        value={logoPreview}
+                                        onChange={handleLogoUpload}
+                                        maxSize={2}
+                                        acceptedFormats={['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/svg+xml']}
+                                        aspectRatio={1}
+                                        helperText="Recommended: Square image (e.g., 512x512px). Max 2MB. Supports JPG, PNG, WebP, SVG."
                                     />
                                 )}
                             </div>

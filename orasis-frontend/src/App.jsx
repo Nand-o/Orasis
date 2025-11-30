@@ -7,8 +7,6 @@ import DesignDetailPage from './features/design/DesignDetailPage';
 import SearchResultPage from './features/design/SearchResultPage';
 import AboutPage from './features/about/AboutPage';
 import CollectionPage from './features/collections/CollectionPage';
-import CollectionTestPage from './features/collections/CollectionTestPage';
-import ShowcaseTestPage from './features/design/ShowcaseTestPage';
 import ShowcaseFormPage from './features/design/ShowcaseFormPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
@@ -116,22 +114,6 @@ const AnimatedRoutes = ({ searchValue }) => {
           element={
             <PageWrapper>
               <ShowcaseFormPage />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/test-crud"
-          element={
-            <PageWrapper>
-              <ShowcaseTestPage />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/test-collections"
-          element={
-            <PageWrapper>
-              <CollectionTestPage />
             </PageWrapper>
           }
         />
