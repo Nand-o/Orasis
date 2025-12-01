@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff, Camera } from 'lucide-react';
+import { User, Mail, Lock, Save, Eye, EyeOff, Camera } from 'lucide-react';
 import userService from '../../services/user.service';
 import { useAuth } from '../../context/AuthContext';
 import Spinner from '../../components/ui/Spinner';
@@ -9,7 +8,6 @@ import CircularImageCropper from '../../components/ui/CircularImageCropper';
 
 const ProfilePage = () => {
     const { user, updateUser } = useAuth();
-    const navigate = useNavigate();
 
     // Tab State
     const [activeTab, setActiveTab] = useState('profile');
