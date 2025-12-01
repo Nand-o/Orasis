@@ -37,12 +37,13 @@ const Contact = () => {
                 </div>
 
                 <div className='flex flex-col items-center text-center'>
-                    <p className='font-family-general text-[10px] uppercase'>Join Zentry</p>
+                    <p className='font-family-general text-[10px] uppercase'>Get in Touch</p>
                     <p className='special-font mt-10 w-full font-family-zentry text-5xl leading-[0.9] md:text-[6rem]'>
-                        Let's b<b>u</b>ild <br /> some<b>t</b>hing <br /> gre<b>a</b>t t<b>o</b>gether.</p>
-                    <Button 
+                        Re<b>a</b>dy <br /> to sho<b>w</b>case <br /> y<b>o</b>ur tale<b>n</b>t?</p>
+                    <Button
                         title='contact us'
                         containerClass='mt-10 cursor-pointer'
+                        to='#'
                     />
                 </div>
             </div>

@@ -30,15 +30,15 @@ const Hero = () => {
     }
 
     useEffect(() => {
-        if(loadedVideos === totalVideos - 1) {
+        if (loadedVideos === totalVideos - 1) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setisLoading(false);
         }
     }, [loadedVideos]);
 
     useGSAP(() => {
-        if(hasClicked) {
-            gsap.set('#next-video', { visibility: 'visible'})
+        if (hasClicked) {
+            gsap.set('#next-video', { visibility: 'visible' })
 
             gsap.to('#next-video', {
                 transformOrigin: 'center center',
@@ -57,7 +57,7 @@ const Hero = () => {
                 ease: 'power1.inOut',
             })
         }
-    }, {dependencies: [currentIndex], revertOnUpdate: true});
+    }, { dependencies: [currentIndex], revertOnUpdate: true });
 
     useGSAP(() => {
         gsap.set('#video-frame', {
@@ -82,7 +82,7 @@ const Hero = () => {
 
 
     return (
-        <div className='relative h-dvh w-screen overflow-x-hidden'>
+        <div id='hero' className='relative h-dvh w-screen overflow-x-hidden'>
 
             {isLoading && (
                 <div className='flex-center absolute z-100 h-dvh w-screen overflow-hidden bg-violet-50'>
@@ -128,20 +128,20 @@ const Hero = () => {
                     />
                 </div>
                 <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75'>
-                    G<b>a</b>ming
+                    <b>O</b>rasis
                 </h1>
 
                 <div className='absolute left-0 top-0 z-40 size-full'>
                     <div className='mt-24 px-5 sm:px-10'>
-                        <h1 className='special-font hero-heading text-blue-100'>redefi<b>n</b>e</h1>
-                        <p className='mb-5 max-w-64 font-family-robert-regular text-blue-100'>Enter the Metagame Layer <br /> Unleash the Play Economy</p>
-                        <Button id='watch-trailer' title='Watch Trailer' leftIcon={<TiLocationArrow />} containerClass='!bg-yellow-300 flex-center gap-1'/>
+                        <h1 className='special-font hero-heading text-blue-100'>i<b>n</b>spire</h1>
+                        <p className='mb-5 max-w-64 font-family-robert-regular text-blue-100'>Discover the world's best design inspiration. Curated for designers, by designers.</p>
+                        <Button id='register-button' title='Register Now!' leftIcon={<TiLocationArrow />} containerClass='!bg-yellow-300 flex-center gap-1' to='/register' />
                     </div>
                 </div>
             </div>
             <h1 className='special-font hero-heading absolute bottom-5 right-5 text-black'>
-                    G<b>a</b>ming
-                </h1>
+                <b>O</b>rasis
+            </h1>
         </div>
     )
 }

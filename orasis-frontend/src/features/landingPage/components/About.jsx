@@ -30,16 +30,16 @@ const About = () => {
         <div id='about' className='min-h-screen w-screen'>
             <div className='relative mb-8 mt-36 flex flex-col items-center gap-5'>
                 <h2 className='font-family-general text-sm uppercase md:text-[10px]'>
-                    Welcome to Zentry</h2>
+                    Welcome to Orasis</h2>
 
-                <AnimationTitle 
-                    title="Disc<b>o</b>ver the world's <br /> l<b>a</b>rgest shared adventure" 
+                <AnimationTitle
+                    title="Disc<b>o</b>ver the world's <br /> f<b>i</b>nest design inspiration"
                     containerClass='mt-5 !text-black text-center'
                 />
 
                 <div className='about-subtext'>
-                    <p>The Game of Games begins-your life, now an epic MMORPG</p>
-                    <p>Zentry unites every player from countless games and platforms</p>
+                    <p>Your daily source of inspiration curated for creativity.</p>
+                    <p>Orasis unites designers and developers to build better digital experiences.</p>
                 </div>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { TiLocationArrow } from 'react-icons/ti';
+import { useNavigate } from 'react-router-dom';
 
 const BentoTilt = ({ children, className = '' }) => {
     const [transformStyle, settransformStyle] = useState('');
@@ -26,7 +27,7 @@ const BentoTilt = ({ children, className = '' }) => {
     };
 
     return (
-        <div ref={itemRef} className={`border-hsla ${className}`} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{transform: transformStyle}}>
+        <div ref={itemRef} className={`border-hsla ${className}`} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{ transform: transformStyle }}>
             {children}
         </div>
     )
@@ -55,23 +56,24 @@ const BentoCard = ({ src, title, description }) => {
 }
 
 const Features = () => {
+    const navigate = useNavigate();
+
     return (
-        <section className='bg-black pb-52'>
+        <section id='features' className='bg-black pb-52'>
             <div className='container mx-auto px-3 md:px-10'>
                 <div className='px-5 py-32'>
-                    <p className='font-family-circular-web text-lg text-blue-50'>Into the Metagame Layer</p>
+                    <p className='font-family-circular-web text-lg text-blue-50'>Explore the Creative Universe</p>
                     <p className='max-w-md font-family-circular-web text-lg text-blue-50 opacity-50'>
-                        Immerse yourself in a rich and ever-expanding universe
-                        there a vibrant array of products converge into an interconnected
-                        overlay experience that transforms the way you interact on your world.
+                        Dive into a vast collection of design masterpieces. From mobile apps to landing pages,
+                        find the spark for your next big project.
                     </p>
                 </div>
 
                 <BentoTilt className='border-hsla relative mb-7 h-96 w-full overflow-hidden rounded-md md:h-[65vh]'>
                     <BentoCard
                         src='videos/feature-1.mp4'
-                        title={<>radia<b>n</b>t</>}
-                        description='A cross-platform metagame app, turning your activities across Web2 and Web3 games into a rewarding adventure.'
+                        title={<>inspi<b>r</b>ation</>}
+                        description='A curated gallery of top-tier web and mobile designs to fuel your creativity.'
                     />
                 </BentoTilt>
 
@@ -79,32 +81,35 @@ const Features = () => {
                     <BentoTilt className='bento-tilt_1 h-96 md:h-auto md:row-span-4 md:col-start-3 md:row-start-1 md:col-span-1'>
                         <BentoCard
                             src='videos/feature-2.mp4'
-                            title={<>zig<b>m</b>a</>}
-                            description='An anime and gaming-inspired NFT collection - the IP primed for expansion'
+                            title={<>collec<b>t</b>ions</>}
+                            description='Save and organize your favorite designs into personalized moodboards.'
                         />
                     </BentoTilt>
 
                     <BentoTilt className='bento-tilt_1 h-96 md:h-auto md:row-span-2 md:col-span-1'>
                         <BentoCard
                             src='videos/feature-3.mp4'
-                            title={<>n<b>e</b>xus</>}
-                            description="A gamified social hub, adding a new dimension of play to social interaction for Web3 communities."
+                            title={<>comm<b>u</b>nity</>}
+                            description="Connect with other designers and share your own masterpieces."
                         />
                     </BentoTilt>
 
                     <BentoTilt className='bento-tilt_1 h-96 md:h-auto md:row-span-2 md:col-span-1'>
                         <BentoCard
                             src="videos/feature-4.mp4"
-                            title={<>az<b>u</b>l</>}
-                            description="A cross-world AI Agent - elevating your gameplay to be more fun and productive."
+                            title={<>sea<b>r</b>ch</>}
+                            description="Powerful filtering to find exactly what you need in seconds."
                         />
                     </BentoTilt>
                 </div>
 
                 <div className="grid max-h-100 grid-cols-2 grid-rows-1 gap-7 mt-3">
                     <BentoTilt className="bento-tilt_2">
-                        <div className='flex size-full flex-col justify-between bg-violet-300 p-5'>
-                            <h1 className='bento-title special-font max-w-64 text-black'>M<b>o</b>re co<b>m</b>ing soo<b>n</b>!</h1>
+                        <div
+                            className='flex size-full flex-col justify-between bg-violet-300 p-5 cursor-pointer hover:bg-violet-400 transition-colors'
+                            onClick={() => navigate('/register')}
+                        >
+                            <h1 className='bento-title special-font max-w-64 text-black'>J<b>o</b>in <br /> <b>O</b>rasis <br /> <b>N</b>ow!</h1>
                             <TiLocationArrow className='m-5 scale-[5] self-end' style={{ fill: 'black' }} />
                         </div>
                     </BentoTilt>
