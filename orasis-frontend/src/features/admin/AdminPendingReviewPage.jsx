@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, Eye, Calendar, User as UserIcon, ExternalLink, AlertCircle, Square, CheckSquare } from 'lucide-react';
 import adminService from '../../services/admin.service';
-import { useAuth } from '../../context/AuthContext';
 import Spinner from '../../components/ui/Spinner';
 import cacheManager from '../../utils/cacheManager';
 
