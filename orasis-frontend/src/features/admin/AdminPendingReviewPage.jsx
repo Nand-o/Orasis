@@ -7,12 +7,11 @@ import Spinner from '../../components/ui/Spinner';
 import cacheManager from '../../utils/cacheManager';
 
 const AdminPendingReviewPage = () => {
-    const { user } = useAuth();
+    useAuth();
     const [pendingShowcases, setPendingShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
-    const [selectedShowcase, setSelectedShowcase] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
