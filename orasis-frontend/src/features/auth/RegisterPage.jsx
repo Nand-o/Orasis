@@ -92,7 +92,7 @@ const RegisterPage = () => {
         }
 
         try {
-            const response = await register(formData);
+            await register(formData);
             
             // Show success message
             setSuccess(true);
