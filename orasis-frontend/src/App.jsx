@@ -17,6 +17,7 @@ import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
 import CategoryManagementPage from './features/admin/CategoryManagementPage';
 import TagManagementPage from './features/admin/TagManagementPage';
 import ProfilePage from './features/profile/ProfilePage';
+import LandingPage from './features/landingPage/LandingPage';
 import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -42,11 +43,11 @@ import DashboardLayout from './components/layout/DashboardLayout';
 // Component to conditionally render dashboard based on user role
 const DashboardRouter = () => {
   const { user } = useAuth();
-  
+
   if (!user) {
     return <DashboardLayout><UserOverviewPage /></DashboardLayout>;
   }
-  
+
   return (
     <DashboardLayout>
       {user.role === 'admin' ? <AdminOverviewPage /> : <UserOverviewPage />}
@@ -62,6 +63,12 @@ const AnimatedRoutes = ({ searchValue }) => {
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"
+          element={
+            <LandingPage />
+          }
+        />
+        <Route
+          path="/home"
           element={
             <PageWrapper>
               <HomePage searchValue={searchValue} />
@@ -201,12 +208,13 @@ const AnimatedRoutes = ({ searchValue }) => {
 const ConditionalLayout = ({ children, searchValue, onSearchChange }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
-  
-  // Only Dashboard routes use their own layout (no main navbar)
-  if (isDashboardRoute) {
+  const isLandingPage = location.pathname === '/';
+
+  // Dashboard routes and Landing Page use their own layout (or no layout)
+  if (isDashboardRoute || isLandingPage) {
     return children;
   }
-  
+
   return (
     <Layout searchValue={searchValue} onSearchChange={onSearchChange}>
       {children}

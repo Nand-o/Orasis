@@ -26,5 +26,472 @@
         transform: translateY(0);
     }
     }
+
+    --font-family-zentry: 'zentry', sans-serif;
+    --font-family-general: 'general', sans-serif;
+    --font-family-circular-web: 'circular-web', sans-serif;
+    --font-family-robert-medium: 'robert-medium', sans-serif;
+    --font-family-robert-regular: 'robert-regular', sans-serif;
+
+    --color-blue-50: #DFDFF0;
+    --color-blue-75: #DFDFF2;
+    --color-blue-100: #F0F2FA;
+    --color-blue-200: #010101;
+    --color-blue-300: #4FB7DD;
+    --color-violet-300: #5724FF;
+    --color-yellow-100: #8E983F;
+    --color-yellow-300: #EDFF66;
+}
+
+
+body {
+    font-family: 'general', sans-serif;
+    width: 100dvw;
+    background-color: #dfdff0;
+    overflow-x: hidden;
+}
+
+
+@font-face {
+    font-family: 'circular-web';
+    src: url('/fonts/circularweb-book.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'general';
+    src: url('/fonts/general.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'robert-medium';
+    src: url('/fonts/robert-medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'robert-regular';
+    src: url('/fonts/robert-regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'zentry';
+    src: url('/fonts/zentry-regular.woff2') format('woff2');
+}
+
+/* === Kelas Utilitas Kustom === */
+.border-hsla {
+    border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mask-clip-path {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.sword-man-clip-path {
+    clip-path: polygon(16% 0, 89% 15%, 75% 100%, 0 97%);
+}
+
+.contact-clip-path-1 {
+    clip-path: polygon(25% 0%, 74% 0, 69% 64%, 34% 73%);
+}
+
+.contact-clip-path-2 {
+    clip-path: polygon(29% 15%, 85% 30%, 50% 100%, 10% 64%);
+}
+
+/* === Kelas Komponen === */
+.nav-hover-btn {
+    position: relative;
+    margin-left: theme(spacing.10);
+    font-family: var(--font-family-general);
+    font-size: theme(fontSize.xs);
+    text-transform: uppercase;
+    color: var(--color-blue-50);
+    cursor: pointer;
+}
+
+.nav-hover-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -0.125rem; /* -bottom-0.5 */
+    left: 0;
+    height: 2px;
+    width: 100%;
+    transform-origin: bottom right;
+    transform: scaleX(0);
+    background-color: theme(colors.white);
+    transition-property: transform;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.dark .nav-hover-btn::after {
+    background-color: theme(colors.white);
+}
+
+.nav-hover-btn:hover::after {
+    transform-origin: bottom left;
+    transform: scaleX(1);
+}
+
+.floating-nav {
+    background-color: black;
+    border-radius: theme(borderRadius.lg);
+    border-width: 1px;
+}
+
+.special-font b {
+    font-family: "Zentry", sans-serif;
+    font-feature-settings: "ss01" on;
+}
+
+.hero-heading {
+    text-transform: uppercase;
+    font-family: var(--font-family-zentry);
+    font-weight: 900; /* font-black */
+    font-size: theme(fontSize.5xl);
+}
+@media (min-width: 640px) { /* sm: */
+    .hero-heading {
+        right: theme(spacing.10);
+        font-size: theme(fontSize.7xl);
+    }
+}
+@media (min-width: 768px) { /* md: */
+    .hero-heading {
+        font-size: theme(fontSize.9xl);
+    }
+}
+@media (min-width: 1024px) { /* lg: */
+    .hero-heading {
+        font-size: 12rem;
+    }
+}
+
+.about-subtext {
+    position: absolute;
+    bottom: -80dvh;
+    left: 50%;
+    width: 100%;
+    max-width: 24rem; /* max-w-96 */
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-family-circular-web);
+    font-size: theme(fontSize.lg);
+}
+@media (min-width: 768px) { /* md: */
+    .about-subtext {
+        max-width: 34rem;
+    }
+}
+
+.about-image {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 20;
+    height: 60vh;
+    width: 24rem; /* w-96 */
+    transform-origin: center;
+    transform: translateX(-50%);
+    overflow: hidden;
+    border-radius: theme(borderRadius.3xl);
+}
+@media (min-width: 768px) { /* md: */
+    .about-image {
+        width: 30vw;
+    }
+}
+
+.animated-title {
+    display: flex;
+    flex-direction: column;
+    gap: theme(spacing.1);
+    font-size: theme(fontSize.7xl);
+    text-transform: uppercase;
+    line-height: .8;
+    color: theme(colors.white);
+}
+@media (min-width: 640px) { /* sm: */
+    .animated-title {
+        padding-left: theme(spacing.32);
+        padding-right: theme(spacing.32);
+    }
+}
+@media (min-width: 768px) { /* md: */
+    .animated-title {
+        font-size: 6rem;
+    }
+}
+
+.animated-word {
+    font-family: var(--font-family-zentry);
+    font-weight: 900; /* font-black */
+    opacity: 0;
+    transform: translate3d(10px, 51px, -60px) rotateY(60deg) rotateX(-40deg);
+    transform-origin: 50% 50% -150px !important;
+    will-change: opacity, transform;
+}
+
+.bento-tilt_1 {
+    position: relative;
+    grid-column: span 2 / span 2;
+    overflow: hidden;
+    border-radius: theme(borderRadius.md);
+    transition-property: transform;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1); /* ease-out */
+}
+
+.bento-tilt_2 {
+    position: relative;
+    grid-column: span 1 / span 1;
+    grid-row: span 1 / span 1;
+    overflow: hidden;
+    border-radius: theme(borderRadius.md);
+    transition-property: transform;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1); /* ease-out */
+}
+
+.bento-title {
+    text-transform: uppercase;
+    font-size: theme(fontSize.4xl);
+    font-weight: 900; /* font-black */
+    font-family: var(--font-family-zentry);
+}
+@media (min-width: 768px) { /* md: */
+    .bento-title {
+        font-size: theme(fontSize.6xl);
+    }
+}
+
+.story-img-container {
+    position: relative;
+    height: 90vh;
+    width: 100%;
+    filter: url("#flt_tag");
+}
+@media (min-width: 768px) { /* md: */
+    .story-img-container {
+        height: 100dvh;
+    }
+}
+
+.story-img-mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    clip-path: polygon(4% 0, 83% 21%, 100% 73%, 0% 100%);
+}
+@media (min-width: 768px) { /* md: */
+    .story-img-mask {
+        left: 20%;
+        top: -10%;
+        height: 80%; /* size-4/5 */
+        width: 80%;  /* size-4/5 */
+    }
+}
+
+.story-img-content {
+    position: absolute;
+    width: 100%;
+    height: 50dvh;
+    opacity: 1;
+    left: theme(spacing.10);
+    top: theme(spacing.16);
+    transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) scale(1);
+}
+@media (min-width: 768px) { /* md: */
+    .story-img-content {
+        height: 100dvh;
+        left: 0;
+        top: theme(spacing.10);
+    }
+}
+@media (min-width: 1024px) { /* lg: */
+    .story-img-content {
+        left: -300px;
+        top: -100px;
+    }
+}
+
+.gallery-img-container {
+    height: 16rem; /* size-64 */
+    width: 16rem;  /* size-64 */
+    overflow: hidden;
+    background-color: var(--color-violet-300);
+}
+
+.gallery-img {
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+}
+
+.gallery-img-4 {
+    border-radius: theme(borderRadius.lg);
+}
+@media (min-width: 640px) { /* sm: */
+    .gallery-img-4 {
+        height: 20rem; /* size-80 */
+        width: 20rem;  /* size-80 */
+    }
+}
+@media (min-width: 768px) { /* md: */
+    .gallery-img-4 {
+        height: 24rem; /* h-96 */
+        width: 25rem;
+    }
+}
+
+/* === Animasi & Komponen Terkait Animasi === */
+.indicator-line {
+    height: 0.25rem; /* h-1 */
+    width: 1px;
+    border-radius: 9999px; /* rounded-full */
+    background-color: theme(colors.white);
+    transition-property: all;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out */
+}
+
+.indicator-line.active {
+    animation: indicator-line 0.5s ease infinite;
+    animation-delay: calc(var(--animation-order) * 0.1s);
+}
+
+@keyframes indicator-line {
+    0% {
+        height: 4px;
+        transform: translateY(0px);
+    }
+    50% {
+        height: 16px;
+        transform: translateY(-4px);
+    }
+    100% {
+        height: 4px;
+        transform: translateY(0px);
+    }
+}
+
+/* === CSS Pihak Ketiga (Contoh: Uiverse.io) === */
+.three-body {
+    --uib-size: 35px;
+    --uib-speed: 0.8s;
+    --uib-color: #5d3fd3;
+    position: relative;
+    display: inline-block;
+    height: var(--uib-size);
+    width: var(--uib-size);
+    animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
+}
+
+.three-body__dot {
+    position: absolute;
+    height: 100%;
+    width: 30%;
+}
+
+.three-body__dot:after {
+    content: "";
+    position: absolute;
+    height: 0%;
+    width: 100%;
+    padding-bottom: 100%;
+    background-color: var(--uib-color);
+    border-radius: 50%;
+}
+
+.three-body__dot:nth-child(1) {
+    bottom: 5%;
+    left: 0;
+    transform: rotate(60deg);
+    transform-origin: 50% 85%;
+}
+
+.three-body__dot:nth-child(1)::after {
+    bottom: 0;
+    left: 0;
+    animation: wobble1 var(--uib-speed) infinite ease-in-out;
+    animation-delay: calc(var(--uib-speed) * -0.3);
+}
+
+.three-body__dot:nth-child(2) {
+    bottom: 5%;
+    right: 0;
+    transform: rotate(-60deg);
+    transform-origin: 50% 85%;
+}
+
+.three-body__dot:nth-child(2)::after {
+    bottom: 0;
+    left: 0;
+    animation: wobble1 var(--uib-speed) infinite calc(var(--uib-speed) * -0.15)
+        ease-in-out;
+}
+
+.three-body__dot:nth-child(3) {
+    bottom: -5%;
+    left: 0;
+    transform: translateX(116.666%);
+}
+
+.three-body__dot:nth-child(3)::after {
+    top: 0;
+    left: 0;
+    animation: wobble2 var(--uib-speed) infinite ease-in-out;
+}
+
+@keyframes spin78236 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes wobble1 {
+    0%,
+    100% {
+        transform: translateY(0%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-66%) scale(0.65);
+        opacity: 0.8;
+    }
+}
+
+@keyframes wobble2 {
+    0%,
+    100% {
+        transform: translateY(0%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(66%) scale(0.65);
+        opacity: 0.8;
+    }
 }
 
