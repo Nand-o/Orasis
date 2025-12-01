@@ -11,7 +11,7 @@ import cacheManager from '../../utils/cacheManager';
 const HomePage = ({ searchValue }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
-    
+
     // Initialize state from URL params
     const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'Websites');
     const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
@@ -32,45 +32,45 @@ const HomePage = ({ searchValue }) => {
         try {
             // Check cache first using cache manager
             const cachedData = cacheManager.getShowcases();
-            
+
             if (cachedData && !forceRefresh) {
                 // Show cached data immediately (optimistic UI)
                 setShowcases(cachedData);
                 setLoading(false);
-                
+
                 // Still fetch fresh data in background to update views counter
                 // This runs silently without blocking UI
                 fetchFreshDataInBackground();
                 return;
             }
-            
+
             setLoading(true);
-            
+
             // Fetch all showcases - use multiple pages if needed
             let allShowcases = [];
             let page = 1;
             let hasMorePages = true;
-            
+
             while (hasMorePages) {
                 const data = await showcaseService.getAll({ page, per_page: 50 });
-                
+
                 allShowcases = [...allShowcases, ...data.data];
-                
+
                 // Check if there are more pages
                 hasMorePages = data.current_page < data.last_page;
                 page++;
             }
-            
+
             // Transform snake_case to camelCase for compatibility with existing components
             const transformedData = allShowcases.map(showcase => ({
                 ...showcase,
                 imageUrl: showcase.image_url,
                 urlWebsite: showcase.url_website,
             }));
-            
+
             // Save to cache using cache manager
             cacheManager.setShowcases(transformedData);
-            
+
             setShowcases(transformedData);
             setError(null);
         } catch (err) {
@@ -89,20 +89,20 @@ const HomePage = ({ searchValue }) => {
             let allShowcases = [];
             let page = 1;
             let hasMorePages = true;
-            
+
             while (hasMorePages) {
                 const data = await showcaseService.getAll({ page, per_page: 50 });
                 allShowcases = [...allShowcases, ...data.data];
                 hasMorePages = data.current_page < data.last_page;
                 page++;
             }
-            
+
             const transformedData = allShowcases.map(showcase => ({
                 ...showcase,
                 imageUrl: showcase.image_url,
                 urlWebsite: showcase.url_website,
             }));
-            
+
             // Update cache and state silently
             cacheManager.setShowcases(transformedData);
             setShowcases(transformedData);
@@ -114,11 +114,11 @@ const HomePage = ({ searchValue }) => {
 
     useEffect(() => {
         document.title = 'Inspiration | Orasis';
-        
+
         // Fetch showcases with cache-first strategy
         // This will show cached data instantly, then refresh in background
         fetchShowcases(false);
-        
+
         // Also listen for visibility changes (tab switching)
         const handleVisibilityChange = () => {
             if (!document.hidden) {
@@ -146,7 +146,7 @@ const HomePage = ({ searchValue }) => {
         if (sortBy !== 'newest') params.sort = sortBy;
         if (selectedTags.length > 0) params.tags = selectedTags.join(',');
         if (selectedCategories.length > 0) params.categories = selectedCategories.join(',');
-        
+
         setSearchParams(params);
     }, [activeCategory, sortBy, selectedTags, selectedCategories, setSearchParams]);
 
@@ -157,7 +157,7 @@ const HomePage = ({ searchValue }) => {
             // 2. Otherwise, use main category toggle (Websites/Mobiles)
             let matchesCategory = false;
             const categoryName = design.category?.name || '';
-            
+
             if (selectedCategories.length > 0) {
                 // Advanced filter takes precedence
                 matchesCategory = selectedCategories.includes(categoryName);
@@ -176,7 +176,7 @@ const HomePage = ({ searchValue }) => {
             // Search filter
             const matchesSearch = design.title.toLowerCase().includes(searchValue.toLowerCase()) ||
                 (design.description && design.description.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (design.tags && design.tags.some(tag => 
+                (design.tags && design.tags.some(tag =>
                     (typeof tag === 'string' ? tag : tag.name).toLowerCase().includes(searchValue.toLowerCase())
                 ));
 
@@ -184,7 +184,7 @@ const HomePage = ({ searchValue }) => {
             const matchesTags = selectedTags.length === 0 || (
                 design.tags && design.tags.some(tag => {
                     const tagName = typeof tag === 'string' ? tag : tag.name;
-                    return selectedTags.some(selectedTag => 
+                    return selectedTags.some(selectedTag =>
                         tagName.toLowerCase().includes(selectedTag.toLowerCase())
                     );
                 })
@@ -210,7 +210,7 @@ const HomePage = ({ searchValue }) => {
                     return 0;
             }
         });
-        
+
         return filtered;
     }, [showcases, activeCategory, sortBy, selectedTags, selectedCategories, searchValue]);
 
@@ -257,10 +257,10 @@ const HomePage = ({ searchValue }) => {
             <div className="space-y-12">
                 {/* Hero skeleton */}
                 <div className="h-96 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
-                
+
                 {/* Filter bar skeleton */}
                 <div className="h-16 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse"></div>
-                
+
                 {/* Showcase cards skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {Array.from({ length: 8 }).map((_, index) => (

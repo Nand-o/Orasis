@@ -10,7 +10,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
     const { collections } = useCollection();
 
     // Check if this design is saved in ANY collection
-    const isSaved = collections.some(col => 
+    const isSaved = collections.some(col =>
         col.showcases?.some(s => s.id === design.id)
     );
 
@@ -27,7 +27,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                 whileTap={{ scale: 0.98 }}
             >
                 {/* Image Container - The "Box" */}
-                <div className="relative aspect-4/3 bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden mb-4 p-12 transition-colors duration-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-700">
+                <div className="relative aspect-4/3 bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden mb-4 p-12 py-16 transition-colors duration-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-700">
                     <div className="w-full h-full rounded-lg overflow-hidden shadow-sm relative">
                         <LazyImage
                             src={design.image_url || design.imageUrl}
@@ -45,8 +45,8 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                         {/* Logo or Fallback Icon */}
                         {design.logo_url ? (
                             <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-md">
-                                <img 
-                                    src={design.logo_url} 
+                                <img
+                                    src={design.logo_url}
                                     alt={`${design.title} logo`}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
@@ -81,7 +81,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                                 <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
                             </button>
                         )}
-                        
+
                         {/* View Count */}
                         <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 pr-2">
                             <Eye className="w-3.5 h-3.5" />

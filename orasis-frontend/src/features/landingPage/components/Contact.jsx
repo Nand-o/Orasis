@@ -37,12 +37,12 @@ const Contact = () => {
                 </div>
 
                 <div className='flex flex-col items-center text-center'>
-                    <p className='font-family-general text-[10px] uppercase'>Get in Touch</p>
-                    <p className='special-font mt-10 w-full font-family-zentry text-5xl leading-[0.9] md:text-[6rem]'>
+                    <p className='font-family-general text-[10px] uppercase text-white'>Get in Touch</p>
+                    <p className='special-font mt-10 w-full font-family-zentry text-5xl leading-[0.9] md:text-[6rem] text-white'>
                         Re<b>a</b>dy <br /> to sho<b>w</b>case <br /> y<b>o</b>ur tale<b>n</b>t?</p>
                     <Button
                         title='contact us'
-                        containerClass='mt-10 cursor-pointer'
+                        containerClass='mt-10 cursor-pointer !bg-yellow-300 !text-black'
                         to='#'
                     />
                 </div>

@@ -43,11 +43,11 @@ const BentoCard = ({ src, title, description }) => {
                 autoPlay
                 className='absolute left-0 top-0 size-full object-cover'
             />
-            <div className='relative z-10 flex size-full flex-col justify-between p-5 text-blue-50'>
+            <div className='relative z-10 flex size-full flex-col justify-between p-5 text-white'>
                 <div>
                     <h1 className='bento-title special-font'>{title}</h1>
                     {description && (
-                        <p className='mt-3 max-w-64 text-xs md:text-base'>{description}</p>
+                        <p className='mt-3 max-w-64 text-xs md:text-base font-family-general'>{description}</p>
                     )}
                 </div>
             </div>
@@ -62,8 +62,8 @@ const Features = () => {
         <section id='features' className='bg-black pb-52'>
             <div className='container mx-auto px-3 md:px-10'>
                 <div className='px-5 py-32'>
-                    <p className='font-family-circular-web text-lg text-blue-50'>Explore the Creative Universe</p>
-                    <p className='max-w-md font-family-circular-web text-lg text-blue-50 opacity-50'>
+                    <p className='font-family-circular-web text-lg text-white'>Explore the Creative Universe</p>
+                    <p className='max-w-md font-family-circular-web text-lg text-white opacity-50'>
                         Dive into a vast collection of design masterpieces. From mobile apps to landing pages,
                         find the spark for your next big project.
                     </p>

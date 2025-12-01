@@ -64,7 +64,7 @@ const Navbar = () => {
                             id='login-button'
                             title='Login'
                             rightIcon={<TiLocationArrow />}
-                            containerClass='bg-blue-50 md:flex hidden items-center justify-center gap-1'
+                            containerClass='bg-white md:flex hidden items-center justify-center gap-1'
                             to='/login'
                         />
                     </div>

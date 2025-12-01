@@ -15,6 +15,8 @@ const Hero = () => {
 
     const totalVideos = 4;
     const nextVideoRef = useRef(null);
+    const mainVideoRef = useRef(null);
+    const VIDEO_PLAYBACK_RATE = 1; // Adjust this value to control video speed (0.5 = 50% speed)
 
     const handleVideoLoad = () => {
         setloadedVideos((prev) => prev + 1);
@@ -35,6 +37,13 @@ const Hero = () => {
             setisLoading(false);
         }
     }, [loadedVideos]);
+
+    // Set video playback rate
+    useEffect(() => {
+        if (mainVideoRef.current) {
+            mainVideoRef.current.playbackRate = VIDEO_PLAYBACK_RATE;
+        }
+    }, [currentIndex]);
 
     useGSAP(() => {
         if (hasClicked) {
@@ -85,7 +94,7 @@ const Hero = () => {
         <div id='hero' className='relative h-dvh w-screen overflow-x-hidden'>
 
             {isLoading && (
-                <div className='flex-center absolute z-100 h-dvh w-screen overflow-hidden bg-violet-50'>
+                <div className='flex-center absolute z-100 h-dvh w-screen overflow-hidden bg-white'>
                     <div className='three-body'>
                         <div className='three-body__dot' />
                         <div className='three-body__dot' />
@@ -119,6 +128,7 @@ const Hero = () => {
                     />
 
                     <video
+                        ref={mainVideoRef}
                         src={getVideoSrc(currentIndex === totalVideos - 1 ? 1 : currentIndex)}
                         autoPlay
                         loop
@@ -126,14 +136,15 @@ const Hero = () => {
                         className='absolute left-0 top-0 size-full object-cover object-center'
                         onLoadedData={handleVideoLoad}
                     />
+                    <div className="absolute left-0 top-0 size-full bg-black/60 z-10" />
                 </div>
-                <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75'>
+                <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-white'>
                     <b>O</b>rasis
                 </h1>
 
                 <div className='absolute left-0 top-0 z-40 size-full'>
                     <div className='mt-24 px-5 sm:px-10'>
-                        <h1 className='special-font hero-heading text-blue-100'>i<b>n</b>spire</h1>
+                        <h1 className='special-font hero-heading text-white'>i<b>n</b>spire</h1>
                         <p className='mb-5 max-w-64 font-family-robert-regular text-blue-100'>Discover the world's best design inspiration. Curated for designers, by designers.</p>
                         <Button id='register-button' title='Register Now!' leftIcon={<TiLocationArrow />} containerClass='!bg-yellow-300 flex-center gap-1' to='/register' />
                     </div>

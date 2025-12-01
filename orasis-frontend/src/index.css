@@ -45,9 +45,9 @@
 
 
 body {
-    font-family: 'general', sans-serif;
+    font-family: 'circular-web', sans-serif;
     width: 100dvw;
-    background-color: #dfdff0;
+    background-color: #ffffff;
     overflow-x: hidden;
 }
 
@@ -118,7 +118,7 @@ body {
     font-family: var(--font-family-general);
     font-size: theme(fontSize.xs);
     text-transform: uppercase;
-    color: var(--color-blue-50);
+    color: var(--color-white);
     cursor: pointer;
 }
 
