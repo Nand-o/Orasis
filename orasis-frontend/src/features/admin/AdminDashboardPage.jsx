@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, Users, FileText, Clock, CheckCircle, XCircle, Edit, Trash2, Eye } from 'lucide-react';
+import { BarChart3, FileText, Clock, CheckCircle, XCircle, Trash2, Eye } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import showcaseService from '../../services/showcase.service';
 import Spinner from '../../components/ui/Spinner';
 
 const AdminDashboardPage = () => {
-    const { user } = useAuth();
+    useAuth(); // Auth context for route protection
     const [activeTab, setActiveTab] = useState('all'); // 'all' | 'pending' | 'users'
     const [showcases, setShowcases] = useState([]);
     const [pendingShowcases, setPendingShowcases] = useState([]);

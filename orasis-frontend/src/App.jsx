@@ -11,7 +11,6 @@ import ShowcaseFormPage from './features/showcase/ShowcaseFormPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/profile/DashboardPage';
-import AdminDashboardPage from './features/admin/AdminDashboardPage';
 import AdminPendingReviewPage from './features/admin/AdminPendingReviewPage';
 import AdminUsersPage from './features/admin/AdminUsersPage';
 import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
