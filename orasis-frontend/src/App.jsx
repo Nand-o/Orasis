@@ -209,9 +209,10 @@ const ConditionalLayout = ({ children, searchValue, onSearchChange }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isLandingPage = location.pathname === '/';
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
 
-  // Dashboard routes and Landing Page use their own layout (or no layout)
-  if (isDashboardRoute || isLandingPage) {
+  // Dashboard routes, Landing Page, and Auth pages use their own layout (or no layout)
+  if (isDashboardRoute || isLandingPage || isAuthPage) {
     return children;
   }
 
