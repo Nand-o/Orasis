@@ -8,20 +8,15 @@ import {
     CheckCircle, 
     XCircle,
     Eye,
-    Heart,
-    MessageCircle,
     ArrowUp,
-    ArrowDown,
-    Calendar
+    ArrowDown
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
 import Spinner from '../../components/ui/Spinner';
-import { useCollection } from '../../context/CollectionContext';
 
 const AdminOverviewPage = () => {
     const { user } = useAuth();
-    const { collections } = useCollection();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         totalShowcases: 0,

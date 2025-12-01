@@ -6,7 +6,6 @@ import showcaseService from '../../services/showcase.service';
 import Spinner from '../../components/ui/Spinner';
 
 const AdminDashboardPage = () => {
-    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('all'); // 'all' | 'pending' | 'users'
     const [showcases, setShowcases] = useState([]);
     const [pendingShowcases, setPendingShowcases] = useState([]);
