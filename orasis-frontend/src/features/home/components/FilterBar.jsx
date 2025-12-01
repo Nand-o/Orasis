@@ -33,7 +33,6 @@ const FilterBar = ({
 }) => {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
-    const [showTagsDropdown, setShowTagsDropdown] = useState(false);
     
     // State for categories and tags from database
     // Initialize with cached or default values for instant render
