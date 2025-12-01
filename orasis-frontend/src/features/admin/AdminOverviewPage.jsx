@@ -14,7 +14,6 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
 import Spinner from '../../components/ui/Spinner';
-
 const AdminOverviewPage = () => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);

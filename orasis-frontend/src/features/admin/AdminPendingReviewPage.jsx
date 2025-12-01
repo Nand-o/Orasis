@@ -6,7 +6,7 @@ import Spinner from '../../components/ui/Spinner';
 import cacheManager from '../../utils/cacheManager';
 
 const AdminPendingReviewPage = () => {
-    useAuth(); // Auth context for route protection
+    useAuth();
     const [pendingShowcases, setPendingShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
