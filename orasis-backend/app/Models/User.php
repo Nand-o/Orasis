@@ -24,7 +24,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'profile_picture'
     ];
 
     /**
@@ -48,6 +49,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Append profile_picture_url to JSON
+     */
+    protected $appends = ['profile_picture_url'];
+
+    /**
+     * Get the full profile picture URL.
+     */
+    public function getProfilePictureUrlAttribute()
+    {
+        if (!$this->profile_picture) {
+            return null;
+        }
+
+        // If already full URL, return as is
+        if (str_starts_with($this->profile_picture, 'http://') || str_starts_with($this->profile_picture, 'https://')) {
+            return $this->profile_picture;
+        }
+
+        // Convert relative path to full URL
+        return url($this->profile_picture);
     }
 
     public function showcases()

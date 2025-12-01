@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark } from 'lucide-react';
+import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark, LayoutDashboard, LogIn, Users, BarChart3, Clock, Folder, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchBar from '../ui/SearchBar';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = ({ searchValue, onSearchChange }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const { theme, setTheme } = useTheme();
+    const { user, isAuthenticated, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        setIsProfileOpen(false);
+        navigate('/');
+    };
 
     const isActive = (path) => {
         return location.pathname === path
@@ -63,42 +71,51 @@ const Navbar = ({ searchValue, onSearchChange }) => {
 
                     {/* Right Section: Bookmark, Profile & Mobile Menu */}
                     <div className="flex items-center shrink-0 space-x-4">
-                        {/* Bookmark Icon - Quick access to Collections */}
-                        <motion.button
-                            onClick={() => navigate('/collections')}
-                            className={`hidden sm:flex p-2 rounded-full transition-colors ${location.pathname === '/collections'
-                                ? 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30'
-                                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                            whileTap={{ scale: 0.95 }}
-                            title="My Collections"
-                        >
-                            <Bookmark className={`w-5 h-5 ${location.pathname === '/collections'
-                                ? 'text-indigo-600 dark:text-indigo-400 fill-indigo-600 dark:fill-indigo-400'
-                                : 'text-gray-700 dark:text-gray-300'
-                                }`} />
-                        </motion.button>
-
-                        {/* Profile Dropdown */}
-                        <div className="relative hidden sm:block">
+                        {/* Bookmark Icon - Quick access to Collections (Only for authenticated users) */}
+                        {isAuthenticated && (
                             <motion.button
-                                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                                onClick={() => navigate('/collections')}
+                                className={`hidden sm:flex p-2 rounded-full transition-colors ${location.pathname === '/collections'
+                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30'
+                                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                                    }`}
                                 whileTap={{ scale: 0.95 }}
+                                title="My Collections"
                             >
-                                <span>Hi, Waka</span>
-                                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                <Bookmark className={`w-5 h-5 ${location.pathname === '/collections'
+                                    ? 'text-indigo-600 dark:text-indigo-400 fill-indigo-600 dark:fill-indigo-400'
+                                    : 'text-gray-700 dark:text-gray-300'
+                                    }`} />
                             </motion.button>
+                        )}
 
-                            <AnimatePresence>
-                                {isProfileOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50"
+                        {/* Profile Dropdown or Login Button */}
+                        <div className="relative hidden sm:block">
+                            {isAuthenticated ? (
+                                <>
+                                    <motion.button
+                                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                        className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                                        whileTap={{ scale: 0.95 }}
                                     >
+                                        <span>Hi, {user?.name || 'User'}</span>
+                                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                    </motion.button>
+
+                                    <AnimatePresence>
+                                        {isProfileOpen && (
+                                    <>
+                                        <div 
+                                            className="fixed inset-0 z-70" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-70"
+                                        >
                                         <div className="px-4 py-2">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="text-sm font-semibold text-gray-900 dark:text-white">Theme</span>
@@ -128,35 +145,84 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                         <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
 
                                         <div className="px-1">
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Settings
+                                            <a href="/dashboard" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                <LayoutDashboard className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                Dashboard
                                             </a>
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                            <a href="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
                                                 <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Your Profiles
-                                            </a>
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Submissions
-                                            </a>
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                                Submit a site
+                                                Profile Settings
                                             </a>
                                             <a href="/collections" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
                                                 <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
                                                 Collections
                                             </a>
+                                            
+                                            {/* Conditional menu items based on user role */}
+                                            {user?.role === 'admin' ? (
+                                                <>
+                                                    <a href="/dashboard/pending" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Clock className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Pending Review
+                                                    </a>
+                                                    <a href="/dashboard/showcases" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        All Submissions
+                                                    </a>
+                                                    <a href="/dashboard/users" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Users className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        User Management
+                                                    </a>
+                                                    <a href="/dashboard/categories" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Folder className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Categories
+                                                    </a>
+                                                    <a href="/dashboard/tags" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Tag className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Tags
+                                                    </a>
+                                                    <a href="/dashboard/analytics" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <BarChart3 className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Analytics
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <a href="/dashboard/showcases" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        My Submissions
+                                                    </a>
+                                                    <a href="/showcase/new" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                                                        <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                                        Submit a site
+                                                    </a>
+                                                </>
+                                            )}
+                                            
                                             <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-3" />
-                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                                            <button 
+                                                onClick={handleLogout}
+                                                className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                                            >
                                                 <LogOut className="w-4 h-4 mr-3 text-red-400" />
                                                 Log out
-                                            </a>
+                                            </button>
                                         </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                                        </motion.div>
+                                    </>
+                                        )}
+                                    </AnimatePresence>
+                                </>
+                            ) : (
+                                <motion.button
+                                    onClick={() => navigate('/login')}
+                                    className="flex items-center space-x-2 bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-black px-6 py-2 rounded-full text-sm font-medium transition-colors"
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    <LogIn className="w-4 h-4" />
+                                    <span>Login</span>
+                                </motion.button>
+                            )}
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -226,34 +292,67 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                         </div>
 
                         {/* Mobile Profile Links */}
-                        <div className="mt-4 space-y-2">
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Hi, Waka</div>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Settings
-                            </a>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Your Profiles
-                            </a>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Submissions
-                            </a>
-                            <a href="#" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Submit a site
-                            </a>
-                            <a href="/collections" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
-                                Collections
-                            </a>
-                            <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
-                            <a href="#" className="flex items-center py-2 text-sm text-red-600 hover:text-red-700 dark:hover:text-red-400">
-                                <LogOut className="w-4 h-4 mr-3 text-red-400" />
-                                Sign Out
-                            </a>
-                        </div>
+                        {isAuthenticated ? (
+                            <div className="mt-4 space-y-2">
+                                <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Hi, {user?.name || 'User'}</div>
+                                <a href="/dashboard" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                    <LayoutDashboard className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                    Dashboard
+                                </a>
+                                <a href="/profile" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                    <User className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                    Profile Settings
+                                </a>
+                                <a href="/collections" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                    <Grid className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                    Collections
+                                </a>
+                                
+                                {/* Conditional mobile menu items based on user role */}
+                                {user?.role === 'admin' ? (
+                                    <>
+                                        <a href="/dashboard/showcases" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            All Submissions
+                                        </a>
+                                        <a href="/dashboard/analytics" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <Settings className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            Analytics
+                                        </a>
+                                    </>
+                                ) : (
+                                    <>
+                                        <a href="/dashboard/showcases" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <FileText className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            My Submissions
+                                        </a>
+                                        <a href="/showcase/new" className="flex items-center py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                            <Upload className="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" />
+                                            Submit a site
+                                        </a>
+                                    </>
+                                )}
+                                
+                                <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
+                                <button 
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center py-2 text-sm text-red-600 hover:text-red-700 dark:hover:text-red-400"
+                                >
+                                    <LogOut className="w-4 h-4 mr-3 text-red-400" />
+                                    Sign Out
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="mt-4">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="w-full flex items-center justify-center space-x-2 bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-black px-6 py-3 rounded-full text-sm font-medium transition-colors"
+                                >
+                                    <LogIn className="w-5 h-5" />
+                                    <span>Login</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

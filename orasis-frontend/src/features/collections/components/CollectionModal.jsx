@@ -1,16 +1,43 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCollections } from '../context/CollectionContext';
+import { useCollection } from '../../../context/CollectionContext';
 
 const CollectionModal = ({ isOpen, onClose, designId }) => {
-    const { collections, createCollection, toggleDesignInCollection } = useCollections();
+    const { collections, createCollection, addShowcaseToCollection, removeShowcaseFromCollection } = useCollection();
     const [newCollectionName, setNewCollectionName] = useState('');
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
         if (newCollectionName.trim()) {
-            createCollection(newCollectionName);
-            setNewCollectionName('');
+            try {
+                await createCollection({ name: newCollectionName });
+                setNewCollectionName('');
+            } catch (error) {
+                console.error('Failed to create collection:', error);
+            }
+        }
+    };
+
+    const toggleDesignInCollection = async (collectionId, showcaseId) => {
+        const collection = collections.find(c => c.id === collectionId);
+        if (!collection) {
+            console.error('Collection not found:', collectionId);
+            return;
+        }
+
+        try {
+            // Check if showcase is already in collection (with type coercion)
+            const isInCollection = collection.showcases?.some(s => 
+                Number(s.id) === Number(showcaseId)
+            );
+            
+            if (isInCollection) {
+                await removeShowcaseFromCollection(collectionId, showcaseId);
+            } else {
+                await addShowcaseToCollection(collectionId, showcaseId);
+            }
+        } catch (error) {
+            console.error('Failed to toggle showcase in collection:', error);
         }
     };
 
@@ -44,17 +71,26 @@ const CollectionModal = ({ isOpen, onClose, designId }) => {
                             <p className="text-gray-500 text-sm text-center py-4">No collections yet.</p>
                         ) : (
                             <div className="space-y-3">
-                                {collections.map((collection) => (
-                                    <label key={collection.id} className="flex items-center justify-between cursor-pointer group">
-                                        <span className="text-gray-700 font-medium group-hover:text-gray-900">{collection.name}</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={collection.designIds.includes(designId)}
-                                            onChange={() => toggleDesignInCollection(collection.id, designId)}
-                                            className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition duration-150 ease-in-out"
-                                        />
-                                    </label>
-                                ))}
+                                {collections.map((collection) => {
+                                    // Ensure type consistency when comparing IDs
+                                    const isInCollection = collection.showcases?.some(s => 
+                                        Number(s.id) === Number(designId)
+                                    ) || false;
+                                    
+                                    return (
+                                        <label key={collection.id} className="flex items-center justify-between cursor-pointer group">
+                                            <span className="text-gray-700 font-medium group-hover:text-gray-900">
+                                                {collection.name} ({collection.showcases_count || 0})
+                                            </span>
+                                            <input
+                                                type="checkbox"
+                                                checked={isInCollection}
+                                                onChange={() => toggleDesignInCollection(collection.id, designId)}
+                                                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                                            />
+                                        </label>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

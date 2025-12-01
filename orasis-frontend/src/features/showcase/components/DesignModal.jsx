@@ -32,7 +32,7 @@ const DesignModal = ({ design, onClose }) => {
                             {/* Image Section */}
                             <div className="lg:col-span-2 bg-gray-100 overflow-y-auto p-8 flex items-center justify-center">
                                 <img
-                                    src={design.imageUrl}
+                                    src={design.image_url || design.imageUrl}
                                     alt={design.title}
                                     className="w-full h-auto rounded-lg shadow-2xl"
                                 />
@@ -42,7 +42,7 @@ const DesignModal = ({ design, onClose }) => {
                             <div className="lg:col-span-1 p-8 overflow-y-auto border-l border-gray-100">
                                 <div className="flex items-center justify-between mb-6">
                                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                                        {design.category}
+                                        {design.category?.name || 'N/A'}
                                     </span>
                                     <div className="flex space-x-2">
                                         <button className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">

@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Grid } from 'lucide-react';
-import { useCollections } from './context/CollectionContext';
+import { useCollection } from '../../context/CollectionContext';
 import CollectionCard from './components/CollectionCard';
 import CollectionModal from './components/CollectionModal';
 import CollectionDetailModal from './components/CollectionDetailModal';
 import ConfirmationModal from '../../components/ui/ConfirmationModal';
-import { MOCK_DESIGNS } from '../../data/mockData';
 
 const CollectionPage = () => {
-    const { collections, deleteCollection } = useCollections();
+    const { collections = [], deleteCollection } = useCollection();
     const [activeTab, setActiveTab] = useState('Websites'); // 'Websites' | 'Mobiles'
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCollection, setSelectedCollection] = useState(null);
@@ -19,31 +18,31 @@ const CollectionPage = () => {
         document.title = 'My Collections | Orasis';
     }, []);
 
-    // Helper to get preview images for a collection
-    const getCollectionPreviews = (designIds) => {
-        return designIds
-            .map(id => MOCK_DESIGNS.find(d => d.id === id))
+    // Helper to get preview images for a collection from backend data
+    const getCollectionPreviews = (showcases) => {
+        if (!showcases || !Array.isArray(showcases)) return [];
+        return showcases
+            .map(s => s.image_url || s.imageUrl)
             .filter(Boolean)
-            .map(d => d.imageUrl)
             .slice(0, 4); // Get up to 4 images
     };
 
     // Filter collections based on active tab
     const filteredCollections = useMemo(() => {
+        if (!Array.isArray(collections)) return [];
+        
         return collections.filter(collection => {
-            // Get all designs in this collection
-            const designs = collection.designIds
-                .map(id => MOCK_DESIGNS.find(d => d.id === id))
-                .filter(Boolean);
+            // Get all showcases in this collection
+            const showcases = collection.showcases || [];
 
             // Show empty collections in all tabs
-            if (designs.length === 0) return true;
+            if (showcases.length === 0) return true;
 
-            // Check if collection has designs matching the active category
+            // Check if collection has showcases matching the active category
             if (activeTab === 'Websites') {
-                return designs.some(d => d.category !== 'Mobile');
+                return showcases.some(s => s.category !== 'Mobile');
             } else if (activeTab === 'Mobiles') {
-                return designs.some(d => d.category === 'Mobile');
+                return showcases.some(s => s.category === 'Mobile');
             }
 
             return true;
@@ -146,7 +145,7 @@ const CollectionPage = () => {
                         >
                             <CollectionCard
                                 collection={collection}
-                                previewImages={getCollectionPreviews(collection.designIds)}
+                                previewImages={getCollectionPreviews(collection.showcases)}
                                 onClick={() => setSelectedCollection(collection)}
                                 onDelete={handleDeleteClick}
                             />
