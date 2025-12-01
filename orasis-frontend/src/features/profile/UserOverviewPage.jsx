@@ -5,12 +5,8 @@ import {
     Grid, 
     CheckCircle, 
     Clock,
-    XCircle,
     Plus,
     TrendingUp,
-    Eye,
-    Heart,
-    Calendar,
     Trash2,
     Pencil,
     X
