@@ -12,8 +12,6 @@ import {
     Grid,
     TrendingUp,
     Clock,
-    CheckCircle,
-    XCircle,
     Tag,
     Folder
 } from 'lucide-react';
