@@ -45,8 +45,6 @@ const FilterBar = ({
         const cached = sessionStorage.getItem('orasis_tags');
         return cached ? JSON.parse(cached) : ['modern', 'minimal', 'dark', 'colorful', 'professional', 'creative', 'clean', 'responsive'];
     });
-    const [loadingCategories, setLoadingCategories] = useState(false);
-    const [loadingTags, setLoadingTags] = useState(false);
 
     // Fetch categories and tags from database (background refresh)
     useEffect(() => {
