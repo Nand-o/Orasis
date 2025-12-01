@@ -12,7 +12,6 @@ const AdminPendingReviewPage = () => {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
-    const [selectedShowcase, setSelectedShowcase] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
