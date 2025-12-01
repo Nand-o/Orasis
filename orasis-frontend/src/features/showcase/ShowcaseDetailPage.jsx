@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Heart, Share2, Bookmark, Eye } from 'lucide-react';
+import { ArrowUpRight, Share2, Bookmark, Eye } from 'lucide-react';
 import showcaseService from '../../services/showcase.service';
 import ShowcaseCard from './components/ShowcaseCard';
 import CollectionModal from '../collections/components/CollectionModal';
