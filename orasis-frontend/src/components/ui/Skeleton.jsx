@@ -5,7 +5,7 @@ import React from 'react';
  */
 export const ShowcaseCardSkeleton = () => {
     return (
-        <div className="bg-white dark:bg-dark-gray rounded-2xl overflow-hidden border border-gray-200 animate-pulse">
+        <div className="bg-white dark:bg-dark-gray rounded-2xl overflow-hidden animate-pulse">
             {/* Image skeleton */}
             <div className="w-full h-64 bg-gray-200 dark:bg-main-black"></div>
 

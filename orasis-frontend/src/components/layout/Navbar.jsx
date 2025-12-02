@@ -14,6 +14,61 @@ const Navbar = ({ searchValue, onSearchChange }) => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Handle theme change with wave ripple effect using View Transitions API
+    const handleThemeChange = async (newTheme, event) => {
+        // Check if View Transitions API is supported
+        if (!document.startViewTransition) {
+            // Fallback: Simple ripple effect without View Transitions
+            const button = event.currentTarget;
+            const rect = button.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.classList.add('wave-ripple');
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            setTheme(newTheme);
+            return;
+        }
+
+        // Get click position relative to viewport
+        const x = event.clientX;
+        const y = event.clientY;
+        
+        // Calculate position as percentage for clip-path
+        const xPercent = (x / window.innerWidth) * 100;
+        const yPercent = (y / window.innerHeight) * 100;
+
+        // Set CSS variables for ripple origin
+        document.documentElement.style.setProperty('--ripple-x', `${xPercent}%`);
+        document.documentElement.style.setProperty('--ripple-y', `${yPercent}%`);
+
+        // Add class for wave ripple animation
+        document.documentElement.classList.add('wave-ripple-transition');
+
+        // Start view transition
+        const transition = document.startViewTransition(() => {
+            setTheme(newTheme);
+        });
+
+        // Clean up after transition
+        try {
+            await transition.finished;
+        } finally {
+            document.documentElement.classList.remove('wave-ripple-transition');
+        }
+    };
+
     const handleLogout = () => {
         logout();
         setIsProfileOpen(false);
@@ -158,19 +213,23 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                                                 {['light', 'dark', 'system'].map((t) => (
                                                                     <button
                                                                         key={t}
-                                                                        onClick={() => setTheme(t)}
-                                                                        className={`relative p-1.5 rounded-full transition-colors z-10 ${theme === t ? 'text-gray-900 dark:text-black' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                                                        onClick={(e) => handleThemeChange(t, e)}
+                                                                        className={`relative p-1.5 rounded-full transition-colors overflow-hidden ${theme === t ? 'text-gray-900 dark:text-black' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                                                        style={{ isolation: 'isolate' }}
                                                                     >
                                                                         {theme === t && (
                                                                             <motion.div
                                                                                 layoutId="activeTheme"
-                                                                                className="absolute inset-0 bg-violet-300 dark:bg-yellow-300 rounded-full shadow-sm -z-10"
+                                                                                className="absolute inset-0 bg-violet-300 dark:bg-yellow-300 rounded-full shadow-sm"
+                                                                                style={{ zIndex: -1 }}
                                                                                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
                                                                             />
                                                                         )}
-                                                                        {t === 'light' && <Sun className={`w-4 h-4 ${theme === t ? 'text-white' : 'text-main-black dark:text-white'}`} />}
-                                                                        {t === 'dark' && <Moon className={`w-4 h-4 ${theme === t ? 'text-main-black' : 'text-main-black dark:text-white'}`} />}
-                                                                        {t === 'system' && <Monitor className={`w-4 h-4 ${theme === t ? 'text-white dark:text-main-black' : 'text-main-black dark:text-white'}`} />}
+                                                                        <span className="relative z-10">
+                                                                            {t === 'light' && <Sun className={`w-4 h-4 ${theme === t ? 'text-white' : 'text-main-black dark:text-white'}`} />}
+                                                                            {t === 'dark' && <Moon className={`w-4 h-4 ${theme === t ? 'text-main-black' : 'text-main-black dark:text-white'}`} />}
+                                                                            {t === 'system' && <Monitor className={`w-4 h-4 ${theme === t ? 'text-white dark:text-main-black' : 'text-main-black dark:text-white'}`} />}
+                                                                        </span>
                                                                     </button>
                                                                 ))}
                                                             </div>
@@ -307,19 +366,23 @@ const Navbar = ({ searchValue, onSearchChange }) => {
                                     {['light', 'dark', 'system'].map((t) => (
                                         <button
                                             key={t}
-                                            onClick={() => setTheme(t)}
-                                            className={`relative p-1.5 rounded-full transition-colors z-10 ${theme === t ? 'text-gray-900 dark:text-black' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                            onClick={(e) => handleThemeChange(t, e)}
+                                            className={`relative p-1.5 rounded-full transition-colors overflow-hidden ${theme === t ? 'text-gray-900 dark:text-black' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                            style={{ isolation: 'isolate' }}
                                         >
                                             {theme === t && (
                                                 <motion.div
                                                     layoutId="activeThemeMobile"
-                                                    className="absolute inset-0 bg-white dark:bg-white rounded-full shadow-sm -z-10"
+                                                    className="absolute inset-0 bg-white dark:bg-white rounded-full shadow-sm"
+                                                    style={{ zIndex: -1 }}
                                                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                                                 />
                                             )}
-                                            {t === 'light' && <Sun className="w-4 h-4" />}
-                                            {t === 'dark' && <Moon className="w-4 h-4" />}
-                                            {t === 'system' && <Monitor className="w-4 h-4" />}
+                                            <span className="relative z-10">
+                                                {t === 'light' && <Sun className="w-4 h-4" />}
+                                                {t === 'dark' && <Moon className="w-4 h-4" />}
+                                                {t === 'system' && <Monitor className="w-4 h-4" />}
+                                            </span>
                                         </button>
                                     ))}
                                 </div>
