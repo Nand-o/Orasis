@@ -1,18 +1,34 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
-const HeroSection = () => {
+const HeroSection = ({ designs }) => {
     // Referensi ke elemen container slider untuk fungsi scroll
     const sliderRef = useRef(null);
+    const navigate = useNavigate();
 
-    // Data Dummy
+    // Handle click on showcase card
+    const handleShowcaseClick = (design) => {
+        if (design && design.id) {
+            navigate(`/showcase/${design.id}`);
+        }
+    };
+
+    // Jika tidak ada data designs, return null atau tampilkan placeholder
+    if (!designs || designs.length === 0) return null;
+
+    // Convert designs data ke format yang sesuai untuk slider
+    // Tambahkan item kosong di index 0 untuk spacing
     const slides = [
-        { id: 0, title: "MADH", category: "Fashion", img: "=80", bg: "bg-gray-100" },
-        { id: 1, title: "MADH", category: "Fashion", img: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=80", bg: "bg-gray-100" },
-        { id: 2, title: "BASS", category: "Arts School", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&q=80", bg: "bg-red-500" },
-        { id: 3, title: "TECH", category: "Software", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80", bg: "bg-blue-50" },
-        { id: 4, title: "SPACE", category: "Interior", img: "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?w=800&q=80", bg: "bg-stone-200" },
-        { id: 5, title: "FUTURE", category: "Concept", img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80", bg: "bg-indigo-100" },
+        { id: 0, title: "", category: "", img: "", bg: "bg-transparent", design: null },
+        ...designs.map((design, index) => ({
+            id: index + 1,
+            title: design.title,
+            category: design.category?.name || 'Uncategorized',
+            img: design.image_url || design.imageUrl,
+            bg: "bg-gray-100",
+            design: design // Keep reference to original design object
+        }))
     ];
 
     // Fungsi untuk menggerakkan slider via tombol
@@ -135,8 +151,9 @@ const HeroSection = () => {
                     {slides.map((item, index) => (
                         <div
                             key={item.id}
+                            onClick={() => index !== 0 && item.design && handleShowcaseClick(item.design)}
                             // w-[80vw] untuk mobile agar terlihat besar, w-[30vw] untuk desktop agar terlihat berjejer
-                            className={`relative shrink-0 w-[80vw] md:w-[40vw] lg:w-[30vw] snap-center select-none group ${index === 0 ? 'hidden md:block' : ''}`}
+                            className={`relative shrink-0 w-[80vw] md:w-[40vw] lg:w-[30vw] snap-center select-none group ${index === 0 ? 'hidden md:block' : 'cursor-pointer'}`}
                         >
                             {/* Image Container */}
                             <div className={`aspect-16/10 w-full overflow-hidden ${index === 0 ? 'bg-transparent' : item.bg} relative`}>
@@ -158,12 +175,14 @@ const HeroSection = () => {
 
                             {/* Caption */}
                             {index !== 0 && (
-                                <div className="mt-4 flex justify-between items-center border-t border-gray-200 pt-3">
-                                    <div>
-                                        <h3 className="text-xl font-bold uppercase group-hover:text-violet-300 dark:group-hover:text-yellow-300 transition-colors duration-300">{item.title}</h3>
-                                        <p className="text-gray-500 text-sm">{item.category}</p>
+                                <div className="mt-4 flex justify-between items-center gap-2 border-t border-gray-200 pt-3">
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-base md:text-xl font-bold uppercase group-hover:text-violet-300 dark:group-hover:text-yellow-300 transition-colors duration-300 truncate">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-gray-500 text-xs md:text-sm truncate">{item.category}</p>
                                     </div>
-                                    <span className="text-xs font-mono border px-2 py-1 rounded-full border-light-gray">
+                                    <span className="text-xs font-mono border px-2 py-1 rounded-full border-light-gray shrink-0">
                                         0{item.id}
                                     </span>
                                 </div>

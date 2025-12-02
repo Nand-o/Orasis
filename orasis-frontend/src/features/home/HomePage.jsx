@@ -311,7 +311,7 @@ const HomePage = ({ searchValue }) => {
             )}
 
             {/* <HeroSection designs={popularDesigns} /> */}
-            <HeroNew />
+            <HeroNew designs={popularDesigns} />
 
             <div className="mt-8">
                 <FilterBar
