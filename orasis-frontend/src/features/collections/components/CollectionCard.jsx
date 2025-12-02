@@ -8,7 +8,7 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
     const inputRef = useRef(null);
-    
+
     // Ensure previewImages is always an array
     const images = Array.isArray(previewImages) ? previewImages : [];
 
@@ -58,13 +58,13 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
         return (
             <motion.div
                 onClick={onClick}
-                className="aspect-square rounded-3xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                className="aspect-square rounded-3xl border-2 border-dashed border-gray-300 dark:border-dark-gray flex flex-col items-center justify-center cursor-pointer hover:border-violet-300 dark:hover:border-yellow-300 transition-colors group"
                 whileTap={{ scale: 0.98 }}
             >
-                <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3 group-hover:bg-white dark:group-hover:bg-gray-700 group-hover:shadow-sm transition-all">
-                    <Plus className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-dark-gray flex items-center justify-center mb-3 group-hover:bg-white dark:group-hover:bg-dark-gray group-hover:shadow-sm transition-all">
+                    <Plus className="w-6 h-6 text-gray-500 dark:text-white group-hover:text-violet-300 dark:group-hover:text-yellow-300" />
                 </div>
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white">New Collection</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-white group-hover:text-violet-300 dark:group-hover:text-yellow-300">New Collection</span>
             </motion.div>
         );
     }
@@ -77,7 +77,7 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
             className="group cursor-pointer"
             whileTap={!isEditing ? { scale: 0.98 } : {}}
         >
-            <div className="aspect-square rounded-3xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-3 relative border border-gray-100 dark:border-gray-800">
+            <div className="aspect-square rounded-3xl bg-gray-100 dark:bg-dark-gray overflow-hidden mb-3 relative border border-gray-100 dark:border-dark-gray">
                 {hasImages ? (
                     <div className={`grid h-full w-full gap-0.5 ${images.length === 1 ? 'grid-cols-1 grid-rows-1' : 'grid-cols-2 grid-rows-2'}`}>
                         {images.slice(0, 4).map((img, index) => (
@@ -97,8 +97,8 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
                         <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors" />
                     </div>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                        <span className="text-gray-300 dark:text-gray-600 text-4xl font-bold opacity-20">{collection?.name?.charAt(0) || '?'}</span>
+                    <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-dark-gray">
+                        <span className="text-violet-300 dark:text-yellow-300 text-4xl font-bold opacity-100">{collection?.name?.charAt(0) || '?'}</span>
                     </div>
                 )}
             </div>
@@ -113,11 +113,11 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
                             onBlur={handleSave}
                             onKeyDown={handleKeyDown}
                             onClick={(e) => e.stopPropagation()}
-                            className="w-full font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-indigo-500 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full font-bold text-gray-900 dark:text-white bg-white dark:bg-dark-gray border border-indigo-500 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     ) : (
                         <>
-                            <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">{collection.name}</h3>
+                            <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-yellow-300 transition-colors truncate">{collection.name}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400">{collection.showcases_count || collection.showcases?.length || 0} items</p>
                         </>
                     )}
@@ -126,14 +126,14 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
                     <div className="flex items-center gap-1 shrink-0">
                         <button
                             onClick={handleEdit}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-main-black transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
                             title="Rename collection"
                         >
-                            <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" />
+                            <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-yellow-300 transition-colors" />
                         </button>
                         <button
                             onClick={handleDeleteClick}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-main-black transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
                             title="Delete collection"
                         >
                             <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" />

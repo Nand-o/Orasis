@@ -73,7 +73,7 @@ const CollectionPage = () => {
 
                 {/* Toggle - Reused Style from FilterBar */}
                 <motion.div
-                    className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-full relative w-fit"
+                    className="flex p-1 bg-gray-100 dark:bg-dark-gray rounded-full relative w-fit"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
@@ -108,7 +108,7 @@ const CollectionPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                 >
-                    <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
+                    <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-dark-gray flex items-center justify-center mb-4">
                         <Grid className="w-10 h-10 text-gray-400 dark:text-gray-500" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">

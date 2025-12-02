@@ -23,6 +23,7 @@ const HomePage = ({ searchValue }) => {
         searchParams.get('categories') ? searchParams.get('categories').split(',') : []
     );
     const [showcases, setShowcases] = useState([]);
+    // Always start with loading true to show skeleton, will be set to false after data loads
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,21 +32,27 @@ const HomePage = ({ searchValue }) => {
     // Function to fetch showcases (wrapped in useCallback to avoid recreating on each render)
     const fetchShowcases = useCallback(async (forceRefresh = false) => {
         try {
+            // Always show skeleton loading for consistent UX
+            setLoading(true);
+            
             // Check cache first using cache manager
             const cachedData = cacheManager.getShowcases();
 
             if (cachedData && !forceRefresh) {
-                // Show cached data immediately (optimistic UI)
+                // Show cached data with brief skeleton display for smooth transition
                 setShowcases(cachedData);
-                setLoading(false);
+                setError(null);
+                
+                // Small delay to show skeleton briefly, then hide
+                setTimeout(() => {
+                    setLoading(false);
+                }, 300);
 
                 // Still fetch fresh data in background to update views counter
                 // This runs silently without blocking UI
                 fetchFreshDataInBackground();
                 return;
             }
-
-            setLoading(true);
 
             // Fetch all showcases - use multiple pages if needed
             let allShowcases = [];
