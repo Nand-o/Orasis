@@ -27,15 +27,15 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                 whileTap={{ scale: 0.98 }}
             >
                 {/* Image Container - The "Box" */}
-                <div className="relative aspect-4/3 bg-gray-100 dark:bg-gray-800 rounded-3xl overflow-hidden mb-4 p-12 py-16 transition-colors duration-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-700">
+                <div className="relative aspect-4/3 bg-light-gray dark:bg-dark-gray rounded-3xl overflow-hidden mb-4 p-12 py-16 transition-colors duration-300 group-hover:bg-black/10 dark:group-hover:bg-main-black">
                     <div className="w-full h-full rounded-lg overflow-hidden shadow-sm relative">
                         <LazyImage
                             src={design.image_url || design.imageUrl}
                             alt={design.title}
-                            className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                            className="w-full h-full transition-transform duration-500"
                         />
                         {/* Optional: Subtle overlay on hover */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors duration-300" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                     </div>
                 </div>
 
@@ -63,7 +63,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                         )}
 
                         <div className="flex-1 min-w-0">
-                            <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+                            <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight group-hover:text-violet-300 dark:group-hover:text-yellow-300 transition-colors truncate">
                                 {design.title}
                             </h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-medium">{design.category?.name || 'N/A'}</p>
@@ -75,7 +75,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                         {/* Action Icon (Bookmark/Save) */}
                         {showBookmark && (
                             <button
-                                className={`transition-colors p-2 ${isSaved ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-indigo-400'}`}
+                                className={`transition-colors p-2 ${isSaved ? 'text-indigo-600 dark:text-yellow-300' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-yellow-300'}`}
                                 onClick={handleBookmarkClick}
                             >
                                 <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />

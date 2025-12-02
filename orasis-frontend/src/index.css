@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant system (&:where(.system, .system *));
 
 @layer base {
     html {
@@ -11,6 +12,27 @@
     body {
     @apply overflow-x-hidden;
     }
+}
+
+/* View Transitions API Styles */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2147483646;
+}
+
+.dark::view-transition-old(root) {
+  z-index: 2147483646;
+}
+.dark::view-transition-new(root) {
+  z-index: 1;
 }
 
 @theme {
@@ -41,13 +63,21 @@
     --color-violet-300: #5724FF;
     --color-yellow-100: #8E983F;
     --color-yellow-300: #EDFF66;
+
+    /* Light Theme */
+    --color-white: #ffffff;
+    --color-light-gray: #f4f4f4;
+
+    /* Dark Theme */
+    --color-main-black: #141414;
+    --color-dark-gray: #222222;
 }
 
 
 body {
     font-family: 'circular-web', sans-serif;
     width: 100dvw;
-    background-color: #ffffff;
+    background-color: var(--color-white);
     overflow-x: hidden;
 }
 
@@ -495,3 +525,10 @@ body {
     }
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

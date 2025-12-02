@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import HeroSection from './components/HeroSection';
+import HeroNew from './components/HeroNew';
 import FilterBar from './components/FilterBar';
 import ShowcaseCard from '../showcase/components/ShowcaseCard';
 import Pagination from '../../components/ui/Pagination';
@@ -116,13 +117,11 @@ const HomePage = ({ searchValue }) => {
         document.title = 'Inspiration | Orasis';
 
         // Fetch showcases with cache-first strategy
-        // This will show cached data instantly, then refresh in background
         fetchShowcases(false);
 
         // Also listen for visibility changes (tab switching)
         const handleVisibilityChange = () => {
             if (!document.hidden) {
-                // When user returns to tab, refresh data in background
                 const cachedData = cacheManager.getShowcases();
                 if (cachedData) {
                     fetchFreshDataInBackground();
@@ -138,6 +137,26 @@ const HomePage = ({ searchValue }) => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, [fetchShowcases]);
+
+    // Sync state from URL params when they change (e.g. navigation from Navbar)
+    useEffect(() => {
+        const categoryParam = searchParams.get('category');
+        if (categoryParam && categoryParam !== activeCategory) {
+            setActiveCategory(categoryParam);
+        } else if (!categoryParam && activeCategory !== 'Websites') {
+            // Only reset if we are supposed to be at default but aren't
+            // But be careful not to loop if setParams effect triggers
+            setActiveCategory('Websites');
+        }
+
+        const sortParam = searchParams.get('sort');
+        if (sortParam && sortParam !== sortBy) {
+            setSortBy(sortParam);
+        }
+
+        // We don't auto-sync tags/categories arrays back from URL to avoid complex loops 
+        // unless strictly needed, but for the main category toggle it's essential.
+    }, [searchParams]);
 
     // Update URL params when filters change
     useEffect(() => {
@@ -256,10 +275,10 @@ const HomePage = ({ searchValue }) => {
         return (
             <div className="space-y-12">
                 {/* Hero skeleton */}
-                <div className="h-96 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
+                <div className="h-96 bg-gray-200 dark:bg-dark-gray rounded-3xl animate-pulse"></div>
 
                 {/* Filter bar skeleton */}
-                <div className="h-16 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                <div className="h-16 bg-gray-200 dark:bg-dark-gray rounded-xl animate-pulse"></div>
 
                 {/* Showcase cards skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -291,11 +310,10 @@ const HomePage = ({ searchValue }) => {
                 </div>
             )}
 
-            <HeroSection designs={popularDesigns} />
+            {/* <HeroSection designs={popularDesigns} /> */}
+            <HeroNew />
 
-            {/* <HeroImageSlider /> */}
-
-            <div className="mt-12">
+            <div className="mt-8">
                 <FilterBar
                     activeCategory={activeCategory}
                     onCategoryChange={setActiveCategory}
