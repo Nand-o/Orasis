@@ -4,6 +4,7 @@ import {
     LogOut, HelpCircle, Trash2, ChevronDown, Camera, Lock, Mail, MapPin, Eye, EyeOff
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import userService from '../../services/user.service';
 import CircularImageCropper from '../../components/ui/CircularImageCropper';
@@ -11,6 +12,7 @@ import DeleteAccountModal from '../../components/ui/DeleteAccountModal';
 
 const ProfilePageNew = () => {
     const { user, updateUser, logout } = useAuth();
+    const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
 
     // Profile Form State
@@ -51,7 +53,7 @@ const ProfilePageNew = () => {
     const [passwordFieldErrors, setPasswordFieldErrors] = useState({});
 
     const [toggles, setToggles] = useState({
-        darkMode: true,
+        darkMode: false,
         emailNotif: false,
         twoFactor: true
     });
@@ -68,6 +70,69 @@ const ProfilePageNew = () => {
             });
         }
     }, [user]);
+
+    // Sync darkMode toggle with theme context
+    useEffect(() => {
+        const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        setToggles(prev => ({ ...prev, darkMode: isDark }));
+    }, [theme]);
+
+    // Handle theme change with wave ripple effect
+    const handleThemeChange = async (event) => {
+        const newTheme = toggles.darkMode ? 'light' : 'dark';
+        
+        // Check if View Transitions API is supported
+        if (!document.startViewTransition) {
+            // Fallback: Simple ripple effect without View Transitions
+            const button = event.currentTarget;
+            const rect = button.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.classList.add('wave-ripple');
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            setTheme(newTheme);
+            return;
+        }
+
+        // Get click position relative to viewport
+        const x = event.clientX;
+        const y = event.clientY;
+        
+        // Calculate position as percentage for clip-path
+        const xPercent = (x / window.innerWidth) * 100;
+        const yPercent = (y / window.innerHeight) * 100;
+
+        // Set CSS variables for ripple origin
+        document.documentElement.style.setProperty('--ripple-x', `${xPercent}%`);
+        document.documentElement.style.setProperty('--ripple-y', `${yPercent}%`);
+
+        // Add class for wave ripple animation
+        document.documentElement.classList.add('wave-ripple-transition');
+
+        // Start view transition
+        const transition = document.startViewTransition(() => {
+            setTheme(newTheme);
+        });
+
+        // Clean up after transition
+        try {
+            await transition.finished;
+        } finally {
+            document.documentElement.classList.remove('wave-ripple-transition');
+        }
+    };
 
     const handleToggle = (key) => {
         setToggles(prev => ({ ...prev, [key]: !prev[key] }));
@@ -427,13 +492,13 @@ const ProfilePageNew = () => {
                                         label="Dark Mode"
                                         desc="Toggle dark theme appearance"
                                         checked={toggles.darkMode}
-                                        onChange={() => handleToggle('darkMode')}
+                                        onChange={handleThemeChange}
                                     />
                                     <ToggleItem
                                         label="Email Notifications"
                                         desc="Receive updates via email"
                                         checked={toggles.emailNotif}
-                                        onChange={() => handleToggle('emailNotif')}
+                                        onChange={(e) => handleToggle('emailNotif')}
                                     />
 
                                     {/* Language Select */}
@@ -546,7 +611,7 @@ const ProfilePageNew = () => {
                                         label="Two-Factor Authentication"
                                         desc="Add an extra layer of security to your account"
                                         checked={toggles.twoFactor}
-                                        onChange={() => handleToggle('twoFactor')}
+                                        onChange={(e) => handleToggle('twoFactor')}
                                     />
                                 </div>
                             </div>
@@ -584,13 +649,13 @@ const ProfilePageNew = () => {
                                             label="Dark Mode"
                                             desc="Toggle dark theme appearance"
                                             checked={toggles.darkMode}
-                                            onChange={() => handleToggle('darkMode')}
+                                            onChange={handleThemeChange}
                                         />
                                         <ToggleItem
                                             label="Email Notifications"
                                             desc="Receive updates via email"
                                             checked={toggles.emailNotif}
-                                            onChange={() => handleToggle('emailNotif')}
+                                            onChange={(e) => handleToggle('emailNotif')}
                                         />
 
                                         {/* Language Select */}
@@ -701,22 +766,35 @@ const PasswordField = ({ label, name, value, onChange, show, onToggleShow, error
     </div>
 );
 
-const ToggleItem = ({ label, desc, checked, onChange }) => (
-    <div className="flex items-center justify-between py-2">
-        <div>
-            <label className="block text-sm font-bold text-gray-900 dark:text-white">{label}</label>
-            <span className="text-xs text-gray-500 dark:text-gray-400">{desc}</span>
+const ToggleItem = ({ label, desc, checked, onChange }) => {
+    const handleClick = (e) => {
+        // Pass the click event to onChange handler
+        onChange(e);
+    };
+
+    return (
+        <div className="flex items-center justify-between py-2">
+            <div>
+                <label className="block text-sm font-bold text-gray-900 dark:text-white">{label}</label>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{desc}</span>
+            </div>
+            <div 
+                className="relative inline-flex items-center cursor-pointer overflow-hidden" 
+                onClick={handleClick}
+                role="button"
+                tabIndex={0}
+                style={{ isolation: 'isolate' }}
+            >
+                <input type="checkbox" className="sr-only peer pointer-events-none" checked={checked} readOnly />
+                <div className={`
+                    w-12 h-7 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer 
+                    peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-1 after:left-1 
+                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm
+                    peer-checked:bg-violet-600 dark:peer-checked:bg-yellow-300 dark:peer-checked:after:bg-black
+                `}></div>
+            </div>
         </div>
-        <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" className="sr-only peer" checked={checked} onChange={onChange} />
-            <div className={`
-                w-12 h-7 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer 
-                peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-1 after:left-1 
-                after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm
-                peer-checked:bg-violet-600 dark:peer-checked:bg-yellow-300 dark:peer-checked:after:bg-black
-            `}></div>
-        </label>
-    </div>
-);
+    );
+};
 
 export default ProfilePageNew;
