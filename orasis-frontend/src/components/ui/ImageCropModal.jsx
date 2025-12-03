@@ -176,14 +176,14 @@ const getCroppedImg = async (imageSrc, pixelCrop, rotation = 0) => {
     const rotRad = (rotation * Math.PI) / 180;
     const sin = Math.abs(Math.sin(rotRad));
     const cos = Math.abs(Math.cos(rotRad));
-    
+
     const rotatedWidth = image.width * cos + image.height * sin;
     const rotatedHeight = image.width * sin + image.height * cos;
 
     // Create a canvas with enough space for rotated image
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
-    
+
     tempCanvas.width = rotatedWidth;
     tempCanvas.height = rotatedHeight;
 

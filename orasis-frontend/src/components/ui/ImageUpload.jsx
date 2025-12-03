@@ -3,9 +3,9 @@ import { Upload, X, Image as ImageIcon, AlertCircle, Crop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCropModal from './ImageCropModal';
 
-const ImageUpload = ({ 
-    value, 
-    onChange, 
+const ImageUpload = ({
+    value,
+    onChange,
     error,
     maxSize = 5, // MB
     acceptedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
@@ -85,7 +85,7 @@ const ImageUpload = ({
         // Generate filename - use current file name if available, otherwise generate new one
         const fileName = currentFile ? currentFile.name : `cropped-${Date.now()}.jpg`;
         const fileType = croppedBlob.type || 'image/jpeg';
-        
+
         // Convert blob to file
         const croppedFile = new File([croppedBlob], fileName, {
             type: fileType,
@@ -185,9 +185,9 @@ const ImageUpload = ({
                         className={`
                             relative border-2 border-dashed rounded-lg p-8
                             transition-all duration-200 cursor-pointer
-                            ${isDragging 
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20' 
-                                : 'border-gray-300 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-600'
+                            ${isDragging
+                                ? 'border-yellow-300 bg-white dark:bg-white/20'
+                                : 'border-gray-300 dark:border-white/50 hover:border-violet-300 dark:hover:border-yellow-300'
                             }
                             ${error || uploadError ? 'border-red-500' : ''}
                         `}
@@ -195,25 +195,25 @@ const ImageUpload = ({
                         <div className="flex flex-col items-center justify-center gap-4 text-center">
                             <div className={`
                                 p-4 rounded-full
-                                ${isDragging 
-                                    ? 'bg-indigo-100 dark:bg-indigo-900/30' 
-                                    : 'bg-gray-100 dark:bg-gray-800'
+                                ${isDragging
+                                    ? 'bg-indigo-100 dark:bg-indigo-900/30'
+                                    : 'bg-gray-100 dark:bg-main-black'
                                 }
                             `}>
                                 <Upload className={`
                                     w-8 h-8
-                                    ${isDragging 
-                                        ? 'text-indigo-600 dark:text-indigo-400' 
-                                        : 'text-gray-400 dark:text-gray-600'
+                                    ${isDragging
+                                        ? 'text-violet-300 dark:text-yellow-300'
+                                        : 'text-gray-400 dark:text-white/50'
                                     }
                                 `} />
                             </div>
 
                             <div>
-                                <p className="text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <p className="text-base font-medium text-gray-700 dark:text-white mb-1">
                                     {isDragging ? 'Drop image here' : 'Click to upload or drag and drop'}
                                 </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-gray-500 dark:text-white/50">
                                     PNG, JPG, WEBP up to {maxSize}MB
                                 </p>
                             </div>
@@ -227,13 +227,13 @@ const ImageUpload = ({
                         exit={{ opacity: 0, scale: 0.95 }}
                         className="relative group"
                     >
-                        <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700">
+                        <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 dark:border-white/50">
                             <img
                                 src={preview}
                                 alt="Preview"
                                 className="w-full h-64 object-cover"
                             />
-                            
+
                             {/* Overlay on hover */}
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
                                 {enableCrop && (
@@ -257,7 +257,7 @@ const ImageUpload = ({
                                             setTempImageForCrop(preview);
                                             setShowCropModal(true);
                                         }}
-                                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                                        className="px-4 py-2 bg-violet-300/90 dark:bg-yellow-300/90 text-white dark:text-main-black rounded-lg font-medium hover:bg-violet-300 dark:hover:bg-yellow-300 transition-colors flex items-center gap-2"
                                     >
                                         <Crop className="w-4 h-4" />
                                         Crop
