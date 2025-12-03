@@ -65,6 +65,14 @@ const userService = {
     const response = await api.delete(`/showcases/${showcaseId}`);
     return response.data;
   },
+
+  /**
+   * Delete user account
+   */
+  deleteAccount: async () => {
+    const response = await api.delete('/user');
+    return response.data;
+  },
 };
 
 export default userService;

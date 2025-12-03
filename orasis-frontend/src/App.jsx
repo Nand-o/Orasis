@@ -17,6 +17,7 @@ import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
 import CategoryManagementPage from './features/admin/CategoryManagementPage';
 import TagManagementPage from './features/admin/TagManagementPage';
 import ProfilePage from './features/profile/ProfilePage';
+import ProfilePageNew from './features/profile/ProfilePageNew';
 import LandingPage from './features/landingPage/LandingPage';
 import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -188,6 +189,14 @@ const AnimatedRoutes = ({ searchValue }) => {
           element={
             <PageWrapper>
               <ProfilePage />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/profile1"
+          element={
+            <PageWrapper>
+              <ProfilePageNew />
             </PageWrapper>
           }
         />

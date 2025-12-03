@@ -135,4 +135,51 @@ class ProfileController extends Controller
             'data' => $stats
         ]);
     }
+
+    public function deleteAccount(Request $request)
+    {
+        $user = $request->user();
+
+        try {
+            // Delete user's profile picture if exists
+            if ($user->profile_picture) {
+                $oldPath = str_replace(url('/storage/'), '', $user->profile_picture);
+                if (\Storage::disk('public')->exists($oldPath)) {
+                    \Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            // Delete all user's showcase images
+            foreach ($user->showcases as $showcase) {
+                if ($showcase->image_url) {
+                    $imagePath = str_replace(url('/storage/'), '', $showcase->image_url);
+                    if (\Storage::disk('public')->exists($imagePath)) {
+                        \Storage::disk('public')->delete($imagePath);
+                    }
+                }
+            }
+
+            // Delete all user's showcases (will cascade to pivot tables)
+            $user->showcases()->delete();
+
+            // Delete all user's collections (will cascade to pivot tables)
+            $user->collections()->delete();
+
+            // Revoke all tokens
+            $user->tokens()->delete();
+
+            // Delete the user account
+            $user->delete();
+
+            return response()->json([
+                'message' => 'Account deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete account: ' . $e->getMessage());
+            
+            return response()->json([
+                'message' => 'Failed to delete account. Please try again.'
+            ], 500);
+        }
+    }
 }

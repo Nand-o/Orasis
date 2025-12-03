@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user', [ProfileController::class, 'update']);
     Route::post('/user', [ProfileController::class, 'update']); // For file uploads with _method=PUT
+    Route::delete('/user', [ProfileController::class, 'deleteAccount']); // Delete account
     Route::put('/user/password', [ProfileController::class, 'changePassword']);
     Route::put('/user/change-password', [ProfileController::class, 'changePassword']); // NEW endpoint to bypass cache
     Route::get('/user/showcases', [ProfileController::class, 'showcases']);

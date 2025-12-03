@@ -108,7 +108,7 @@ const Navbar = ({ searchValue, onSearchChange }) => {
 
                                 {/* Hover Dropdown */}
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                    <div className="bg-[#414141] rounded-2xl shadow-xl p-3 flex gap-3 min-w-[240px]">
+                                    <div className="bg-[#414141] rounded-2xl shadow-xl p-3 flex gap-3 min-w-60">
                                         <button
                                             onClick={(e) => {
                                                 e.preventDefault();
