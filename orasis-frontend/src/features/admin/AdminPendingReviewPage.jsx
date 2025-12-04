@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, Eye, Calendar, User as UserIcon, ExternalLink, AlertCircle, Square, CheckSquare } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
 import Spinner from '../../components/ui/Spinner';
 import cacheManager from '../../utils/cacheManager';
 
 const AdminPendingReviewPage = () => {
-    useAuth();
+    const { user } = useAuth();
     const [pendingShowcases, setPendingShowcases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);

@@ -51,24 +51,24 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden"
+                    className="bg-white dark:bg-main-black rounded-2xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/50">
+                        <h3 className="text-xl font-bold text-main-black dark:text-white">
                             Crop Image
                         </h3>
                         <button
                             onClick={onCancel}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                            className="p-2 rounded-lg transition-colors"
                         >
-                            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                            <X className="w-6 h-6 text-gray-500 dark:text-gray-400 hover:text-violet-300 dark:hover:text-yellow-300 cursor-pointer" />
                         </button>
                     </div>
 
                     {/* Cropper Area */}
-                    <div className="relative h-[500px] bg-gray-900">
+                    <div className="relative h-[500px] bg-main-black">
                         <Cropper
                             image={image}
                             crop={crop}
@@ -87,14 +87,14 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                     </div>
 
                     {/* Controls */}
-                    <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-800">
+                    <div className="p-6 space-y-4 bg-gray-50 dark:bg-main-black">
                         {/* Zoom Control */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="text-sm font-medium text-main-black dark:text-white">
                                     Zoom
                                 </label>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                <span className="text-sm text-gray-500 dark:text-white/50">
                                     {Math.round(zoom * 100)}%
                                 </span>
                             </div>
@@ -107,7 +107,7 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                                     step={0.1}
                                     value={zoom}
                                     onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                    className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                    className="flex-1 h-2 bg-gray-200 dark:bg-dark-gray rounded-lg appearance-none cursor-pointer accent-violet-300 dark:accent-yellow-300"
                                 />
                                 <ZoomIn className="w-4 h-4 text-gray-400" />
                             </div>
@@ -116,12 +116,12 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                         {/* Rotation Control */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="text-sm font-medium text-main-black dark:text-white">
                                     Rotation
                                 </label>
                                 <button
                                     onClick={handleRotate}
-                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-violet-300 dark:text-yellow-300 rounded-lg transition-colors cursor-pointer"
                                 >
                                     <RotateCw className="w-4 h-4" />
                                     Rotate 90°
@@ -134,7 +134,7 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                                 step={1}
                                 value={rotation}
                                 onChange={(e) => setRotation(parseInt(e.target.value))}
-                                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                className="w-full h-2 bg-gray-200 dark:bg-dark-gray rounded-lg appearance-none cursor-pointer accent-violet-300 dark:accent-yellow-300"
                             />
                             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                                 <span>0°</span>
@@ -147,13 +147,13 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                         <div className="flex gap-3 pt-4">
                             <button
                                 onClick={onCancel}
-                                className="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                className="flex-1 px-6 py-3 bg-gray-200 dark:bg-white text-gray-700 dark:text-main-black rounded-xl font-medium hover:bg-red-500 transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={createCroppedImage}
-                                className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                                className="flex-1 px-6 py-3 bg-violet-300/90 dark:bg-yellow-300/90 text-white dark:text-main-black rounded-xl font-medium hover:bg-violet-300 dark:hover:bg-yellow-300 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                             >
                                 <Check className="w-5 h-5" />
                                 Apply Crop
