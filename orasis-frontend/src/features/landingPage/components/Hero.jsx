@@ -22,6 +22,11 @@ const Hero = () => {
         setloadedVideos((prev) => prev + 1);
     }
 
+    const handleVideoError = () => {
+        console.warn("Video failed to load, proceeding anyway.");
+        setloadedVideos((prev) => prev + 1);
+    }
+
     // Modulo Operation to loop back to first video after the last one
     const upcomingVideoIndex = (currentIndex % totalVideos) + 1;
 
@@ -37,6 +42,18 @@ const Hero = () => {
             setisLoading(false);
         }
     }, [loadedVideos]);
+
+    // Safety timeout to prevent infinite loading
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (isLoading) {
+                console.warn("Loading timed out, forcing display.");
+                setisLoading(false);
+            }
+        }, 5000); // 5 seconds timeout
+
+        return () => clearTimeout(timer);
+    }, [isLoading]);
 
     // Set video playback rate
     useEffect(() => {
@@ -114,6 +131,7 @@ const Hero = () => {
                                 id='current-video'
                                 className='size-64 origin-center scale-150 object-cover object-center'
                                 onLoadedData={handleVideoLoad}
+                                onError={handleVideoError}
                             />
                         </div>
                     </div>
@@ -125,6 +143,7 @@ const Hero = () => {
                         id='next-video'
                         className='absolute-center invisible absolute z-20 size-64 object-cover object-center'
                         onLoadedData={handleVideoLoad}
+                        onError={handleVideoError}
                     />
 
                     <video
@@ -135,6 +154,7 @@ const Hero = () => {
                         muted
                         className='absolute left-0 top-0 size-full object-cover object-center'
                         onLoadedData={handleVideoLoad}
+                        onError={handleVideoError}
                     />
                     <div className="absolute left-0 top-0 size-full bg-black/60 z-10" />
                 </div>

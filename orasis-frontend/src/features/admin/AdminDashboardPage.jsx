@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart3, FileText, Clock, CheckCircle, XCircle, Trash2, Eye } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import showcaseService from '../../services/showcase.service';
-import Spinner from '../../components/ui/Spinner';
+import { ShowcasesPageSkeleton } from '../../components/ui/SkeletonLoading';
 
 const AdminDashboardPage = () => {
     useAuth();
@@ -86,9 +86,10 @@ const AdminDashboardPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                <Spinner size="xl" color="gray" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading dashboard data...</p>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-16">
+                <div className="max-w-7xl mx-auto">
+                    <ShowcasesPageSkeleton />
+                </div>
             </div>
         );
     }

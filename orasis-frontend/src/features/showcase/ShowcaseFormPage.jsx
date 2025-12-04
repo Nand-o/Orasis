@@ -6,10 +6,10 @@ import tagService from '../../services/tag.service';
 import categoryService from '../../services/category.service';
 import { useAuth } from '../../context/AuthContext';
 import ImageUpload from '../../components/ui/ImageUpload';
-import Spinner from '../../components/ui/Spinner';
+import { ShowcaseFormPageSkeleton } from '../../components/ui/SkeletonLoading';
 import UploadProgressBar from '../../components/ui/UploadProgressBar';
 import cacheManager from '../../utils/cacheManager';
-import { ChevronLeft, Upload, Link as LinkIcon, Image as ImageIcon, Check, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Upload, Link as LinkIcon, Image as ImageIcon, Check, AlertCircle, Spinner } from 'lucide-react';
 
 const ShowcaseFormPage = () => {
     const navigate = useNavigate();
@@ -350,14 +350,7 @@ const ShowcaseFormPage = () => {
     };
 
     if (initialLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-main-black">
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Spinner size="xl" color="gray" />
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">Loading showcase data...</p>
-                </div>
-            </div>
-        );
+        return <ShowcaseFormPageSkeleton />;
     }
 
     return (

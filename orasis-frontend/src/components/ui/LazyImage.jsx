@@ -11,14 +11,14 @@ import React, { useState, useEffect, useRef } from 'react';
  * @param {function} onLoad - Optional callback when image loads
  * @param {function} onError - Optional callback when image fails to load
  */
-const LazyImage = ({ 
-    src, 
-    alt, 
-    className = '', 
+const LazyImage = ({
+    src,
+    alt,
+    className = '',
     placeholderSrc = null,
     onLoad = null,
     onError = null,
-    ...props 
+    ...props
 }) => {
     const [imageSrc, setImageSrc] = useState(placeholderSrc);
     const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +57,7 @@ const LazyImage = ({
     const loadImage = () => {
         const img = new Image();
         img.src = src;
-        
+
         img.onload = () => {
             setImageSrc(src);
             setIsLoading(false);
@@ -75,10 +75,10 @@ const LazyImage = ({
         <div ref={imgRef} className={`relative overflow-hidden ${className}`}>
             {/* Loading placeholder */}
             {isLoading && !isError && (
-                <div className="absolute inset-0 bg-linear-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse">
+                <div className="absolute inset-0 bg-linear-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-white/30 dark:via-white/20 dark:to-white/50 animate-pulse">
                     <div className="absolute inset-0 flex items-center justify-center">
                         <svg
-                            className="w-12 h-12 text-gray-300 dark:text-gray-600"
+                            className="w-12 h-12 text-gray-300 dark:text-white"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -120,9 +120,8 @@ const LazyImage = ({
             <img
                 src={imageSrc || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
                 alt={alt}
-                className={`w-full h-full object-cover transition-opacity duration-300 ${
-                    isLoading ? 'opacity-0' : 'opacity-100'
-                }`}
+                className={`w-full h-full object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'
+                    }`}
                 loading="lazy"
                 {...props}
             />

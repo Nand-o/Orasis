@@ -7,33 +7,33 @@ export const ShowcaseCardSkeleton = () => {
     return (
         <div className="bg-white dark:bg-dark-gray rounded-2xl overflow-hidden animate-pulse">
             {/* Image skeleton */}
-            <div className="w-full h-64 bg-gray-200 dark:bg-main-black"></div>
+            <div className="w-full h-64 bg-gray-200 dark:bg-white/5"></div>
 
             {/* Content skeleton */}
             <div className="p-6 space-y-4">
                 {/* Title */}
-                <div className="h-6 bg-gray-200 dark:bg-main-black rounded w-3/4"></div>
+                <div className="h-6 bg-gray-200 dark:bg-white/5 rounded w-3/4"></div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 dark:bg-main-black rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-main-black rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-white/5 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-white/5 rounded w-5/6"></div>
                 </div>
 
                 {/* Tags */}
                 <div className="flex gap-2">
-                    <div className="h-6 w-16 bg-gray-200 dark:bg-main-black rounded-full"></div>
-                    <div className="h-6 w-20 bg-gray-200 dark:bg-main-black rounded-full"></div>
-                    <div className="h-6 w-14 bg-gray-200 dark:bg-main-black rounded-full"></div>
+                    <div className="h-6 w-16 bg-gray-200 dark:bg-white/5 rounded-full"></div>
+                    <div className="h-6 w-20 bg-gray-200 dark:bg-white/5 rounded-full"></div>
+                    <div className="h-6 w-14 bg-gray-200 dark:bg-white/5 rounded-full"></div>
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-main-black"></div>
-                        <div className="h-4 w-24 bg-gray-200 dark:bg-main-black rounded"></div>
+                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-white/5"></div>
+                        <div className="h-4 w-24 bg-gray-200 dark:bg-white/5 rounded"></div>
                     </div>
-                    <div className="h-4 w-16 bg-gray-200 dark:bg-main-black rounded"></div>
+                    <div className="h-4 w-16 bg-gray-200 dark:bg-white/5 rounded"></div>
                 </div>
             </div>
         </div>
@@ -60,22 +60,22 @@ export const TableRowSkeleton = ({ columns = 5 }) => {
  */
 export const CollectionCardSkeleton = () => {
     return (
-        <div className="bg-white dark:bg-dark-gray rounded-2xl p-6 border border-gray-200 dark:border-gray-800 animate-pulse">
+        <div className="bg-white dark:bg-dark-gray rounded-2xl p-6 border border-gray-200 dark:border-white/10 animate-pulse">
             <div className="space-y-4">
                 {/* Icon */}
-                <div className="w-12 h-12 bg-gray-200 dark:bg-main-black rounded-xl"></div>
+                <div className="w-12 h-12 bg-gray-200 dark:bg-white/5 rounded-xl"></div>
 
                 {/* Title */}
-                <div className="h-6 bg-gray-200 dark:bg-main-black rounded w-2/3"></div>
+                <div className="h-6 bg-gray-200 dark:bg-white/5 rounded w-2/3"></div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 dark:bg-main-black rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-main-black rounded w-4/5"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-white/5 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-white/5 rounded w-4/5"></div>
                 </div>
 
                 {/* Count */}
-                <div className="h-4 bg-gray-200 dark:bg-main-black rounded w-1/3"></div>
+                <div className="h-4 bg-gray-200 dark:bg-white/5 rounded w-1/3"></div>
             </div>
         </div>
     );

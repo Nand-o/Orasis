@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-    TrendingUp, 
-    Users, 
-    FileText, 
-    Clock, 
-    CheckCircle, 
+import {
+    TrendingUp,
+    Users,
+    FileText,
+    Clock,
+    CheckCircle,
     XCircle,
     Eye,
     ArrowUp,
@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
-import Spinner from '../../components/ui/Spinner';
+import { OverviewPageSkeleton } from '../../components/ui/SkeletonLoading';
+
 const AdminOverviewPage = () => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
@@ -22,10 +23,10 @@ const AdminOverviewPage = () => {
         approvedShowcases: 0,
         pendingShowcases: 0,
         rejectedShowcases: 0,
-        totalUsers: 4, // TODO: Get from API
-        newUsersThisMonth: 2,
-        totalViews: 1250,
-        totalLikes: 340
+        totalUsers: 0,
+        newUsersThisMonth: 0,
+        totalViews: 0,
+        totalLikes: 0
     });
     const [recentShowcases, setRecentShowcases] = useState([]);
     const [recentActivity, setRecentActivity] = useState([]);
@@ -39,264 +40,274 @@ const AdminOverviewPage = () => {
         try {
             setLoading(true);
             const response = await adminService.getAllShowcases();
-            const showcases = response.data;
+            const showcases = response.data || [];
+
+            // Calculate stats
+            const totalShowcases = showcases.length;
+            const approvedShowcases = showcases.filter(s => s.status === 'approved').length;
+            const pendingShowcases = showcases.filter(s => s.status === 'pending').length;
+            const rejectedShowcases = showcases.filter(s => s.status === 'rejected').length;
+            const totalViews = showcases.reduce((acc, curr) => acc + (curr.views_count || 0), 0);
+            const totalLikes = showcases.reduce((acc, curr) => acc + (curr.likes_count || 0), 0);
 
             setStats({
-                totalShowcases: showcases.length,
-                approvedShowcases: showcases.filter(s => s.status === 'approved').length,
-                pendingShowcases: showcases.filter(s => s.status === 'pending').length,
-                rejectedShowcases: showcases.filter(s => s.status === 'rejected').length,
-                totalUsers: 4,
-                newUsersThisMonth: 2,
-                totalViews: 1250,
-                totalLikes: 340
+                totalShowcases,
+                approvedShowcases,
+                pendingShowcases,
+                rejectedShowcases,
+                totalUsers: 12, // Mock data for now as we don't have user stats endpoint yet
+                newUsersThisMonth: 3,
+                totalViews,
+                totalLikes
             });
 
             // Get 5 most recent showcases
             setRecentShowcases(showcases.slice(0, 5));
 
-            // Mock activity data
-            setRecentActivity([
-                { type: 'new_showcase', user: 'John Doe', action: 'submitted a new showcase', time: '5 minutes ago' },
-                { type: 'approved', user: 'Admin', action: 'approved "Modern Dashboard"', time: '1 hour ago' },
-                { type: 'new_user', user: 'Jane Smith', action: 'joined Orasis', time: '2 hours ago' },
-                { type: 'rejected', user: 'Admin', action: 'rejected "Old Design"', time: '3 hours ago' },
-                { type: 'new_showcase', user: 'Bob Wilson', action: 'submitted a new showcase', time: '5 hours ago' },
-            ]);
+            // Mock recent activity based on showcases
+            const activity = showcases.slice(0, 5).map(s => ({
+                type: s.status === 'approved' ? 'approved' : s.status === 'rejected' ? 'rejected' : 'new_showcase',
+                user: s.user?.name || 'Unknown User',
+                action: s.status === 'approved' ? 'showcase approved' : s.status === 'rejected' ? 'showcase rejected' : 'submitted a new showcase',
+                time: new Date(s.created_at).toLocaleDateString()
+            }));
+            setRecentActivity(activity);
+
         } catch (error) {
-            console.error('Error fetching dashboard data:', error);
+            console.error('Failed to fetch dashboard data:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const statCards = [
-        {
-            title: 'Total Showcases',
-            value: stats.totalShowcases,
-            change: '+12%',
-            isPositive: true,
-            icon: FileText,
-            color: 'indigo',
-            bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
-            iconColor: 'text-indigo-600 dark:text-indigo-400'
-        },
-        {
-            title: 'Pending Review',
-            value: stats.pendingShowcases,
-            change: stats.pendingShowcases > 5 ? 'High' : 'Normal',
-            isPositive: stats.pendingShowcases <= 5,
-            icon: Clock,
-            color: 'yellow',
-            bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
-            iconColor: 'text-yellow-600 dark:text-yellow-400'
-        },
-        {
-            title: 'Total Users',
-            value: stats.totalUsers,
-            change: '+2 this month',
-            isPositive: true,
-            icon: Users,
-            color: 'green',
-            bgColor: 'bg-green-50 dark:bg-green-900/20',
-            iconColor: 'text-green-600 dark:text-green-400'
-        },
-        {
-            title: 'Total Views',
-            value: stats.totalViews.toLocaleString(),
-            change: '+18%',
-            isPositive: true,
-            icon: Eye,
-            color: 'purple',
-            bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-            iconColor: 'text-purple-600 dark:text-purple-400'
-        }
-    ];
-
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Spinner size="xl" color="gray" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading admin dashboard...</p>
-            </div>
-        );
+        return <OverviewPageSkeleton />;
     }
 
+    const colorVariants = {
+        violet: {
+            bg: 'bg-violet-100 dark:bg-violet-900/20',
+            text: 'text-violet-600 dark:text-violet-400'
+        },
+        yellow: {
+            bg: 'bg-yellow-300 dark:bg-yellow-900/20',
+            text: 'text-yellow-400 dark:text-yellow-400'
+        },
+        blue: {
+            bg: 'bg-blue-100 dark:bg-blue-900/20',
+            text: 'text-blue-600 dark:text-blue-400'
+        },
+        green: {
+            bg: 'bg-green-100 dark:bg-green-900/20',
+            text: 'text-green-600 dark:text-green-400'
+        }
+    };
+
+    const StatCard = ({ title, value, icon: Icon, color, trend }) => (
+        <motion.div
+            whileHover={{ y: -5 }}
+            className="bg-white dark:bg-dark-gray p-6 rounded-3xl border border-gray-200 dark:border-white/5 shadow-sm"
+        >
+            <div className="flex justify-between items-start mb-4">
+                <div className={`p-3 rounded-2xl ${colorVariants[color].bg} ${colorVariants[color].text}`}>
+                    <Icon className="w-6 h-6" />
+                </div>
+                {trend && (
+                    <div className={`flex items-center gap-1 text-sm font-bold ${trend > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {trend > 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                        {Math.abs(trend)}%
+                    </div>
+                )}
+            </div>
+            <h3 className="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase tracking-wider mb-1">{title}</h3>
+            <p className="text-3xl font-black text-gray-900 dark:text-white font-zentry">{value}</p>
+        </motion.div>
+    );
+
     return (
-        <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                        Welcome back, {user?.name}! 👋
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-4xl font-black text-gray-900 dark:text-white font-zentry tracking-wide">
+                        DASHBOARD OVERVIEW
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Here's what's happening with your platform today
+                    <p className="text-gray-600 dark:text-gray-400 font-medium mt-1">
+                        Welcome back, {user?.name || 'Admin'}
                     </p>
                 </div>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {statCards.map((stat, index) => {
-                        const Icon = stat.icon;
-                        return (
-                            <motion.div
-                                key={stat.title}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow"
-                            >
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className={`p-3 ${stat.bgColor} rounded-xl`}>
-                                        <Icon className={`w-6 h-6 ${stat.iconColor}`} />
-                                    </div>
-                                    <div className={`flex items-center gap-1 text-sm ${
-                                        stat.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                                    }`}>
-                                        {stat.isPositive ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-                                        <span className="font-medium">{stat.change}</span>
-                                    </div>
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                                    {stat.value}
-                                </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">{stat.title}</p>
-                            </motion.div>
-                        );
-                    })}
+                <div className="flex gap-3">
+                    <button className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors">
+                        Download Report
+                    </button>
+                    <button className="px-4 py-2 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 dark:hover:bg-yellow-300 dark:text-main-black text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-violet-500/20">
+                        Refresh Data
+                    </button>
                 </div>
+            </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Recent Showcases */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800"
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recent Showcases</h2>
-                            <a href="/dashboard/showcases" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
-                                View all
-                            </a>
-                        </div>
-                        <div className="space-y-4">
-                            {recentShowcases.map((showcase) => (
-                                <div
-                                    key={showcase.id}
-                                    className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                                    onClick={() => window.location.href = `/design/${showcase.id}`}
-                                >
-                                    <div className="w-16 h-16 rounded-lg shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
-                                        {showcase.image_url ? (
-                                            <img 
-                                                src={showcase.image_url} 
-                                                alt={showcase.title}
-                                                className="w-full h-full object-cover"
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none';
-                                                    e.target.parentElement.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-purple-600');
-                                                }}
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-black dark:bg-white flex items-center justify-center">
-                                                <FileText className="w-6 h-6 text-white dark:text-black" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                                            {showcase.title}
-                                        </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            by {showcase.user?.name} • {new Date(showcase.created_at).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                        showcase.status === 'approved' 
-                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                            : showcase.status === 'pending'
-                                            ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                                    }`}>
-                                        {showcase.status}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                    title="Total Users"
+                    value={stats.totalUsers}
+                    icon={Users}
+                    color="violet"
+                    trend={12}
+                />
+                <StatCard
+                    title="Pending Reviews"
+                    value={stats.pendingShowcases}
+                    icon={Clock}
+                    color="yellow"
+                    trend={-5}
+                />
+                <StatCard
+                    title="Total Showcases"
+                    value={stats.totalShowcases}
+                    icon={FileText}
+                    color="blue"
+                    trend={8}
+                />
+                <StatCard
+                    title="Total Views"
+                    value={stats.totalViews.toLocaleString()}
+                    icon={Eye}
+                    color="green"
+                    trend={24}
+                />
+            </div>
 
-                    {/* Activity Feed */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800"
-                    >
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Recent Activity</h2>
-                        <div className="space-y-4">
-                            {recentActivity.map((activity, index) => (
-                                <div key={index} className="flex gap-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                                        activity.type === 'approved' 
-                                            ? 'bg-green-100 dark:bg-green-900/30'
-                                            : activity.type === 'rejected'
-                                            ? 'bg-red-100 dark:bg-red-900/30'
-                                            : 'bg-indigo-100 dark:bg-indigo-900/30'
-                                    }`}>
-                                        {activity.type === 'approved' && <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                                        {activity.type === 'rejected' && <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />}
-                                        {activity.type === 'new_showcase' && <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
-                                        {activity.type === 'new_user' && <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm text-gray-900 dark:text-white">
-                                            <span className="font-semibold">{activity.user}</span>
-                                            {' '}{activity.action}
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Quick Actions */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="mt-8 bg-black dark:bg-white rounded-2xl p-8 text-white dark:text-black"
-                >
-                    <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Recent Showcases */}
+                <div className="lg:col-span-2 bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">RECENT SHOWCASES</h2>
                         <button
-                            onClick={() => window.location.href = '/dashboard/pending'}
-                            className="bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 backdrop-blur-sm rounded-xl p-4 text-left transition-colors"
+                            onClick={() => window.location.href = '/dashboard/showcases'}
+                            className="text-sm font-bold text-violet-300/90 hover:text-violet-300 dark:text-yellow-300/90 dark:hover:text-yellow-300 cursor-pointer"
                         >
-                            <Clock className="w-6 h-6 mb-2" />
-                            <h3 className="font-semibold">Review Pending</h3>
-                            <p className="text-sm opacity-80">{stats.pendingShowcases} awaiting review</p>
-                        </button>
-                        <button
-                            onClick={() => window.location.href = '/dashboard/users'}
-                            className="bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 backdrop-blur-sm rounded-xl p-4 text-left transition-colors"
-                        >
-                            <Users className="w-6 h-6 mb-2" />
-                            <h3 className="font-semibold">Manage Users</h3>
-                            <p className="text-sm opacity-80">{stats.totalUsers} total users</p>
-                        </button>
-                        <button
-                            onClick={() => window.location.href = '/dashboard/tags'}
-                            className="bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 backdrop-blur-sm rounded-xl p-4 text-left transition-colors"
-                        >
-                            <TrendingUp className="w-6 h-6 mb-2" />
-                            <h3 className="font-semibold">View Analytics</h3>
-                            <p className="text-sm opacity-80">Detailed insights</p>
+                            View All
                         </button>
                     </div>
-                </motion.div>
+                    <div className="space-y-4">
+                        {recentShowcases.map((showcase) => (
+                            <motion.div
+                                key={showcase.id}
+                                whileHover={{ scale: 1.01 }}
+                                className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                                <div className="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-200 dark:bg-gray-800">
+                                    {showcase.image_url ? (
+                                        <img
+                                            src={showcase.image_url}
+                                            alt={showcase.title}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+                                                e.target.parentElement.innerHTML = '<svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <FileText className="w-6 h-6 text-gray-400" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-gray-900 dark:text-white truncate">
+                                        {showcase.title}
+                                    </h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                        by {showcase.user?.name || 'Unknown'} • {new Date(showcase.created_at).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${showcase.status === 'approved'
+                                    ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                    : showcase.status === 'pending'
+                                        ? 'bg-yellow-300 dark:bg-yellow-900/20 text-yellow-400 dark:text-yellow-400'
+                                        : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                                    }`}>
+                                    {showcase.status}
+                                </span>
+                            </motion.div>
+                        ))}
+                        {recentShowcases.length === 0 && (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400 font-medium">
+                                No showcases found
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-sm">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide mb-6">RECENT ACTIVITY</h2>
+                    <div className="space-y-6">
+                        {recentActivity.map((activity, index) => (
+                            <div key={index} className="flex gap-4 relative">
+                                {index !== recentActivity.length - 1 && (
+                                    <div className="absolute left-5 top-10 bottom-0 w-0.5 bg-gray-100 dark:bg-white/5 -mb-6"></div>
+                                )}
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 ${activity.type === 'approved'
+                                    ? 'bg-green-100 dark:bg-green-900/20'
+                                    : activity.type === 'rejected'
+                                        ? 'bg-red-100 dark:bg-red-900/20'
+                                        : 'bg-indigo-100 dark:bg-indigo-900/20'
+                                    }`}>
+                                    {activity.type === 'approved' && <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />}
+                                    {activity.type === 'rejected' && <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />}
+                                    {activity.type === 'new_showcase' && <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />}
+                                </div>
+                                <div className="flex-1 min-w-0 pt-1">
+                                    <p className="text-sm text-gray-900 dark:text-white font-medium">
+                                        <span className="font-bold">{activity.user}</span>
+                                        {' '}{activity.action}
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-bold">{activity.time}</p>
+                                </div>
+                            </div>
+                        ))}
+                        {recentActivity.length === 0 && (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400 font-medium">
+                                No recent activity
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-violet-300 dark:bg-yellow-300 rounded-3xl p-8 text-white dark:text-black shadow-xl">
+                <h2 className="text-2xl font-black font-zentry tracking-wide mb-6">QUICK ACTIONS</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button
+                        onClick={() => window.location.href = '/dashboard/pending'}
+                        className="bg-white/10 dark:bg-black/5 hover:bg-white/20 dark:hover:bg-black/10 backdrop-blur-sm rounded-2xl p-6 text-left transition-colors group"
+                    >
+                        <Clock className="w-8 h-8 mb-4 opacity-80 group-hover:scale-110 transition-transform" />
+                        <h3 className="font-bold text-lg mb-1">Review Pending</h3>
+                        <p className="text-sm opacity-70 font-medium">{stats.pendingShowcases} awaiting review</p>
+                    </button>
+                    <button
+                        onClick={() => window.location.href = '/dashboard/users'}
+                        className="bg-white/10 dark:bg-black/5 hover:bg-white/20 dark:hover:bg-black/10 backdrop-blur-sm rounded-2xl p-6 text-left transition-colors group"
+                    >
+                        <Users className="w-8 h-8 mb-4 opacity-80 group-hover:scale-110 transition-transform" />
+                        <h3 className="font-bold text-lg mb-1">Manage Users</h3>
+                        <p className="text-sm opacity-70 font-medium">{stats.totalUsers} total users</p>
+                    </button>
+                    <button
+                        onClick={() => window.location.href = '/dashboard/analytics'}
+                        className="bg-white/10 dark:bg-black/5 hover:bg-white/20 dark:hover:bg-black/10 backdrop-blur-sm rounded-2xl p-6 text-left transition-colors group"
+                    >
+                        <TrendingUp className="w-8 h-8 mb-4 opacity-80 group-hover:scale-110 transition-transform" />
+                        <h3 className="font-bold text-lg mb-1">View Analytics</h3>
+                        <p className="text-sm opacity-70 font-medium">Detailed insights</p>
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

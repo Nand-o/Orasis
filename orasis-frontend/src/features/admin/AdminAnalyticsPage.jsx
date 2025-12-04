@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Spinner from '../../components/ui/Spinner';
-import { 
-    TrendingUp, 
-    Users, 
-    FileText, 
+import { AnalyticsPageSkeleton } from '../../components/ui/SkeletonLoading';
+import {
+    TrendingUp,
+    Users,
+    FileText,
     Clock,
     CheckCircle,
     XCircle,
@@ -41,27 +41,24 @@ const AdminAnalyticsPage = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col justify-center items-center min-h-[60vh] gap-4">
-                <Spinner size="xl" color="gray" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Loading analytics data...</p>
-            </div>
-        );
+        return <AnalyticsPageSkeleton />;
     }
 
     if (error || !analytics) {
         return (
             <div className="text-center py-20">
-                <BarChart3 className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <BarChart3 className="w-10 h-10 text-red-600 dark:text-red-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     Failed to load analytics
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
                     {error || 'Please try refreshing the page'}
                 </p>
                 <button
                     onClick={fetchAnalytics}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                    className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold transition-colors shadow-lg shadow-violet-500/20"
                 >
                     Retry
                 </button>
@@ -71,310 +68,375 @@ const AdminAnalyticsPage = () => {
 
     const { overview, showcases_per_month, users_per_month, top_contributors, showcases_by_category, popular_tags, top_viewed_showcases } = analytics;
 
-    const StatCard = ({ icon: Icon, label, value, color, subtitle }) => (
+    const colorVariants = {
+        violet: {
+            bg: 'bg-violet-100 dark:bg-violet-900/20',
+            text: 'text-violet-600 dark:text-violet-400'
+        },
+        blue: {
+            bg: 'bg-blue-100 dark:bg-blue-900/20',
+            text: 'text-blue-600 dark:text-blue-400'
+        },
+        green: {
+            bg: 'bg-green-100 dark:bg-green-900/20',
+            text: 'text-green-600 dark:text-green-400'
+        },
+        yellow: {
+            bg: 'bg-yellow-300 dark:bg-yellow-900/20',
+            text: 'text-yellow-400 dark:text-yellow-400'
+        },
+        red: {
+            bg: 'bg-red-100 dark:bg-red-900/20',
+            text: 'text-red-600 dark:text-red-400'
+        }
+    };
+
+    const StatCard = ({ icon: Icon, label, value, color, subtitle, delay = 0 }) => (
         <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay }}
+            whileHover={{ y: -5 }}
+            className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-sm hover:shadow-xl transition-all duration-300"
         >
             <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 bg-${color}-100 dark:bg-${color}-900/30 rounded-xl`}>
-                    <Icon className={`w-6 h-6 text-${color}-600 dark:text-${color}-400`} />
+                <div className={`p-3 rounded-2xl ${colorVariants[color]?.bg || 'bg-gray-100'} ${colorVariants[color]?.text || 'text-gray-600'}`}>
+                    <Icon className="w-6 h-6" />
                 </div>
                 <div className="text-right">
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+                    <p className="text-3xl font-black text-gray-900 dark:text-white font-zentry tracking-wide">{value}</p>
                     {subtitle && (
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>
                     )}
                 </div>
             </div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
+            <p className="text-sm font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">{label}</p>
         </motion.div>
     );
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="space-y-8">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                        <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
-                            Platform insights and statistics
-                        </p>
-                    </div>
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-violet-100 dark:bg-yellow-200/30 rounded-2xl">
+                    <TrendingUp className="w-8 h-8 text-violet-600 dark:text-yellow-300" />
+                </div>
+                <div>
+                    <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-wide">ANALYTICS DASHBOARD</h1>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium">
+                        Platform insights and statistics
+                    </p>
                 </div>
             </div>
 
             {/* Overview Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatCard
                     icon={Users}
                     label="Total Users"
                     value={overview.total_users}
-                    color="purple"
+                    color="violet"
+                    delay={0.1}
                 />
                 <StatCard
                     icon={FileText}
                     label="Total Showcases"
                     value={overview.total_showcases}
                     color="blue"
+                    delay={0.2}
                 />
                 <StatCard
                     icon={CheckCircle}
                     label="Approved"
                     value={overview.approved_showcases}
                     color="green"
+                    delay={0.3}
                 />
                 <StatCard
                     icon={Clock}
                     label="Pending"
                     value={overview.pending_showcases}
                     color="yellow"
+                    delay={0.4}
                 />
                 <StatCard
                     icon={XCircle}
                     label="Rejected"
                     value={overview.rejected_showcases}
                     color="red"
+                    delay={0.5}
                 />
             </div>
 
             {/* Total Views Card */}
             {overview.total_views !== undefined && (
-                <div className="mb-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-linear-to-br from-purple-500 to-indigo-600 rounded-2xl p-8 text-white"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <Eye className="w-8 h-8" />
-                                    <h3 className="text-xl font-semibold">Total Views</h3>
-                                </div>
-                                <p className="text-5xl font-bold mb-2">
-                                    {overview.total_views?.toLocaleString() || 0}
-                                </p>
-                                <p className="text-white/80 text-sm">
-                                    Across all approved showcases
-                                </p>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="bg-linear-to-br from-violet-600 to-indigo-600 dark:from-yellow-300 dark:to-yellow-400 rounded-3xl p-8 text-white dark:text-main-black shadow-2xl shadow-violet-500/20 relative overflow-hidden group"
+                >
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
+                        <TrendingUp className="w-48 h-48" />
+                    </div>
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <Eye className="w-8 h-8" />
+                                <h3 className="text-xl font-bold uppercase tracking-wider">Total Views</h3>
                             </div>
-                            <div className="hidden md:block">
-                                <TrendingUp className="w-24 h-24 opacity-20" />
+                            <p className="text-6xl font-black font-zentry tracking-wide mb-2">
+                                {overview.total_views?.toLocaleString() || 0}
+                            </p>
+                            <p className="text-white/80 font-medium dark:text-dark-gray">
+                                Across all approved showcases
+                            </p>
+                        </div>
+                        <div className="hidden md:block">
+                            <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                <TrendingUp className="w-12 h-12 text-white" />
                             </div>
                         </div>
-                    </motion.div>
-                </div>
+                    </div>
+                </motion.div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Showcases Per Month */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-sm"
+                >
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
+                            <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                            Showcases Per Month (Last 6 Months)
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">
+                            SHOWCASES PER MONTH
                         </h3>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-6">
                         {showcases_per_month.map((item, index) => {
                             const maxCount = Math.max(...showcases_per_month.map(i => i.count));
-                            const percentage = (item.count / maxCount) * 100;
+                            const percentage = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
                             return (
                                 <div key={index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 dark:text-gray-400">{item.month}</span>
-                                        <span className="font-semibold text-gray-900 dark:text-white">{item.count}</span>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="font-bold text-gray-600 dark:text-gray-400">{item.month}</span>
+                                        <span className="font-bold text-gray-900 dark:text-white">{item.count}</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-3 overflow-hidden">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${percentage}%` }}
-                                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                                            className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full"
+                                            transition={{ duration: 1, delay: 0.5 + (index * 0.1) }}
+                                            className="bg-blue-600 dark:bg-blue-400 h-full rounded-full"
                                         />
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Users Per Month */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-sm"
+                >
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="p-3 bg-violet-100 dark:bg-violet-900/20 rounded-xl">
+                            <Users className="w-6 h-6 text-violet-600 dark:text-violet-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                            User Registrations (Last 6 Months)
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">
+                            USER REGISTRATIONS
                         </h3>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-6">
                         {users_per_month.map((item, index) => {
                             const maxCount = Math.max(...users_per_month.map(i => i.count));
-                            const percentage = (item.count / maxCount) * 100;
+                            const percentage = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
                             return (
                                 <div key={index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 dark:text-gray-400">{item.month}</span>
-                                        <span className="font-semibold text-gray-900 dark:text-white">{item.count}</span>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="font-bold text-gray-600 dark:text-gray-400">{item.month}</span>
+                                        <span className="font-bold text-gray-900 dark:text-white">{item.count}</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-3 overflow-hidden">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${percentage}%` }}
-                                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                                            className="bg-purple-600 dark:bg-purple-400 h-2 rounded-full"
+                                            transition={{ duration: 1, delay: 0.5 + (index * 0.1) }}
+                                            className="bg-violet-600 dark:bg-violet-400 h-full rounded-full"
                                         />
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-                </div>
+                </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top Contributors */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                            <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-sm"
+                >
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="p-3 bg-yellow-200 dark:bg-yellow-900/20 rounded-xl">
+                            <Award className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                            Top Contributors
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">
+                            TOP CONTRIBUTORS
                         </h3>
                     </div>
                     <div className="space-y-4">
                         {top_contributors.map((user, index) => (
-                            <div key={user.id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-linear-to-br from-yellow-400 to-orange-500 text-white font-bold text-sm">
+                            <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className={`flex items-center justify-center w-10 h-10 rounded-xl font-black text-lg shadow-lg ${index === 0 ? 'bg-yellow-400 text-yellow-900' :
+                                        index === 1 ? 'bg-gray-300 text-gray-800' :
+                                            index === 2 ? 'bg-orange-300 text-orange-900' :
+                                                'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400'
+                                        }`}>
                                         {index + 1}
                                     </div>
-                                    <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                                        <span className="text-white font-semibold">
+                                    <div className="w-12 h-12 bg-linear-to-br from-violet-500 to-indigo-500 dark:from-yellow-300 dark:to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
+                                        <span className="text-white dark:text-main-black font-bold text-lg">
                                             {user.name.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-gray-900 dark:text-white">{user.name}</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                                        <p className="font-bold text-gray-900 dark:text-white">{user.name}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{user.email}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-xl font-bold text-gray-900 dark:text-white">
+                                    <p className="text-2xl font-black text-gray-900 dark:text-white font-zentry">
                                         {user.showcases_count}
                                     </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">showcases</p>
+                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">showcases</p>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Showcases by Category */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <PieChart className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-sm"
+                >
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-xl">
+                            <PieChart className="w-6 h-6 text-green-600 dark:text-green-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                            Showcases by Category
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">
+                            SHOWCASES BY CATEGORY
                         </h3>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {showcases_by_category.map((item, index) => {
                             const maxCount = Math.max(...showcases_by_category.map(i => i.count));
-                            const percentage = (item.count / maxCount) * 100;
+                            const percentage = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
                             return (
                                 <div key={index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 dark:text-gray-400">{item.category || 'N/A'}</span>
-                                        <span className="font-semibold text-gray-900 dark:text-white">{item.count}</span>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="font-bold text-gray-600 dark:text-gray-400">{item.category || 'N/A'}</span>
+                                        <span className="font-bold text-gray-900 dark:text-white">{item.count}</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-3 overflow-hidden">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${percentage}%` }}
-                                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                                            className="bg-green-600 dark:bg-green-400 h-2 rounded-full"
+                                            transition={{ duration: 1, delay: 0.5 + (index * 0.1) }}
+                                            className="bg-green-600 dark:bg-green-400 h-full rounded-full"
                                         />
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-                </div>
+                </motion.div>
             </div>
 
             {/* Top Viewed Showcases */}
             {top_viewed_showcases && top_viewed_showcases.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-sm"
+                >
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="p-3 bg-indigo-100 dark:bg-indigo-900/20 rounded-xl">
+                            <Eye className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                            Most Viewed Showcases
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">
+                            MOST VIEWED SHOWCASES
                         </h3>
                     </div>
                     <div className="space-y-4">
                         {top_viewed_showcases.map((showcase, index) => (
                             <motion.div
                                 key={showcase.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: index * 0.05 }}
-                                className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                                whileHover={{ scale: 1.01 }}
+                                className="flex items-center gap-6 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer"
                             >
-                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-linear-to-br from-purple-500 to-indigo-600 text-white font-bold text-sm shrink-0">
+                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-black text-lg shrink-0">
                                     {index + 1}
                                 </div>
-                                <img 
-                                    src={showcase.image_url} 
+                                <img
+                                    src={showcase.image_url}
                                     alt={showcase.title}
-                                    className="w-20 h-16 object-cover rounded-lg shrink-0"
+                                    className="w-24 h-16 object-cover rounded-xl shadow-md shrink-0"
                                 />
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                    <p className="font-bold text-gray-900 dark:text-white truncate text-lg">
                                         {showcase.title}
                                     </p>
                                     <div className="flex items-center gap-3 mt-1">
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <span className="px-2 py-1 bg-gray-200 dark:bg-white/10 rounded-md text-xs font-bold text-gray-600 dark:text-gray-300">
                                             {showcase.category?.name || 'N/A'}
-                                        </p>
-                                        <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            {showcase.user?.name || 'Unknown'}
-                                        </p>
+                                        </span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                            by {showcase.user?.name || 'Unknown'}
+                                        </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 shrink-0">
-                                    <Eye className="w-4 h-4" />
-                                    <span className="font-bold text-lg">{showcase.views_count?.toLocaleString() || 0}</span>
+                                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 shrink-0 bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-xl">
+                                    <Eye className="w-5 h-5" />
+                                    <span className="font-black text-xl font-zentry">{showcase.views_count?.toLocaleString() || 0}</span>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             )}
 
             {/* Popular Tags */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-pink-100 dark:bg-pink-900/30 rounded-lg">
-                        <Tag className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+                className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-sm"
+            >
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="p-3 bg-pink-100 dark:bg-pink-900/20 rounded-xl">
+                        <Tag className="w-6 h-6 text-pink-600 dark:text-pink-400" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                        Most Popular Tags
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">
+                        MOST POPULAR TAGS
                     </h3>
                 </div>
                 <div className="flex flex-wrap gap-3">
@@ -382,16 +444,17 @@ const AdminAnalyticsPage = () => {
                         <motion.div
                             key={tag.id}
                             whileHover={{ scale: 1.05 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 rounded-full"
+                            whileTap={{ scale: 0.95 }}
+                            className="inline-flex items-center gap-3 px-5 py-3 bg-gray-50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-white/5 rounded-xl transition-colors cursor-pointer group"
                         >
-                            <span className="font-medium text-gray-900 dark:text-white">{tag.name}</span>
-                            <span className="px-2 py-0.5 bg-white dark:bg-gray-800 rounded-full text-xs font-bold text-gray-700 dark:text-gray-300">
+                            <span className="font-bold text-gray-700 dark:text-gray-300 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">#{tag.name}</span>
+                            <span className="px-2 py-0.5 bg-white dark:bg-black/20 rounded-lg text-xs font-black text-gray-500 dark:text-gray-400">
                                 {tag.showcases_count}
                             </span>
                         </motion.div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };

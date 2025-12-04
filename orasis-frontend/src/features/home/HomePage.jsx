@@ -282,10 +282,10 @@ const HomePage = ({ searchValue }) => {
         return (
             <div className="space-y-12">
                 {/* Hero skeleton */}
-                <div className="h-96 bg-gray-200 dark:bg-dark-gray rounded-3xl animate-pulse"></div>
+                <div className="h-96 bg-gray-200 dark:bg-white/5 rounded-3xl animate-pulse"></div>
 
                 {/* Filter bar skeleton */}
-                <div className="h-16 bg-gray-200 dark:bg-dark-gray rounded-xl animate-pulse"></div>
+                <div className="h-16 bg-gray-200 dark:bg-white/5 rounded-xl animate-pulse"></div>
 
                 {/* Showcase cards skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">

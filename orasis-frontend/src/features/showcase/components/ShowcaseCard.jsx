@@ -40,11 +40,11 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                 </div>
 
                 {/* Content Container - Outside the box */}
-                <div className="flex items-start justify-between px-1">
-                    <div className="flex items-center space-x-3">
+                <div className="flex items-start justify-between px-1 gap-4">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
                         {/* Logo or Fallback Icon */}
                         {design.logo_url ? (
-                            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-md">
+                            <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-md">
                                 <img
                                     src={design.logo_url}
                                     alt={`${design.title} logo`}
@@ -57,34 +57,34 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                                 />
                             </div>
                         ) : (
-                            <div className="w-12 h-12 rounded-xl bg-gray-900 dark:bg-white flex items-center justify-center shrink-0 text-white dark:text-black shadow-md">
-                                <span className="text-base font-bold">{design.title.charAt(0)}</span>
+                            <div className="w-10 h-10 rounded-xl bg-gray-900 dark:bg-white flex items-center justify-center shrink-0 text-white dark:text-black shadow-md">
+                                <span className="text-sm font-bold">{design.title.charAt(0)}</span>
                             </div>
                         )}
 
                         <div className="flex-1 min-w-0">
-                            <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight group-hover:text-violet-300 dark:group-hover:text-yellow-300 transition-colors truncate">
+                            <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-tight group-hover:text-violet-300 dark:group-hover:text-yellow-300 transition-colors truncate pr-2">
                                 {design.title}
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-medium">{design.category?.name || 'N/A'}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium truncate">{design.category?.name || 'N/A'}</p>
                         </div>
                     </div>
 
                     {/* Right Side: Bookmark and View Count */}
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-col items-end gap-1 shrink-0">
                         {/* Action Icon (Bookmark/Save) */}
                         {showBookmark && (
                             <button
-                                className={`transition-colors p-2 ${isSaved ? 'text-indigo-600 dark:text-yellow-300' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-yellow-300'}`}
+                                className={`transition-colors p-1.5 ${isSaved ? 'text-indigo-600 dark:text-yellow-300' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-yellow-300'}`}
                                 onClick={handleBookmarkClick}
                             >
-                                <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+                                <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
                             </button>
                         )}
 
                         {/* View Count */}
-                        <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 pr-2">
-                            <Eye className="w-3.5 h-3.5" />
+                        <div className="flex items-center gap-1 text-[10px] font-medium text-gray-400 dark:text-gray-500">
+                            <Eye className="w-3 h-3" />
                             <span>{design.views_count?.toLocaleString() || 0}</span>
                         </div>
                     </div>

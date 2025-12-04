@@ -90,7 +90,7 @@ const CollectionCard = ({ collection, onClick, onDelete, isNew = false, previewI
                         ))}
                         {/* Fill remaining spots with gray if needed */}
                         {images.length < 4 && images.length !== 1 && Array.from({ length: 4 - images.length }).map((_, i) => (
-                            <div key={`empty-${i}`} className="bg-gray-200 dark:bg-gray-700 w-full h-full" />
+                            <div key={`empty-${i}`} className="bg-gray-200 dark:bg-dark-gray w-full h-full" />
                         ))}
 
                         {/* Overlay with count */}
