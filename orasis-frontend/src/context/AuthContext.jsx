@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/auth.service';
-import Spinner from '../components/ui/Spinner';
 
 const AuthContext = createContext(undefined);
 
@@ -85,9 +84,11 @@ export const AuthProvider = ({ children }) => {
     return (
         <AuthContext.Provider value={value}>
             {loading ? (
-                <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-                    <Spinner size="xl" color="gray" />
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">Loading application...</p>
+                <div className="flex items-center justify-center min-h-screen bg-white dark:bg-main-black">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-gray-200 dark:border-white/10 border-t-violet-600 dark:border-t-yellow-300 rounded-full animate-spin" />
+                        <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Loading...</p>
+                    </div>
                 </div>
             ) : (
                 children

@@ -14,8 +14,8 @@ const StatusBadge = ({ status, size = 'md' }) => {
         },
         pending: {
             icon: Clock,
-            color: 'text-yellow-400 dark:text-yellow-400',
-            bgColor: 'bg-yellow-300 dark:bg-yellow-900/30',
+            color: 'text-yellow-600 dark:text-yellow-400',
+            bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
             label: 'Pending Review'
         },
         rejected: {

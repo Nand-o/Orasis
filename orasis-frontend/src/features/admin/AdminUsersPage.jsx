@@ -13,10 +13,12 @@ import {
     X,
     Check,
     MoreVertical,
-    Filter
+    Filter,
+    ChevronLeft
 } from 'lucide-react';
 import adminService from '../../services/admin.service';
 import { TableRowSkeleton } from '../../components/ui/Skeleton';
+import UserAvatar from '../../components/ui/UserAvatar';
 
 const AdminUsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -33,6 +35,7 @@ const AdminUsersPage = () => {
         role: 'user'
     });
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [isRoleOpen, setIsRoleOpen] = useState(false);
 
     useEffect(() => {
         document.title = 'User Management | Admin | Orasis';
@@ -161,7 +164,7 @@ const AdminUsersPage = () => {
                         Manage all users and their roles
                     </p>
                 </div>
-                <div className="flex items-center gap-3 w-full lg:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
                     <div className="relative flex-1 lg:flex-none">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white" />
                         <input
@@ -176,17 +179,90 @@ const AdminUsersPage = () => {
                         onClick={handleCreateUser}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="px-4 py-2 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 hover:dark:bg-yellow-300 dark:text-main-black text-white rounded-xl font-bold flex items-center gap-2 transition-colors shadow-lg shadow-violet-500/20"
+                        className="px-4 py-2 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 hover:dark:bg-yellow-300 dark:text-main-black text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg shadow-violet-500/20 whitespace-nowrap"
                     >
                         <Plus className="w-4 h-4" />
-                        <span className="hidden sm:inline">Add User</span>
+                        <span>Add User</span>
                     </motion.button>
                 </div>
             </div>
 
-            {/* Users Table */}
+            {/* Users Table / Mobile Cards */}
             <div className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
-                <div className="overflow-x-auto">
+
+                {/* Mobile Card View (Visible on Mobile) */}
+                <div className="md:hidden">
+                    {loading ? (
+                        Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index} className="p-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gray-100 dark:bg-white/5 rounded-full animate-pulse" />
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-4 bg-gray-100 dark:bg-white/5 rounded w-1/2 animate-pulse" />
+                                        <div className="h-3 bg-gray-100 dark:bg-white/5 rounded w-1/3 animate-pulse" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : filteredUsers.length === 0 ? (
+                        <div className="py-12 text-center text-gray-500 dark:text-gray-400">
+                            <div className="flex flex-col items-center gap-3">
+                                <Users className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                                <p>{searchQuery ? 'No users found' : 'No users yet'}</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-gray-100 dark:divide-white/5">
+                            {filteredUsers.map((user) => (
+                                <div key={user.id} className="p-4 flex flex-col gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <UserAvatar 
+                                            user={user} 
+                                            size="lg"
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between">
+                                                <p className="font-bold text-gray-900 dark:text-white truncate pr-2">
+                                                    {user.name}
+                                                </p>
+                                                {getRoleBadge(user.role)}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                                <Mail className="w-3 h-3" />
+                                                <span className="truncate">{user.email}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                                                <Calendar className="w-3 h-3" />
+                                                <span>Joined {new Date(user.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile Actions - Always Visible */}
+                                    <div className="flex gap-2 pt-2">
+                                        <button
+                                            onClick={() => handleEditUser(user)}
+                                            className="flex-1 py-2 px-3 bg-gray-50 dark:bg-white/5 hover:bg-violet-50 dark:hover:bg-violet-900/20 text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-yellow-300 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Edit2 className="w-4 h-4" />
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteUser(user.id)}
+                                            className="flex-1 py-2 px-3 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Table View (Hidden on Mobile) */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5">
@@ -223,10 +299,11 @@ const AdminUsersPage = () => {
                                     >
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-violet-500 to-fuchsia-500 dark:from-yellow-300 dark:to-yellow-600 flex items-center justify-center text-white dark:text-main-black font-bold shadow-sm">
-                                                    {user.name.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div>
+                                                <UserAvatar 
+                                                    user={user} 
+                                                    size="md"
+                                                />
+                                                <div className="min-w-0">
                                                     <p className="font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-yellow-300 transition-colors">
                                                         {user.name}
                                                     </p>
@@ -354,17 +431,46 @@ const AdminUsersPage = () => {
                                         Role
                                     </label>
                                     <div className="relative">
-                                        <select
-                                            value={formData.role}
-                                            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-yellow-300 appearance-none transition-all"
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsRoleOpen(!isRoleOpen)}
+                                            className={`w-full px-4 py-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                                                isRoleOpen 
+                                                    ? 'ring-2 ring-violet-500 dark:ring-yellow-300 border-transparent' 
+                                                    : 'border-gray-200 dark:border-white/10 hover:border-violet-300 dark:hover:border-yellow-300/50'
+                                            } bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:outline-none`}
                                         >
-                                            <option value="user">User</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                                            <Filter className="w-4 h-4" />
-                                        </div>
+                                            <span className="font-medium capitalize">
+                                                {formData.role}
+                                            </span>
+                                            <ChevronLeft className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isRoleOpen ? 'rotate-90' : '-rotate-90'}`} />
+                                        </button>
+
+                                        {isRoleOpen && (
+                                            <>
+                                                <div className="fixed inset-0 z-10" onClick={() => setIsRoleOpen(false)} />
+                                                <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-dark-gray border border-gray-200 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
+                                                    {['user', 'admin'].map(role => (
+                                                        <div
+                                                            key={role}
+                                                            onClick={() => {
+                                                                setFormData({ ...formData, role });
+                                                                setIsRoleOpen(false);
+                                                            }}
+                                                            className={`px-4 py-3 text-sm font-medium cursor-pointer transition-colors flex items-center justify-between capitalize
+                                                                ${formData.role === role
+                                                                    ? 'bg-violet-50 dark:bg-yellow-300/10 text-violet-700 dark:text-yellow-300'
+                                                                    : 'text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5'
+                                                                }
+                                                            `}
+                                                        >
+                                                            {role}
+                                                            {formData.role === role && <Check className="w-4 h-4" />}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 

@@ -5,7 +5,7 @@ import ShowcaseCard from './components/ShowcaseCard';
 import FilterBar from '../home/components/FilterBar';
 import { useNavigate } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
-import Spinner from '../../components/ui/Spinner';
+import { ShowcaseCardSkeleton } from '../../components/ui/Skeleton';
 
 const ShowcaseSearchPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -142,9 +142,25 @@ const ShowcaseSearchPage = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-                <Spinner size="xl" color="gray" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Searching showcases...</p>
+            <div className="min-h-screen bg-white dark:bg-main-black">
+                <div className="container mx-auto px-4 py-8">
+                    {/* Filter Bar Skeleton */}
+                    <div className="mb-8">
+                        <div className="h-12 bg-gray-200 dark:bg-white/5 rounded-xl animate-pulse mb-4" />
+                        <div className="flex gap-3">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="h-10 w-24 bg-gray-200 dark:bg-white/5 rounded-lg animate-pulse" />
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Results Grid Skeleton */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {[...Array(12)].map((_, i) => (
+                            <ShowcaseCardSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }

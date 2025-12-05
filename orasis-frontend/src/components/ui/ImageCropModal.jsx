@@ -8,6 +8,7 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [isInitializing, setIsInitializing] = useState(true);
 
     const onCropChange = (crop) => {
         setCrop(crop);
@@ -19,6 +20,29 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
 
     const onCropCompleteCallback = useCallback((croppedArea, croppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+
+    const onMediaLoaded = useCallback((mediaSize) => {
+        // Auto-rotate 360° to force proper crop area calculation
+        // This simulates the fix that happens when user manually rotates
+        let currentRotation = 0;
+        const rotateStep = () => {
+            currentRotation += 90;
+            setRotation(currentRotation);
+            
+            if (currentRotation < 360) {
+                setTimeout(rotateStep, 50); // 50ms between each 90° rotation
+            } else {
+                // After full 360° rotation, reset to 0 and show UI
+                setTimeout(() => {
+                    setRotation(0);
+                    setIsInitializing(false);
+                }, 50);
+            }
+        };
+        
+        // Start the rotation sequence after a brief delay
+        setTimeout(rotateStep, 100);
     }, []);
 
     const handleRotate = () => {
@@ -69,6 +93,14 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
 
                     {/* Cropper Area */}
                     <div className="relative h-[500px] bg-main-black">
+                        {isInitializing && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
+                                <div className="flex flex-col items-center gap-3">
+                                    <div className="w-10 h-10 border-4 border-gray-700 border-t-yellow-300 rounded-full animate-spin"></div>
+                                    <p className="text-white text-sm font-medium">Preparing crop tool...</p>
+                                </div>
+                            </div>
+                        )}
                         <Cropper
                             image={image}
                             crop={crop}
@@ -78,9 +110,17 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                             onCropChange={onCropChange}
                             onZoomChange={onZoomChange}
                             onCropComplete={onCropCompleteCallback}
+                            onMediaLoaded={onMediaLoaded}
+                            restrictPosition={false}
+                            objectFit="contain"
+                            showGrid={!isInitializing}
+                            zoomSpeed={0.5}
                             style={{
                                 containerStyle: {
                                     backgroundColor: '#000',
+                                },
+                                mediaStyle: {
+                                    transform: 'translate(-50%, -50%)',
                                 },
                             }}
                         />

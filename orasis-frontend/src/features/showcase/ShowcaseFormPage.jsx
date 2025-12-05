@@ -9,7 +9,8 @@ import ImageUpload from '../../components/ui/ImageUpload';
 import { ShowcaseFormPageSkeleton } from '../../components/ui/SkeletonLoading';
 import UploadProgressBar from '../../components/ui/UploadProgressBar';
 import cacheManager from '../../utils/cacheManager';
-import { ChevronLeft, Upload, Link as LinkIcon, Image as ImageIcon, Check, AlertCircle, Spinner } from 'lucide-react';
+import { ChevronLeft, Upload, Link as LinkIcon, Image as ImageIcon, Check, AlertCircle } from 'lucide-react';
+import Spinner from '../../components/ui/Spinner';
 
 const ShowcaseFormPage = () => {
     const navigate = useNavigate();

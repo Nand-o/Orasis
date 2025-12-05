@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -27,8 +27,65 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const { theme, setTheme } = useTheme();
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
+    const dashboardCaption = useMemo(() => isAdmin ? 'Admin Panel' : 'User Dashboard', [isAdmin]);
     const [pendingCount, setPendingCount] = useState(0);
+    // Handle theme toggle with wave ripple effect
+    const handleThemeToggle = async (event) => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+
+        // Check if View Transitions API is supported
+        if (!document.startViewTransition) {
+            // Fallback: Simple ripple effect without View Transitions
+            const button = event.currentTarget;
+            const rect = button.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.classList.add('wave-ripple');
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            setTheme(newTheme);
+            return;
+        }
+
+        // Get click position relative to viewport
+        const x = event.clientX;
+        const y = event.clientY;
+
+        // Calculate position as percentage for clip-path
+        const xPercent = (x / window.innerWidth) * 100;
+        const yPercent = (y / window.innerHeight) * 100;
+
+        // Set CSS variables for ripple origin
+        document.documentElement.style.setProperty('--ripple-x', `${xPercent}%`);
+        document.documentElement.style.setProperty('--ripple-y', `${yPercent}%`);
+
+        // Add class for wave ripple animation
+        document.documentElement.classList.add('wave-ripple-transition');
+
+        // Start view transition
+        const transition = document.startViewTransition(() => {
+            setTheme(newTheme);
+        });
+
+        // Clean up after transition
+        try {
+            await transition.finished;
+        } finally {
+            document.documentElement.classList.remove('wave-ripple-transition');
+        }
+    };
 
     // Fetch pending count for admin
     useEffect(() => {
@@ -110,17 +167,12 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                         <img src="/logo-white.svg" alt="Orasis" className="w-full h-full object-contain hidden dark:block" />
                     </div>
                     {!collapsed && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="flex flex-col min-w-0"
-                        >
+                        <div className="flex flex-col min-w-0">
                             <span className="font-bold text-sm text-violet-300 dark:text-yellow-300 tracking-tight">ORASIS</span>
                             <span className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wider">
-                                {isAdmin ? 'Admin Panel' : 'User Dashboard'}
+                                {dashboardCaption}
                             </span>
-                        </motion.div>
+                        </div>
                     )}
                 </div>
 
@@ -195,8 +247,8 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
             {/* Bottom Actions */}
             <div className="p-4 mt-auto space-y-2 border-t border-gray-100 dark:border-white/5">
                 <button
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all group ${collapsed ? 'justify-center' : ''}`}
+                    onClick={handleThemeToggle}
+                    className={`relative overflow-hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all group ${collapsed ? 'justify-center' : ''}`}
                 >
                     {theme === 'dark' ? (
                         <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
@@ -225,4 +277,4 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     );
 };
 
-export default DashboardSidebar;
+export default React.memo(DashboardSidebar);

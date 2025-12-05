@@ -126,6 +126,15 @@
     }
     }
 
+    @keyframes ripple {
+    to {
+        width: 500px;
+        height: 500px;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    }
+
     --font-family-zentry: 'zentry', sans-serif;
     --font-family-general: 'general', sans-serif;
     --font-family-circular-web: 'circular-web', sans-serif;

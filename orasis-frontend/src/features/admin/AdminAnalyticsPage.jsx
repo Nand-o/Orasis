@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { AnalyticsPageSkeleton } from '../../components/ui/SkeletonLoading';
 import {
     TrendingUp,
@@ -15,8 +16,10 @@ import {
     Eye
 } from 'lucide-react';
 import adminService from '../../services/admin.service';
+import UserAvatar from '../../components/ui/UserAvatar';
 
 const AdminAnalyticsPage = () => {
+    const navigate = useNavigate();
     const [analytics, setAnalytics] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -301,29 +304,36 @@ const AdminAnalyticsPage = () => {
                     <div className="space-y-4">
                         {top_contributors.map((user, index) => (
                             <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div className={`flex items-center justify-center w-10 h-10 rounded-xl font-black text-lg shadow-lg ${index === 0 ? 'bg-yellow-400 text-yellow-900' :
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl font-black text-sm md:text-lg shadow-lg shrink-0 ${index === 0 ? 'bg-yellow-400 text-yellow-900' :
                                         index === 1 ? 'bg-gray-300 text-gray-800' :
                                             index === 2 ? 'bg-orange-300 text-orange-900' :
                                                 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400'
                                         }`}>
                                         {index + 1}
                                     </div>
-                                    <div className="w-12 h-12 bg-linear-to-br from-violet-500 to-indigo-500 dark:from-yellow-300 dark:to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
-                                        <span className="text-white dark:text-main-black font-bold text-lg">
-                                            {user.name.charAt(0).toUpperCase()}
-                                        </span>
+                                    <div className="hidden md:block">
+                                        <UserAvatar 
+                                            user={user} 
+                                            size="lg"
+                                        />
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-gray-900 dark:text-white">{user.name}</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{user.email}</p>
+                                    <div className="md:hidden">
+                                        <UserAvatar 
+                                            user={user} 
+                                            size="md"
+                                        />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-gray-900 dark:text-white truncate text-sm md:text-base">{user.name}</p>
+                                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{user.email}</p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-2xl font-black text-gray-900 dark:text-white font-zentry">
+                                <div className="text-right shrink-0 pl-2">
+                                    <p className="text-xl md:text-2xl font-black text-gray-900 dark:text-white font-zentry">
                                         {user.showcases_count}
                                     </p>
-                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">showcases</p>
+                                    <p className="text-[10px] md:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">showcases</p>
                                 </div>
                             </div>
                         ))}
@@ -391,16 +401,22 @@ const AdminAnalyticsPage = () => {
                             <motion.div
                                 key={showcase.id}
                                 whileHover={{ scale: 1.01 }}
-                                className="flex items-center gap-6 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer"
+                                onClick={() => navigate(`/design/${showcase.id}`)}
+                                className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer overflow-hidden"
                             >
-                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-black text-lg shrink-0">
-                                    {index + 1}
+                                <div className="flex items-center gap-4 w-full sm:w-auto">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-black text-lg shrink-0">
+                                        {index + 1}
+                                    </div>
+                                    <div className="w-full sm:w-24 h-48 sm:h-16 rounded-xl shadow-md overflow-hidden shrink-0">
+                                        <img
+                                            src={showcase.image_url}
+                                            alt={showcase.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 </div>
-                                <img
-                                    src={showcase.image_url}
-                                    alt={showcase.title}
-                                    className="w-24 h-16 object-cover rounded-xl shadow-md shrink-0"
-                                />
+
                                 <div className="flex-1 min-w-0">
                                     <p className="font-bold text-gray-900 dark:text-white truncate text-lg">
                                         {showcase.title}
@@ -414,8 +430,11 @@ const AdminAnalyticsPage = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 shrink-0 bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-xl">
-                                    <Eye className="w-5 h-5" />
+                                <div className="flex items-center justify-between sm:justify-end gap-2 text-indigo-600 dark:text-indigo-400 w-full sm:w-auto bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-xl">
+                                    <div className="flex items-center gap-2">
+                                        <Eye className="w-5 h-5" />
+                                        <span className="text-sm font-bold sm:hidden">Views</span>
+                                    </div>
                                     <span className="font-black text-xl font-zentry">{showcase.views_count?.toLocaleString() || 0}</span>
                                 </div>
                             </motion.div>

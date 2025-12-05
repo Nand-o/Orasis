@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
     TrendingUp,
     Users,
@@ -16,6 +17,7 @@ import adminService from '../../services/admin.service';
 import { OverviewPageSkeleton } from '../../components/ui/SkeletonLoading';
 
 const AdminOverviewPage = () => {
+    const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
@@ -39,8 +41,15 @@ const AdminOverviewPage = () => {
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const response = await adminService.getAllShowcases();
-            const showcases = response.data || [];
+            
+            // Fetch showcases and users in parallel
+            const [showcasesResponse, usersResponse] = await Promise.all([
+                adminService.getAllShowcases(),
+                adminService.getAllUsers()
+            ]);
+            
+            const showcases = showcasesResponse.data || [];
+            const users = usersResponse.data || [];
 
             // Calculate stats
             const totalShowcases = showcases.length;
@@ -49,14 +58,22 @@ const AdminOverviewPage = () => {
             const rejectedShowcases = showcases.filter(s => s.status === 'rejected').length;
             const totalViews = showcases.reduce((acc, curr) => acc + (curr.views_count || 0), 0);
             const totalLikes = showcases.reduce((acc, curr) => acc + (curr.likes_count || 0), 0);
+            
+            // Calculate new users this month
+            const now = new Date();
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const newUsersThisMonth = users.filter(u => {
+                const createdAt = new Date(u.created_at);
+                return createdAt >= firstDayOfMonth;
+            }).length;
 
             setStats({
                 totalShowcases,
                 approvedShowcases,
                 pendingShowcases,
                 rejectedShowcases,
-                totalUsers: 12, // Mock data for now as we don't have user stats endpoint yet
-                newUsersThisMonth: 3,
+                totalUsers: users.length,
+                newUsersThisMonth,
                 totalViews,
                 totalLikes
             });
@@ -184,7 +201,7 @@ const AdminOverviewPage = () => {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white font-zentry tracking-wide">RECENT SHOWCASES</h2>
                         <button
-                            onClick={() => window.location.href = '/dashboard/showcases'}
+                            onClick={() => navigate('/dashboard/showcases')}
                             className="text-sm font-bold text-violet-300/90 hover:text-violet-300 dark:text-yellow-300/90 dark:hover:text-yellow-300 cursor-pointer"
                         >
                             View All
@@ -195,6 +212,7 @@ const AdminOverviewPage = () => {
                             <motion.div
                                 key={showcase.id}
                                 whileHover={{ scale: 1.01 }}
+                                onClick={() => navigate(`/design/${showcase.id}`)}
                                 className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
                             >
                                 <div className="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-200 dark:bg-gray-800">

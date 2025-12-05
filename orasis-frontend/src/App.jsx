@@ -11,6 +11,7 @@ import ShowcaseFormPage from './features/showcase/ShowcaseFormPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/profile/DashboardPage';
+import AdminDashboardPage from './features/admin/AdminDashboardPage';
 import AdminPendingReviewPage from './features/admin/AdminPendingReviewPage';
 import AdminUsersPage from './features/admin/AdminUsersPage';
 import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
@@ -51,6 +52,26 @@ const DashboardRouter = () => {
   return (
     <DashboardLayout>
       {user.role === 'admin' ? <AdminOverviewPage /> : <UserOverviewPage />}
+    </DashboardLayout>
+  );
+};
+
+// Component to render All Showcases page based on user role
+const ShowcasesDashboardRouter = () => {
+  const { user } = useAuth();
+
+  // Redirect non-admin users to their own showcase page
+  if (!user || user.role !== 'admin') {
+    return (
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <AdminDashboardPage />
     </DashboardLayout>
   );
 };
@@ -129,11 +150,7 @@ const AnimatedRoutes = ({ searchValue }) => {
         />
         <Route
           path="/dashboard/showcases"
-          element={
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
-          }
+          element={<ShowcasesDashboardRouter />}
         />
         <Route
           path="/dashboard/collections"

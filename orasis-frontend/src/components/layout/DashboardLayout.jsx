@@ -1,15 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+    ArrowLeft,
+    Menu,
+    X,
+    LayoutDashboard,
+    FileText,
+    Clock,
+    Users,
+    Folder,
+    Tag,
+    TrendingUp,
+    Grid,
+    Sun,
+    Moon,
+    Settings,
+    LogOut
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import DashboardSidebar from './DashboardSidebar';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import adminService from '../../services/admin.service';
 
 const DashboardLayout = ({ children }) => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+    const { theme, setTheme } = useTheme();
+    const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
+
+    // Mobile Menu State
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // Initialize collapsed state based on screen size
     const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
         return window.innerWidth < 1024; // Collapsed on screens smaller than 1024px (tablet and mobile)
     });
+
+    // Memoize setSidebarCollapsed to prevent re-renders
+    const handleSetCollapsed = useCallback((value) => {
+        setSidebarCollapsed(value);
+    }, []);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [location.pathname]);
+
+    // Admin Pending Count Logic (Duplicate for Mobile Menu Badge)
+    const [pendingCount, setPendingCount] = useState(0);
+    useEffect(() => {
+        if (isAdmin) {
+            const fetchPendingCount = async () => {
+                try {
+                    const response = await adminService.getPendingShowcases();
+                    setPendingCount(response.data?.length || 0);
+                } catch (error) {
+                    console.error('Failed to fetch pending count:', error);
+                }
+            };
+            fetchPendingCount();
+            const interval = setInterval(fetchPendingCount, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [isAdmin]);
 
     const getPageTitle = () => {
         const path = location.pathname;
@@ -31,15 +86,151 @@ const DashboardLayout = ({ children }) => {
         return { main: 'Dashboard', sub: 'Overview' };
     };
 
+    const handleLogout = () => {
+        if (confirm('Are you sure you want to logout?')) {
+            logout();
+            navigate('/');
+        }
+    };
+
     // Calculate margin based on sidebar state + spacing
     // Sidebar is fixed at left-4 (16px)
     // Width is 280px or 88px
     // We want some gap after the sidebar, say 24px
     const contentMargin = sidebarCollapsed ? '120px' : '320px';
 
+    const adminMenuItems = [
+        { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
+        { icon: FileText, label: 'Showcases', path: '/dashboard/showcases', badge: null },
+        { icon: Clock, label: 'Pending Review', path: '/dashboard/pending', badge: 'pending' },
+        { icon: Users, label: 'Users', path: '/dashboard/users' },
+        { icon: Folder, label: 'Categories', path: '/dashboard/categories' },
+        { icon: Tag, label: 'Tags', path: '/dashboard/tags' },
+        { icon: TrendingUp, label: 'Analytics', path: '/dashboard/analytics' },
+    ];
+
+    const userMenuItems = [
+        { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
+        { icon: FileText, label: 'My Showcases', path: '/dashboard/showcases' },
+        { icon: Grid, label: 'Collections', path: '/dashboard/collections' },
+    ];
+
+    const menuItems = isAdmin ? adminMenuItems : userMenuItems;
+
+    const isActive = (path) => {
+        if (path === '/dashboard') {
+            return location.pathname === '/dashboard';
+        }
+        return location.pathname.startsWith(path);
+    };
+
     return (
         <div className="flex min-h-screen bg-gray-50 dark:bg-main-black transition-colors duration-300">
-            <DashboardSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+            <DashboardSidebar collapsed={sidebarCollapsed} setCollapsed={handleSetCollapsed} />
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+                        />
+
+                        {/* Drawer */}
+                        <motion.div
+                            initial={{ x: '-100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '-100%' }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-dark-gray z-50 md:hidden border-r border-gray-200 dark:border-white/10 flex flex-col shadow-2xl"
+                        >
+                            {/* Drawer Header */}
+                            <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100 dark:border-white/5">
+                                <span className="font-bold text-lg text-gray-900 dark:text-white font-zentry tracking-wide">ORASIS</span>
+                                <button
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg text-gray-500 dark:text-gray-400"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            {/* User Profile */}
+                            <div className="p-4 border-b border-gray-100 dark:border-white/5">
+                                <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-black/20 rounded-xl">
+                                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-violet-300/80 to-violet-300 dark:from-yellow-300/80 dark:to-yellow-300 p-0.5 shrink-0">
+                                        <img
+                                            src={user?.profile_picture_url || `https://ui-avatars.com/api/?name=${user?.name}&background=random`}
+                                            alt={user?.name}
+                                            className="w-full h-full rounded-full object-cover border-2 border-white dark:border-dark-gray"
+                                        />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Navigation */}
+                            <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+                                {menuItems.map((item) => {
+                                    const Icon = item.icon;
+                                    const active = isActive(item.path);
+                                    return (
+                                        <button
+                                            key={item.path}
+                                            onClick={() => navigate(item.path)}
+                                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
+                                                    ? 'bg-violet-600 dark:bg-yellow-300 text-white dark:text-black shadow-lg shadow-violet-500/20 dark:shadow-yellow-300/20'
+                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                                                }`}
+                                        >
+                                            <Icon className={`w-5 h-5 ${active ? 'text-white dark:text-black' : ''}`} />
+                                            <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
+                                            {item.badge === 'pending' && pendingCount > 0 && (
+                                                <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">
+                                                    {pendingCount}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </nav>
+
+                            {/* Bottom Actions */}
+                            <div className="p-4 border-t border-gray-100 dark:border-white/5 space-y-2">
+                                <button
+                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+                                >
+                                    {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                                    <span className="text-sm font-medium">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                                </button>
+                                <button
+                                    onClick={() => navigate('/profile')}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+                                >
+                                    <Settings className="w-5 h-5" />
+                                    <span className="text-sm font-medium">Settings</span>
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-all"
+                                >
+                                    <LogOut className="w-5 h-5" />
+                                    <span className="text-sm font-medium">Logout</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
             {/* Main Content Area */}
             <div
@@ -51,13 +242,17 @@ const DashboardLayout = ({ children }) => {
                 className="flex-1 min-h-screen flex flex-col relative"
             >
                 {/* Top Navbar - Glassmorphism */}
-                <header className="h-20 flex items-center px-8 sticky top-0 z-40 bg-gray-50 dark:bg-main-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 transition-all">
+                <header className="h-20 flex items-center px-4 md:px-8 sticky top-0 z-40 bg-gray-50 dark:bg-main-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 transition-all">
                     <div className="flex items-center justify-between w-full">
-                        {/* Mobile: Logo & Toggle Placeholder (handled by sidebar) */}
+                        {/* Mobile: Hamburger & Logo */}
                         <div className="md:hidden flex items-center gap-3">
-                            {/* Spacer for mobile menu button which is in sidebar */}
-                            <div className="w-10"></div>
-                            <span className="font-bold text-lg text-gray-900 dark:text-white font-family-zentry">ORASIS</span>
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg"
+                            >
+                                <Menu className="w-6 h-6" />
+                            </button>
+                            <span className="font-bold text-lg text-gray-900 dark:text-white font-zentry tracking-wide">ORASIS</span>
                         </div>
 
                         {/* Desktop: Breadcrumbs or Page Title */}

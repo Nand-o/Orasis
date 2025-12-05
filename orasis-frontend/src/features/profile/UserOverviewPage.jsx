@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
     FileText,
     Grid,
@@ -24,6 +25,7 @@ import StatusBadge from '../../components/ui/StatusBadge';
 import cacheManager from '../../utils/cacheManager';
 
 const UserOverviewPage = () => {
+    const navigate = useNavigate();
     const { user } = useAuth();
     const { collections } = useCollection();
     const [loading, setLoading] = useState(true);
@@ -96,38 +98,38 @@ const UserOverviewPage = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="lg:col-span-2 bg-linear-to-br from-violet-600 to-indigo-600 dark:from-violet-900 dark:to-indigo-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl"
+                    className="lg:col-span-2 bg-linear-to-br from-violet-600 to-indigo-600 dark:from-yellow-300 dark:to-yellow-400 rounded-3xl p-8 text-white dark:text-main-black relative overflow-hidden shadow-xl"
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
 
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-4">
-                            <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider">
+                            <span className="px-3 py-1 bg-white/20 dark:text-white dark:bg-dark-gray backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider">
                                 Dashboard
                             </span>
-                            <span className="text-white/60 text-sm font-medium">
+                            <span className="text-white/60 dark:text-dark-gray text-sm font-medium">
                                 {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
                             </span>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-black font-family-zentry mb-2">
                             Welcome back, {user?.name?.split(' ')[0]}!
                         </h1>
-                        <p className="text-indigo-100 max-w-lg text-lg mb-8">
-                            Ready to showcase your next big idea? You have <span className="font-bold text-white">{stats.total} projects</span> in your portfolio.
+                        <p className="text-indigo-100 dark:text-dark-gray max-w-lg text-lg mb-8">
+                            Ready to showcase your next big idea? You have <span className="font-bold text-white dark:text-dark-gray">{stats.total} projects</span> in your portfolio.
                         </p>
 
                         <div className="flex flex-wrap gap-3">
                             <button
                                 onClick={() => window.location.href = '/showcase/new'}
-                                className="px-6 py-3 bg-white text-indigo-600 rounded-xl font-bold hover:bg-indigo-50 transition-colors shadow-lg flex items-center gap-2"
+                                className="px-6 py-3 bg-white dark:bg-dark-gray text-indigo-600 dark:text-white rounded-xl font-bold hover:bg-indigo-50 dark:hover:bg-yellow-300/50 dark:hover:text-main-black transition-colors shadow-lg flex items-center gap-2"
                             >
                                 <Plus className="w-5 h-5" />
                                 Create New Showcase
                             </button>
                             <button
                                 onClick={() => window.location.href = '/profile'}
-                                className="px-6 py-3 bg-indigo-700/50 hover:bg-indigo-700/70 text-white rounded-xl font-bold transition-colors backdrop-blur-sm"
+                                className="px-6 py-3 bg-indigo-700/50 dark:bg-main-black/50 hover:bg-indigo-700/70 dark:hover:bg-yellow-300/50 dark:hover:text-main-black text-white rounded-xl font-bold transition-colors backdrop-blur-sm"
                             >
                                 Edit Profile
                             </button>
@@ -201,7 +203,12 @@ const UserOverviewPage = () => {
                                 {myShowcases.slice(0, 4).map((showcase) => (
                                     <div
                                         key={showcase.id}
-                                        onClick={() => window.location.href = `/design/${showcase.id}`}
+                                        onClick={(e) => {
+                                            // Only navigate if not clicking on buttons
+                                            if (!e.target.closest('button')) {
+                                                navigate(`/design/${showcase.id}`);
+                                            }
+                                        }}
                                         className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-white/5"
                                     >
                                         <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-black/40 shrink-0 relative">
@@ -229,13 +236,13 @@ const UserOverviewPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-3 shrink-0">
                                             <StatusBadge status={showcase.status} size="sm" />
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="hidden md:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        window.location.href = `/showcase/edit/${showcase.id}`;
+                                                        navigate(`/showcase/edit/${showcase.id}`);
                                                     }}
                                                     className="p-2 hover:bg-white dark:hover:bg-black/40 rounded-lg text-gray-500 hover:text-violet-600 dark:hover:text-yellow-300 transition-colors shadow-sm"
                                                 >
