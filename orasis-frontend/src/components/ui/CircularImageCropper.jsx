@@ -75,31 +75,44 @@ const CircularImageCropper = ({ isOpen, onClose, onCropComplete, initialImage })
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        const maxSize = Math.max(image.width, image.height);
-        const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
+        // Calculate rotated image dimensions
+        const rotRad = (rotation * Math.PI) / 180;
+        const sin = Math.abs(Math.sin(rotRad));
+        const cos = Math.abs(Math.cos(rotRad));
 
-        canvas.width = safeArea;
-        canvas.height = safeArea;
+        const rotatedWidth = image.width * cos + image.height * sin;
+        const rotatedHeight = image.width * sin + image.height * cos;
 
-        ctx.translate(safeArea / 2, safeArea / 2);
-        ctx.rotate((rotation * Math.PI) / 180);
-        ctx.translate(-safeArea / 2, -safeArea / 2);
+        // Create a canvas with enough space for rotated image
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
 
-        ctx.drawImage(
+        tempCanvas.width = rotatedWidth;
+        tempCanvas.height = rotatedHeight;
+
+        // Rotate the image
+        tempCtx.translate(rotatedWidth / 2, rotatedHeight / 2);
+        tempCtx.rotate(rotRad);
+        tempCtx.drawImage(
             image,
-            safeArea / 2 - image.width * 0.5,
-            safeArea / 2 - image.height * 0.5
+            -image.width / 2,
+            -image.height / 2
         );
 
-        const data = ctx.getImageData(0, 0, safeArea, safeArea);
-
+        // Now crop from the rotated image
         canvas.width = pixelCrop.width;
         canvas.height = pixelCrop.height;
 
-        ctx.putImageData(
-            data,
-            Math.round(0 - safeArea / 2 + image.width * 0.5 - pixelCrop.x),
-            Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
+        ctx.drawImage(
+            tempCanvas,
+            pixelCrop.x,
+            pixelCrop.y,
+            pixelCrop.width,
+            pixelCrop.height,
+            0,
+            0,
+            pixelCrop.width,
+            pixelCrop.height
         );
 
         return new Promise((resolve) => {
