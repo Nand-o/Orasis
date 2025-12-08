@@ -164,6 +164,7 @@ const ProfilePageNew = () => {
         if (file) {
             if (file.size > 5 * 1024 * 1024) { // 5MB limit
                 setProfileMessage({ type: 'error', text: 'Image size should be less than 5MB' });
+                e.target.value = ''; // Reset input
                 return;
             }
             const reader = new FileReader();
@@ -173,13 +174,44 @@ const ProfilePageNew = () => {
             };
             reader.readAsDataURL(file);
         }
+        // Reset input value to allow selecting the same file again
+        e.target.value = '';
     };
 
     // Handle Profile Picture Crop
-    const handleCropComplete = (croppedFile, previewUrl) => {
+    const handleCropComplete = async (croppedFile, previewUrl) => {
         setProfilePicture(croppedFile);
         setProfilePicturePreview(previewUrl);
         setShowCropper(false);
+        
+        // Automatically upload the cropped image
+        setIsLoadingProfile(true);
+        setProfileMessage({ type: '', text: '' });
+
+        try {
+            const formDataObj = new FormData();
+            formDataObj.append('_method', 'PUT');
+            formDataObj.append('name', formData.name);
+            formDataObj.append('email', formData.email);
+            formDataObj.append('profile_picture', croppedFile);
+
+            const response = await userService.updateProfileWithFile(formDataObj);
+            if (response.data) {
+                updateUser(response.data);
+                setProfileMessage({ type: 'success', text: 'Profile picture updated successfully!' });
+                // Clear preview to use the uploaded image from server
+                setProfilePicturePreview(null);
+            }
+            // Clear the profilePicture state after successful upload
+            setProfilePicture(null);
+        } catch (error) {
+            setProfileMessage({
+                type: 'error',
+                text: error.message || 'Failed to update profile picture',
+            });
+        } finally {
+            setIsLoadingProfile(false);
+        }
     };
 
     // Validate Profile Form
@@ -360,11 +392,16 @@ const ProfilePageNew = () => {
                             <div className="w-20 h-20 rounded-full p-1 border-2 border-violet-300 dark:border-yellow-300">
                                 <img
                                     src={profilePicturePreview || user?.profile_picture_url || `https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=random`}
-                                    className="w-full h-full rounded-full object-cover"
+                                    className={`w-full h-full rounded-full object-cover transition-opacity ${isLoadingProfile ? 'opacity-50' : 'opacity-100'}`}
                                     alt="User Avatar"
                                 />
+                                {isLoadingProfile && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-8 h-8 border-4 border-violet-300 dark:border-yellow-300 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
                             </div>
-                            <label htmlFor="profile-picture-input" className="absolute bottom-0 right-0 p-2 bg-violet-300 dark:bg-yellow-300 text-white dark:text-black rounded-full shadow-lg hover:scale-110 transition-transform cursor-pointer">
+                            <label htmlFor="profile-picture-input" className={`absolute bottom-0 right-0 p-2 bg-violet-300 dark:bg-yellow-300 text-white dark:text-black rounded-full shadow-lg hover:scale-110 transition-transform ${isLoadingProfile ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
                                 <Camera className="w-4 h-4" />
                                 <input
                                     id="profile-picture-input"
@@ -372,6 +409,7 @@ const ProfilePageNew = () => {
                                     accept="image/*"
                                     onChange={handleProfilePictureSelect}
                                     className="hidden"
+                                    disabled={isLoadingProfile}
                                 />
                             </label>
                         </div>
@@ -701,13 +739,12 @@ const ProfilePageNew = () => {
             </div>
 
             {/* Circular Image Cropper Modal */}
-            {showCropper && profilePicturePreview && (
-                <CircularImageCropper
-                    image={profilePicturePreview}
-                    onCropComplete={handleCropComplete}
-                    onClose={() => setShowCropper(false)}
-                />
-            )}
+            <CircularImageCropper
+                isOpen={showCropper}
+                initialImage={profilePicturePreview}
+                onCropComplete={handleCropComplete}
+                onClose={() => setShowCropper(false)}
+            />
 
             {/* Delete Account Modal */}
             <DeleteAccountModal

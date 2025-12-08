@@ -10,7 +10,7 @@ const HeroSection = ({ designs }) => {
     // Handle click on showcase card
     const handleShowcaseClick = (design) => {
         if (design && design.id) {
-            navigate(`/showcase/${design.id}`);
+            navigate(`/design/${design.id}`);
         }
     };
 
