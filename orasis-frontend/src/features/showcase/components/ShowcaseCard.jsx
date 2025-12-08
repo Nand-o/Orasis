@@ -19,6 +19,9 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
         setIsModalOpen(true);
     };
 
+    // Determine if this is a mobile showcase
+    const isMobile = design.category?.name?.toLowerCase() === 'mobile';
+    
     return (
         <>
             <motion.div
@@ -27,7 +30,7 @@ const ShowcaseCard = ({ design, onClick, showBookmark = true }) => {
                 whileTap={{ scale: 0.98 }}
             >
                 {/* Image Container - The "Box" */}
-                <div className="relative aspect-4/3 bg-light-gray dark:bg-dark-gray rounded-3xl overflow-hidden mb-4 p-12 py-16 transition-colors duration-300 group-hover:bg-black/10 dark:group-hover:bg-main-black">
+                <div className={`relative ${isMobile ? 'aspect-9/16' : 'aspect-4/3'} bg-light-gray dark:bg-dark-gray rounded-3xl overflow-hidden mb-4 ${isMobile ? 'p-16 py-12' : 'p-12 py-16'} transition-colors duration-300 group-hover:bg-black/10 dark:group-hover:bg-main-black`}>
                     <div className="w-full h-full rounded-lg overflow-hidden shadow-sm relative">
                         <LazyImage
                             src={design.image_url || design.imageUrl}
