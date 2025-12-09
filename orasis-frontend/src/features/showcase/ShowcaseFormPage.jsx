@@ -46,6 +46,7 @@ const ShowcaseFormPage = () => {
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [showcaseType, setShowcaseType] = useState('website'); // 'website' | 'mobile'
 
     // Load showcase data if editing
     useEffect(() => {
@@ -112,6 +113,10 @@ const ShowcaseFormPage = () => {
             });
             setImagePreview(showcase.image_url);
             setLogoPreview(showcase.logo_url);
+            // Set showcase type based on category
+            if (showcase.category?.name.toLowerCase() === 'mobile') {
+                setShowcaseType('mobile');
+            }
             // If it's a stored image (not external URL), switch to upload mode
             if (showcase.image_url && !showcase.image_url.startsWith('http')) {
                 setUseUrlMode(false);
@@ -180,6 +185,30 @@ const ShowcaseFormPage = () => {
                 : [...prev.tags, tagId]
         }));
     };
+
+    const handleTypeToggle = (type) => {
+        setShowcaseType(type);
+        // Clear category if switching types and current category is invalid for new type
+        const currentCategory = categories.find(c => c.id == formData.category_id);
+        if (currentCategory) {
+            const isMobileCategory = currentCategory.name.toLowerCase() === 'mobile';
+            if (type === 'website' && isMobileCategory) {
+                setFormData(prev => ({ ...prev, category_id: '' }));
+            } else if (type === 'mobile' && !isMobileCategory) {
+                const mobileCategory = categories.find(c => c.name.toLowerCase() === 'mobile');
+                setFormData(prev => ({ ...prev, category_id: mobileCategory?.id || '' }));
+            }
+        }
+    };
+
+    // Get filtered categories based on showcase type
+    const filteredCategories = categories.filter(cat => {
+        const isMobileCategory = cat.name.toLowerCase() === 'mobile';
+        return showcaseType === 'mobile' ? isMobileCategory : !isMobileCategory;
+    });
+
+    // Get aspect ratio based on showcase type
+    const getAspectRatio = () => showcaseType === 'mobile' ? 9 / 16 : 16 / 9;
 
     const validateForm = () => {
         const newErrors = {};
@@ -371,15 +400,46 @@ const ShowcaseFormPage = () => {
                             <ChevronLeft className="w-5 h-5" />
                             Back to Dashboard
                         </button>
-                        <h1 className="text-2xl font-bold text-main-black dark:text-white mb-2 uppercase tracking-tight">
-                            {isEditMode ? 'Edit Showcase' : 'Create New Showcase'}
-                        </h1>
-                        <p className="text-dark-gray dark:text-white/50">
-                            {isEditMode
-                                ? 'Update the details of your showcase below.'
-                                : 'Share your amazing work with the community.'
-                            }
-                        </p>
+                        
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <h1 className="text-2xl font-bold text-main-black dark:text-white mb-2 uppercase tracking-tight">
+                                    {isEditMode ? 'Edit Showcase' : 'Create New Showcase'}
+                                </h1>
+                                <p className="text-dark-gray dark:text-white/50">
+                                    {isEditMode
+                                        ? 'Update the details of your showcase below.'
+                                        : 'Share your amazing work with the community.'
+                                    }
+                                </p>
+                            </div>
+                            
+                            {/* Showcase Type Toggle */}
+                            <div className="flex items-center gap-2 bg-gray-100 dark:bg-white/5 p-1.5 rounded-xl border border-gray-200 dark:border-white/10">
+                                <button
+                                    type="button"
+                                    onClick={() => handleTypeToggle('website')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        showcaseType === 'website'
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-black shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    Website
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleTypeToggle('mobile')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        showcaseType === 'mobile'
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-black shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    Mobile
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Message Display */}
@@ -560,11 +620,14 @@ const ShowcaseFormPage = () => {
                                         {formData.image_url && isValidUrl(formData.image_url) && (
                                             <div className="mt-4">
                                                 <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">Preview:</p>
-                                                <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-sm">
+                                                <div className={`relative rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-sm ${
+                                                    showcaseType === 'mobile' ? 'max-w-sm mx-auto' : 'w-full'
+                                                }`}>
                                                     <img
                                                         src={formData.image_url}
                                                         alt="Preview"
-                                                        className="w-full h-64 object-cover"
+                                                        className="w-full object-cover"
+                                                        style={{ aspectRatio: showcaseType === 'mobile' ? '9/16' : '16/9' }}
                                                         onError={(e) => {
                                                             e.target.style.display = 'none';
                                                         }}
@@ -580,6 +643,11 @@ const ShowcaseFormPage = () => {
                                         error={errors.image}
                                         maxSize={5}
                                         acceptedFormats={['image/jpeg', 'image/png', 'image/jpg', 'image/webp']}
+                                        aspectRatio={getAspectRatio()}
+                                        helperText={showcaseType === 'mobile' 
+                                            ? "Recommended: 9:16 aspect ratio (e.g., 1080x1920px). Max 5MB. Supports JPG, PNG, WebP."
+                                            : "Recommended: 16:9 aspect ratio (e.g., 1920x1080px). Max 5MB. Supports JPG, PNG, WebP."
+                                        }
                                     />
                                 )}
                             </div>
@@ -725,7 +793,7 @@ const ShowcaseFormPage = () => {
                                         <span className={!formData.category_id ? "text-gray-400" : "font-medium"}>
                                             {loadingCategories
                                                 ? "Loading categories..."
-                                                : (categories.find(c => c.id == formData.category_id)?.name || "Select a category")
+                                                : (filteredCategories.find(c => c.id == formData.category_id)?.name || "Select a category")
                                             }
                                         </span>
                                         <ChevronLeft className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isCategoryOpen ? 'rotate-90' : '-rotate-90'}`} />
@@ -735,7 +803,7 @@ const ShowcaseFormPage = () => {
                                         <>
                                             <div className="fixed inset-0 z-10" onClick={() => setIsCategoryOpen(false)} />
                                             <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-dark-gray border border-gray-200 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-                                                {categories.map(cat => (
+                                                {filteredCategories.map(cat => (
                                                     <div
                                                         key={cat.id}
                                                         onClick={() => {
@@ -753,9 +821,9 @@ const ShowcaseFormPage = () => {
                                                         {formData.category_id == cat.id && <Check className="w-4 h-4" />}
                                                     </div>
                                                 ))}
-                                                {categories.length === 0 && (
+                                                {filteredCategories.length === 0 && (
                                                     <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 italic">
-                                                        No categories found
+                                                        No categories available for {showcaseType} showcases
                                                     </div>
                                                 )}
                                             </div>

@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
 import { PendingReviewPageSkeleton } from '../../components/ui/SkeletonLoading';
+import UserAvatar from '../../components/ui/UserAvatar';
 import cacheManager from '../../utils/cacheManager';
 import Spinner from '../../components/common/Spinner';
 
@@ -360,9 +361,10 @@ const AdminPendingReviewPage = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-violet-500 to-fuchsia-500 dark:from-yellow-300 dark:to-yellow-700 flex items-center justify-center text-white dark:text-main-black text-xs font-bold">
-                                                    {showcase.user?.name?.charAt(0) || 'U'}
-                                                </div>
+                                                <UserAvatar 
+                                                    user={showcase.user}
+                                                    size="sm"
+                                                />
                                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                     {showcase.user?.name || 'Unknown'}
                                                 </span>

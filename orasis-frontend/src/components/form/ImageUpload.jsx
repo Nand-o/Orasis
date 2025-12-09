@@ -225,13 +225,14 @@ const ImageUpload = ({
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="relative group"
+                        className={`relative group ${aspectRatio < 1 ? 'max-w-sm mx-auto' : ''}`}
                     >
                         <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 dark:border-white/50">
                             <img
                                 src={preview}
                                 alt="Preview"
-                                className="w-full h-64 object-cover"
+                                className="w-full object-cover"
+                                style={{ aspectRatio: aspectRatio }}
                             />
 
                             {/* Overlay on hover */}
