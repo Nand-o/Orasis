@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaGoogle, FaApple, FaFacebook } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import Button from '../../components/ui/Button';
+import Button from '../../components/common/Button';
 
 const LoginPage = () => {
     const navigate = useNavigate();

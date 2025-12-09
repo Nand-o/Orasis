@@ -5,12 +5,12 @@ import showcaseService from '../../services/showcase.service';
 import tagService from '../../services/tag.service';
 import categoryService from '../../services/category.service';
 import { useAuth } from '../../context/AuthContext';
-import ImageUpload from '../../components/ui/ImageUpload';
+import ImageUpload from '../../components/form/ImageUpload';
 import { ShowcaseFormPageSkeleton } from '../../components/ui/SkeletonLoading';
 import UploadProgressBar from '../../components/ui/UploadProgressBar';
 import cacheManager from '../../utils/cacheManager';
 import { ChevronLeft, Upload, Link as LinkIcon, Image as ImageIcon, Check, AlertCircle } from 'lucide-react';
-import Spinner from '../../components/ui/Spinner';
+import Spinner from '../../components/common/Spinner';
 
 const ShowcaseFormPage = () => {
     const navigate = useNavigate();

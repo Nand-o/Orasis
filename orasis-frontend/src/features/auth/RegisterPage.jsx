@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaGoogle, FaApple, FaFacebook } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import Toast from '../../components/ui/Toast';
+import Toast from '../../components/feedback/Toast';
 import { useToast } from '../../hooks/useToast';
 
 const RegisterPage = () => {
@@ -132,7 +132,7 @@ const RegisterPage = () => {
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-300/20 rounded-full blur-[120px] hidden dark:block" />
 
             {/* Background Elements (Light Mode) */}
-            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:hidden opacity-50" />
+            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:hidden opacity-50" />
 
             {/* Decorative Floating Elements (Desktop Only) */}
             <div className="absolute inset-0 pointer-events-none hidden lg:block max-w-7xl mx-auto">

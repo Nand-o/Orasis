@@ -7,8 +7,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import userService from '../../services/user.service';
-import CircularImageCropper from '../../components/ui/CircularImageCropper';
-import DeleteAccountModal from '../../components/ui/DeleteAccountModal';
+import CircularImageCropper from '../../components/form/CircularImageCropper';
+import DeleteAccountModal from '../../components/feedback/DeleteAccountModal';
 
 const ProfilePageNew = () => {
     const { user, updateUser, logout } = useAuth();

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark, LayoutDashboard, LogIn, Users, BarChart3, Clock, Folder, Tag, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import SearchBar from '../ui/SearchBar';
+import SearchBar from '../form/SearchBar';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 

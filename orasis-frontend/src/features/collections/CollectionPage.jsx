@@ -6,7 +6,7 @@ import { useCollection } from '../../context/CollectionContext';
 import CollectionCard from './components/CollectionCard';
 import CollectionModal from './components/CollectionModal';
 import CollectionDetailModal from './components/CollectionDetailModal';
-import ConfirmationModal from '../../components/ui/ConfirmationModal';
+import ConfirmationModal from '../../components/feedback/ConfirmationModal';
 
 const CollectionPage = () => {
     const { collections = [], deleteCollection } = useCollection();
