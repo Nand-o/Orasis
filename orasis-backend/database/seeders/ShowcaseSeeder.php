@@ -56,7 +56,7 @@ class ShowcaseSeeder extends Seeder
                     'title' => $data[0] 
                 ],
                 [
-                    'user_id'       => rand(1, 3),
+                    'user_id'       => rand(2, 4),
                     'category_id'   => $this->getCategoryId($data[1]),
                     'description'   => $data[2],
                     'url_website'   => $data[4], 
