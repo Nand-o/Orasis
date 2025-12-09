@@ -3,6 +3,7 @@ import { TiLocationArrow } from 'react-icons/ti';
 import { useNavigate } from 'react-router-dom';
 import GridMotion from '../../../components/ui/GridMotion';
 import Globe from '../../../components/ui/Globe';
+import Threads from '../../../components/ui/Threads';
 
 const items = [
     'https://api.microlink.io/?url=https://mkxgamer295-web.github.io/try/&screenshot=true&meta=false&embed=screenshot.url',
@@ -59,16 +60,22 @@ const BentoTilt = ({ children, className = '' }) => {
     )
 }
 
-const BentoCard = ({ src, title, description }) => {
+const BentoCard = ({ src, title, description, backgroundComponent: BackgroundComponent }) => {
     return (
         <div className='relative size-full'>
-            <video
-                src={src}
-                loop
-                muted
-                autoPlay
-                className='absolute left-0 top-0 size-full object-cover'
-            />
+            {BackgroundComponent ? (
+                <div className='absolute left-0 top-0 size-full'>
+                    <BackgroundComponent />
+                </div>
+            ) : (
+                <video
+                    src={src}
+                    loop
+                    muted
+                    autoPlay
+                    className='absolute left-0 top-0 size-full object-cover'
+                />
+            )}
             <div className='relative z-10 flex size-full flex-col justify-between p-5 text-white'>
                 <div>
                     <h1 className='bento-title special-font'>{title}</h1>
@@ -107,19 +114,17 @@ const Features = () => {
                 <div className='grid w-full grid-cols-1 gap-7 md:grid-cols-4 md:grid-rows-4'>
                     <BentoTilt className='bento-tilt_1 h-96 md:h-auto md:row-span-4 md:col-start-3 md:row-start-1 md:col-span-1'>
                         <div className='relative size-full'>
-                            <Globe />
-                            <div className='absolute inset-0 z-10 flex size-full flex-col justify-between p-5 text-white pointer-events-none'>
-                                <div>
-                                    <h1 className='bento-title special-font'><>collec<b>t</b>ions</></h1>
-                                    <p className='mt-3 max-w-64 text-xs md:text-base font-family-general'>Save and organize your favorite designs into personalized moodboards.</p>
-                                </div>
-                            </div>
+                            <BentoCard
+                                src="videos/feature-4.mp4"
+                                title={<>collec<b>t</b>ions</>}
+                                description="Save and organize your favorite designs into personalized moodboards."
+                            />
                         </div>
                     </BentoTilt>
 
                     <BentoTilt className='bento-tilt_1 h-96 md:h-auto md:row-span-2 md:col-span-1'>
                         <BentoCard
-                            src='videos/feature-3.mp4'
+                            backgroundComponent={Globe}
                             title={<>comm<b>u</b>nity</>}
                             description="Connect with other designers and share your own masterpieces."
                         />
@@ -127,7 +132,7 @@ const Features = () => {
 
                     <BentoTilt className='bento-tilt_1 h-96 md:h-auto md:row-span-2 md:col-span-1'>
                         <BentoCard
-                            src="videos/feature-4.mp4"
+                            backgroundComponent={Threads}
                             title={<>sea<b>r</b>ch</>}
                             description="Powerful filtering to find exactly what you need in seconds."
                         />
