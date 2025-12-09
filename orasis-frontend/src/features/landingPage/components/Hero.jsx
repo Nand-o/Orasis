@@ -13,7 +13,7 @@ const Hero = () => {
     const [isLoading, setisLoading] = useState(true);
     const [loadedVideos, setloadedVideos] = useState(0);
 
-    const totalVideos = 4;
+    const totalVideos = 1;
     const nextVideoRef = useRef(null);
     const mainVideoRef = useRef(null);
     const VIDEO_PLAYBACK_RATE = 1; // Adjust this value to control video speed (0.5 = 50% speed)
@@ -121,8 +121,8 @@ const Hero = () => {
             )}
             <div id='video-frame' className='relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75'>
                 <div>
-                    <div className='mask-clip-path absolute-center absolute z-50 cursor-pointer overflow-hidden rounded-lg'>
-                        <div onClick={handleMiniVdClick} className='origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100'>
+                    <div className='mask-clip-path absolute-center absolute z-50 overflow-hidden rounded-lg'>
+                        {/* <div onClick={handleMiniVdClick} className='origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100'>
                             <video
                                 ref={nextVideoRef}
                                 src={getVideoSrc(upcomingVideoIndex)}
@@ -133,7 +133,7 @@ const Hero = () => {
                                 onLoadedData={handleVideoLoad}
                                 onError={handleVideoError}
                             />
-                        </div>
+                        </div> */}
                     </div>
                     <video
                         ref={nextVideoRef}

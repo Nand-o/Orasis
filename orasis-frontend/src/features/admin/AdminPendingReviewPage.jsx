@@ -19,6 +19,7 @@ import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
 import { PendingReviewPageSkeleton } from '../../components/ui/SkeletonLoading';
 import cacheManager from '../../utils/cacheManager';
+import Spinner from '../../components/ui/Spinner';
 
 const AdminPendingReviewPage = () => {
     const { user } = useAuth();

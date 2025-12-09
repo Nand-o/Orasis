@@ -29,7 +29,7 @@ const About = () => {
     return (
         <div id='about' className='min-h-screen w-screen'>
             <div className='relative mb-8 mt-36 flex flex-col items-center gap-5'>
-                <h2 className='font-family-general text-sm uppercase md:text-[10px]'>
+                <h2 className='font-family-general text-main-black text-sm uppercase md:text-[10px]'>
                     Welcome to Orasis</h2>
 
                 <AnimationTitle
@@ -37,7 +37,7 @@ const About = () => {
                     containerClass='mt-5 !text-black text-center'
                 />
 
-                <div className='about-subtext'>
+                <div className='about-subtext text-main-black'>
                     <p>Your daily source of inspiration curated for creativity.</p>
                     <p>Orasis unites designers and developers to build better digital experiences.</p>
                 </div>

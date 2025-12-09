@@ -172,6 +172,7 @@ const CircularImageCropper = ({ isOpen, onClose, onCropComplete, initialImage })
                             Crop Profile Picture
                         </h2>
                         <button
+                            type="button"
                             onClick={onClose}
                             className="p-2 rounded-lg transition-colors"
                         >
@@ -290,6 +291,7 @@ const CircularImageCropper = ({ isOpen, onClose, onCropComplete, initialImage })
                     {image && (
                         <div className="flex items-center justify-between gap-3 p-6 border-t border-gray-100 dark:border-white/50 bg-gray-50 dark:bg-main-black">
                             <button
+                                type="button"
                                 onClick={() => fileInputRef.current?.click()}
                                 className="px-4 py-2 text-sm font-medium text-violet-300 dark:text-yellow-300 rounded-lg transition-colors cursor-pointer"
                             >
@@ -304,12 +306,14 @@ const CircularImageCropper = ({ isOpen, onClose, onCropComplete, initialImage })
                             />
                             <div className="flex gap-3">
                                 <button
+                                    type="button"
                                     onClick={onClose}
                                     className="px-6 py-3 bg-gray-200 dark:bg-white text-gray-700 dark:text-main-black rounded-xl font-medium hover:bg-red-500 transition-colors cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={handleApplyCrop}
                                     className="flex items-center gap-2 px-6 py-3 bg-violet-300/90 dark:bg-yellow-300/90 text-white dark:text-main-black rounded-xl font-medium hover:bg-violet-300 dark:hover:bg-yellow-300 transition-colors cursor-pointer"
                                 >

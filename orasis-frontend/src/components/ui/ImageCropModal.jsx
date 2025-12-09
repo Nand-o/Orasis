@@ -84,6 +84,7 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                             Crop Image
                         </h3>
                         <button
+                            type="button"
                             onClick={onCancel}
                             className="p-2 rounded-lg transition-colors"
                         >
@@ -160,6 +161,7 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                                     Rotation
                                 </label>
                                 <button
+                                    type="button"
                                     onClick={handleRotate}
                                     className="flex items-center gap-2 px-3 py-1.5 text-sm text-violet-300 dark:text-yellow-300 rounded-lg transition-colors cursor-pointer"
                                 >
@@ -186,12 +188,14 @@ const ImageCropModal = ({ image, onCropComplete, onCancel, aspectRatio = 16 / 9 
                         {/* Action Buttons */}
                         <div className="flex gap-3 pt-4">
                             <button
+                                type="button"
                                 onClick={onCancel}
                                 className="flex-1 px-6 py-3 bg-gray-200 dark:bg-white text-gray-700 dark:text-main-black rounded-xl font-medium hover:bg-red-500 transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
+                                type="button"
                                 onClick={createCroppedImage}
                                 className="flex-1 px-6 py-3 bg-violet-300/90 dark:bg-yellow-300/90 text-white dark:text-main-black rounded-xl font-medium hover:bg-violet-300 dark:hover:bg-yellow-300 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                             >
