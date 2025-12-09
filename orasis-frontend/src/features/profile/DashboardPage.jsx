@@ -10,6 +10,7 @@ import ShowcaseCard from '../showcase/components/ShowcaseCard';
 import CollectionCard from '../collections/components/CollectionCard';
 import { ShowcasesPageSkeleton, CollectionsPageSkeleton } from '../../components/ui/SkeletonLoading';
 import StatusBadge from '../../components/ui/StatusBadge';
+import Spinner from '../../components/common/Spinner';
 import cacheManager from '../../utils/cacheManager';
 
 const DashboardPage = () => {

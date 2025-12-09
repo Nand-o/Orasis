@@ -126,10 +126,10 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-blue-200 flex items-center justify-center px-4 py-12 relative overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen bg-gray-50 dark:bg-main-black flex items-center justify-center px-4 py-12 relative overflow-hidden transition-colors duration-300">
             {/* Background Glow Effects (Dark Mode Only) */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-300/20 rounded-full blur-[120px] hidden dark:block" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-300/20 rounded-full blur-[120px] hidden dark:block" />
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-300/20 rounded-full blur-[120px] hidden dark:block" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-yellow-300/20 rounded-full blur-[120px] hidden dark:block" />
 
             {/* Background Elements (Light Mode) */}
             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:hidden opacity-50" />
@@ -160,7 +160,7 @@ const RegisterPage = () => {
                     <div className="flex gap-2">
                         <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-blue-50/30" />
                         <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-blue-50/30" />
-                        <div className="w-2 h-2 rounded-full bg-violet-500 dark:bg-violet-300" />
+                        <div className="w-2 h-2 rounded-full bg-violet-500 dark:bg-yellow-300" />
                     </div>
                 </motion.div>
 
@@ -192,7 +192,7 @@ const RegisterPage = () => {
 
             <div className="max-w-md w-full relative z-10">
                 {/* Register Card */}
-                <div className="bg-white dark:bg-blue-200/50 backdrop-blur-md border border-gray-200 dark:border-violet-300/30 rounded-2xl shadow-xl dark:shadow-[0_0_40px_rgba(87,36,255,0.15)] p-8 transition-all duration-300">
+                <div className="bg-white dark:bg-main-black backdrop-blur-md border border-gray-200 dark:border-yellow-300/50 rounded-2xl shadow-xl dark:shadow-[0_0_40px_rgba(255,215,0,0.15)] p-8 transition-all duration-300">
                     {/* Header */}
                     <div className="text-center mb-8">
                         {/* Logo */}
@@ -250,11 +250,11 @@ const RegisterPage = () => {
                                     minLength={3}
                                     className={`w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-blue-50/5 border ${fieldErrors.name
                                         ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-violet-300'
-                                        } text-gray-900 dark:text-blue-50 placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-violet-300 transition-all duration-300 font-family-circular-web`}
+                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300'
+                                        } text-main-black dark:text-white placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-yellow-300 transition-all duration-300 font-family-circular-web`}
                                     placeholder="Suzumiya Haruhi"
                                 />
-                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-violet-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
+                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-yellow-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
                             </div>
                             {fieldErrors.name && (
                                 <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-family-circular-web">{fieldErrors.name}</p>
@@ -276,11 +276,11 @@ const RegisterPage = () => {
                                     required
                                     className={`w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-blue-50/5 border ${fieldErrors.email
                                         ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-violet-300'
-                                        } text-gray-900 dark:text-blue-50 placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-violet-300 transition-all duration-300 font-family-circular-web`}
+                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300'
+                                        } text-main-black dark:text-white placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-yellow-300 transition-all duration-300 font-family-circular-web`}
                                     placeholder="your@email.com"
                                 />
-                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-violet-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
+                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-yellow-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
                             </div>
                             {fieldErrors.email && (
                                 <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-family-circular-web">{fieldErrors.email}</p>
@@ -303,11 +303,11 @@ const RegisterPage = () => {
                                     minLength="8"
                                     className={`w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-blue-50/5 border ${fieldErrors.password
                                         ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-violet-300'
-                                        } text-gray-900 dark:text-blue-50 placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-violet-300 transition-all duration-300 font-family-circular-web`}
+                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300'
+                                        } text-main-black dark:text-white placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-yellow-300 transition-all duration-300 font-family-circular-web`}
                                     placeholder="••••••••"
                                 />
-                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-violet-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
+                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-yellow-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
                             </div>
                             {fieldErrors.password && (
                                 <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-family-circular-web">{fieldErrors.password}</p>
@@ -332,11 +332,11 @@ const RegisterPage = () => {
                                     required
                                     className={`w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-blue-50/5 border ${fieldErrors.password_confirmation
                                         ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-violet-300'
-                                        } text-gray-900 dark:text-blue-50 placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-violet-300 transition-all duration-300 font-family-circular-web`}
+                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300'
+                                        } text-main-black dark:text-white placeholder-gray-400 dark:placeholder-blue-50/20 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:focus:ring-yellow-300 transition-all duration-300 font-family-circular-web`}
                                     placeholder="••••••••"
                                 />
-                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-violet-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
+                                <div className="absolute inset-0 rounded-lg bg-violet-500/5 dark:bg-yellow-300/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
                             </div>
                             {fieldErrors.password_confirmation && (
                                 <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-family-circular-web">{fieldErrors.password_confirmation}</p>
@@ -347,7 +347,7 @@ const RegisterPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full mt-2 py-3.5 rounded-lg bg-violet-600 dark:bg-violet-300 hover:bg-violet-700 dark:hover:bg-violet-300/90 text-white dark:text-black font-family-general uppercase tracking-widest font-bold shadow-lg shadow-violet-200 dark:shadow-[0_0_10px_rgba(87,36,255,0.2)] hover:shadow-violet-300 dark:hover:shadow-[0_0_20px_rgba(87,36,255,0.4)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full mt-2 py-3.5 rounded-lg bg-violet-600 dark:bg-yellow-300 hover:bg-violet-700 dark:hover:bg-yellow-300/90 text-white dark:text-black font-family-general uppercase tracking-widest font-bold shadow-lg shadow-violet-200 dark:shadow-[0_0_10px_rgba(255,215,0,0.2)] hover:shadow-violet-300 dark:hover:shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
@@ -359,7 +359,7 @@ const RegisterPage = () => {
                             <div className="w-full border-t border-gray-200 dark:border-white/10"></div>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="px-4 bg-white dark:bg-blue-200 text-gray-500 dark:text-blue-50/40 font-family-general tracking-widest transition-colors">
+                            <span className="px-4 bg-white dark:bg-main-black text-gray-500 dark:text-blue-50/40 font-family-general tracking-widest transition-colors">
                                 Or continue with
                             </span>
                         </div>
@@ -382,7 +382,7 @@ const RegisterPage = () => {
                     <div className="text-center">
                         <p className="text-sm text-gray-500 dark:text-blue-50/60 font-family-circular-web transition-colors">
                             Already have an account?{' '}
-                            <Link to="/login" className="text-violet-600 dark:text-violet-300 hover:text-violet-700 dark:hover:text-violet-200 font-semibold transition-colors">
+                            <Link to="/login" className="text-violet-600 dark:text-yellow-300/70 hover:text-violet-700 dark:hover:text-yellow-300 font-semibold transition-colors">
                                 Login
                             </Link>
                         </p>
