@@ -1,3 +1,10 @@
+/**
+ * CategoryManagementPage
+ *
+ * Halaman administrasi untuk mengelola kategori showcase. Menyediakan
+ * pembuatan, pembaruan, penghapusan, dan pencarian kategori melalui
+ * `categoryService`.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Tag, AlertCircle, CheckCircle, Search, Filter } from 'lucide-react';

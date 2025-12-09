@@ -1,3 +1,10 @@
+/**
+ * ErrorBoundary
+ *
+ * Komponen Error Boundary React untuk menangkap error runtime di tree
+ * komponen dan menampilkan fallback UI. Digunakan di root (`main.jsx`)
+ * untuk mencegah crash seluruh aplikasi saat ada uncaught error.
+ */
 import React from 'react';
 
 class ErrorBoundary extends React.Component {

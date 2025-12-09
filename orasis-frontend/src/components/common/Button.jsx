@@ -2,15 +2,21 @@ import React from 'react';
 import Spinner from './Spinner';
 
 /**
- * Button - Reusable button component with loading state
- * @param {React.ReactNode} children - Button content
- * @param {boolean} isLoading - Loading state
- * @param {boolean} disabled - Disabled state
- * @param {string} variant - Button variant: 'primary', 'secondary', 'danger', 'ghost'
- * @param {string} size - Button size: 'sm', 'md', 'lg'
- * @param {string} className - Additional CSS classes
- * @param {function} onClick - Click handler
- * @param {string} type - Button type: 'button', 'submit', 'reset'
+ * Button
+ *
+ * Komponen tombol serbaguna dengan state loading dan beberapa variasi
+ * style (primary, secondary, danger, ghost). Digunakan di banyak form
+ * dan UI kontrol.
+ *
+ * Props:
+ * - `children` (React.ReactNode)
+ * - `isLoading` (boolean)
+ * - `disabled` (boolean)
+ * - `variant` (string): 'primary'|'secondary'|'danger'|'ghost'|'black'
+ * - `size` (string): 'sm'|'md'|'lg'
+ * - `className` (string)
+ * - `onClick` (function)
+ * - `type` (string): 'button'|'submit'|'reset'
  */
 const Button = ({
     children,

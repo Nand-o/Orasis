@@ -1,3 +1,10 @@
+/**
+ * AdminPendingReviewPage
+ *
+ * Halaman untuk admin yang menampilkan daftar showcase yang menunggu
+ * tinjauan. Menyediakan aksi approve/reject, bulk actions, dan
+ * pencarian dengan feedback status operasi.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {

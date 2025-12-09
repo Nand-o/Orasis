@@ -1,3 +1,9 @@
+/**
+ * Hero (Landing)
+ *
+ * Section hero pada halaman landing, berisi judul utama, deskripsi, dan
+ * visual utama seperti animasi atau ilustrasi. Biasanya berisi CTA.
+ */
 import React, { useEffect, useRef, useState } from 'react'
 import Button from './Button';
 import { TiLocationArrow } from 'react-icons/ti';

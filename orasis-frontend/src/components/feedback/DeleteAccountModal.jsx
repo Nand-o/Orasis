@@ -1,3 +1,16 @@
+/**
+ * DeleteAccountModal
+ *
+ * Modal khusus untuk mengonfirmasi penghapusan akun. Menyertakan input
+ * konfirmasi (ketik "DELETE") untuk mencegah aksi tak sengaja, serta
+ * indikator loading saat proses penghapusan berjalan.
+ *
+ * Props:
+ * - `isOpen` (boolean)
+ * - `onClose` (function)
+ * - `onConfirm` (function)
+ * - `isLoading` (boolean)
+ */
 import React, { useState } from 'react';
 import { X, AlertTriangle, Trash2 } from 'lucide-react';
 

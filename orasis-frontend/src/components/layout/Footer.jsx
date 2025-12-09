@@ -1,3 +1,9 @@
+/**
+ * Footer
+ *
+ * Komponen footer yang muncul di bagian bawah halaman publik.
+ * Menyediakan link navigasi, copyright, dan informasi kontak singkat.
+ */
 import React from 'react';
 
 const Footer = () => {

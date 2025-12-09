@@ -1,3 +1,20 @@
+/**
+ * ConfirmationModal
+ *
+ * Modal konfirmasi generik untuk tindakan berisiko (delete, sign-out, dll.).
+ * Menyediakan judul, pesan, dan tombol konfirmasi/cancel. Animasi menggunakan
+ * `framer-motion` dan ikon dari `lucide-react`.
+ *
+ * Props:
+ * - `isOpen` (boolean): kontrol visibilitas modal
+ * - `onClose` (function): callback saat modal ditutup
+ * - `onConfirm` (function): callback saat pengguna mengonfirmasi
+ * - `title` (string)
+ * - `message` (string)
+ * - `confirmText` (string)
+ * - `cancelText` (string)
+ * - `isDanger` (boolean)
+ */
 import React from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

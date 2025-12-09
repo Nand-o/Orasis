@@ -1,3 +1,10 @@
+/**
+ * Landing About
+ *
+ * Seksi 'About' pada landing page yang menampilkan headline
+ * animatif dan latar gambar. Menggunakan GSAP + ScrollTrigger
+ * untuk animasi clip/mask saat pengunjung menggulir halaman.
+ */
 import { useGSAP } from '@gsap/react'
 import React from 'react'
 import { gsap } from 'gsap'

@@ -1,4 +1,13 @@
 <?php
+/**
+ * Config: filesystems.php
+ * Deskripsi: Pengaturan storage dan disk yang digunakan untuk menyimpan file (gambar, upload, dll).
+ * Disk penting pada proyek ini:
+ * - `local`: root diset ke `storage/app/private` untuk penyimpanan internal.
+ * - `public`: root `storage/app/public` dan `url` mengarah ke `APP_URL/storage` (gunakan `php artisan storage:link`).
+ * - `s3`: konfigurasi untuk menyimpan file di AWS S3 (opsional, diatur lewat env vars).
+ * Catatan: Pastikan menjalankan `php artisan storage:link` untuk meng-ekspos disk `public` ke `public/storage`.
+ */
 
 return [
 

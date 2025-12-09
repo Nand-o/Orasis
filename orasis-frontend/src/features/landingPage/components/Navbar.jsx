@@ -1,3 +1,10 @@
+/**
+ * Landing Navbar
+ *
+ * Navbar khusus untuk halaman landing, berisi navigasi sektion internal,
+ * tombol CTA, dan beberapa elemen dekoratif (audio indicator). Tidak sama
+ * dengan aplikasi navbar utama yang menangani auth dan profile.
+ */
 import React, { useEffect, useRef, useState } from 'react'
 import Button from './Button';
 import { TiLocationArrow } from 'react-icons/ti';

@@ -1,3 +1,15 @@
+/**
+ * GridMotion
+ *
+ * Komponen grid animasi menggunakan `gsap` untuk membuat baris yang
+ * bergerak saling melintang (parallax-like). Digunakan sebagai latar atau
+ * elemen dekoratif pada halaman hero. Menerima daftar `items` sebagai
+ * konten yang akan ditampilkan di sel grid.
+ *
+ * Props:
+ * - `items` (array): list konten (string atau URL gambar) untuk sel.
+ * - `gradientColor` (string): warna dasar gradient background.
+ */
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 

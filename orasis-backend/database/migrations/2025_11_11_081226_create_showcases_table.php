@@ -1,4 +1,18 @@
 <?php
+/**
+ * Migration: create_showcases_table
+ * Deskripsi: Membuat tabel `showcases` untuk menyimpan karya / project yang diunggah oleh pengguna.
+ * Kolom penting:
+ * - id: primary key
+ * - user_id: foreign key ke `users.id` (pemilik showcase)
+ * - title: judul showcase
+ * - url_website: (opsional) URL terkait showcase
+ * - description: deskripsi teks
+ * - image_url: path / URL gambar utama
+ * - category: (awal) menyimpan nama kategori sebagai string; terdapat migrasi tambahan untuk mengubahnya ke `category_id`.
+ * - timestamps: created_at, updated_at
+ * Catatan: Beberapa kolom dan optimisasi (status, logo_url, views_count) ditambahkan oleh migrasi terpisah.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

@@ -1,4 +1,10 @@
 import React, { useRef, useState } from 'react'
+/**
+ * Landing Features
+ *
+ * Section yang menjelaskan fitur-fitur kunci Orasis. Berisi daftar fitur
+ * dengan icon dan deskripsi singkat untuk membantu visitor memahami nilai.
+ */
 import { TiLocationArrow } from 'react-icons/ti';
 import { useNavigate } from 'react-router-dom';
 import GridMotion from '../../../components/ui/GridMotion';

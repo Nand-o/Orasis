@@ -1,3 +1,17 @@
+/**
+ * Threads
+ *
+ * Komponen visual berbasis WebGL (OG1) yang merender efek "threads"/garis
+ * bergerak menggunakan shader GLSL. Digunakan untuk latar interaktif atau
+ * hiasan pada layout. Komponen bertanggung jawab membuat renderer, program
+ * shader, dan membersihkan resource saat unmount.
+ *
+ * Props:
+ * - `color` (array[3]): RGB linear color values antara 0-1.
+ * - `amplitude` (number): kekuatan variasi garis.
+ * - `distance` (number): jarak/offset antar garis.
+ * - `enableMouseInteraction` (boolean): aktifkan interaksi mouse.
+ */
 import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle, Color } from 'ogl';
 

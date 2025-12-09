@@ -1,3 +1,10 @@
+/**
+ * AdminDashboardPage
+ *
+ * Halaman dashboard admin utama yang memuat semua showcase untuk admin,
+ * memungkinkan pengelolaan massal, paginasi, dan tindakan cepat seperti
+ * hapus atau ubah status showcase.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, FileText, Clock, CheckCircle, XCircle, Trash2, Eye, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';

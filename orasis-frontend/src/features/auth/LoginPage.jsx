@@ -1,3 +1,10 @@
+/**
+ * LoginPage
+ *
+ * Halaman login untuk pengguna. Mengelola form login, validasi ringkas,
+ * dan memanggil `useAuth().login`. Juga mendukung menampilkan pesan sukses
+ * dari registrasi melalui `location.state`.
+ */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';

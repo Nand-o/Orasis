@@ -1,3 +1,10 @@
+/**
+ * Landing Button (Local)
+ *
+ * Komponen tombol khusus yang digunakan pada section landing (CTA). Hanya
+ * berfungsi sebagai elemen presentasional untuk halaman landing dan tidak
+ * menggantikan komponen `Button` global.
+ */
 import React from 'react'
 
 import { useNavigate } from 'react-router-dom';

@@ -1,3 +1,15 @@
+/**
+ * ImageCropModal
+ *
+ * Modal untuk cropping gambar sebelum disimpan/upload.
+ * Menggunakan `react-easy-crop` dan menyediakan kontrol zoom/rotate.
+ *
+ * Props:
+ * - `image` (string): data URL gambar yang akan dicrop
+ * - `onCropComplete` (function): callback menerima blob atau file hasil crop
+ * - `onCancel` (function): callback saat modal dibatalkan
+ * - `aspectRatio` (number): rasio default untuk cropping
+ */
 import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import { motion, AnimatePresence } from 'framer-motion';

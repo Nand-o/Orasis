@@ -1,3 +1,10 @@
+/**
+ * CollectionDetailModal
+ *
+ * Modal yang menampilkan isi sebuah collection, memberikan listing
+ * showcase di dalamnya, pencarian internal, dan opsi untuk
+ * menghapus showcase dari collection.
+ */
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Package, SearchX } from 'lucide-react';

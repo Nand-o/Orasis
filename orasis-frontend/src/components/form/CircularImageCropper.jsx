@@ -1,3 +1,16 @@
+/**
+ * CircularImageCropper
+ *
+ * Modal cropper khusus untuk membuat avatar/profil berbentuk lingkaran.
+ * - Mendukung drag & drop, upload file, zoom, rotate
+ * - Menghasilkan File dan preview URL yang siap diupload ke server
+ *
+ * Props:
+ * - `isOpen` (boolean): apakah modal terbuka
+ * - `onClose` (function): callback untuk menutup modal
+ * - `onCropComplete` (function): menerima (file, previewUrl)
+ * - `initialImage` (string): optional initial data URL
+ */
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import { motion, AnimatePresence } from 'framer-motion';

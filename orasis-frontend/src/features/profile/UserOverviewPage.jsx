@@ -1,3 +1,10 @@
+/**
+ * UserOverviewPage
+ *
+ * Halaman ringkasan dashboard (overview) untuk pengguna, menampilkan
+ * statistik singkat (total projects, status), daftar showcase terbaru,
+ * dan quick actions. Menyajikan skeleton saat data sedang dimuat.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

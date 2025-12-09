@@ -1,4 +1,12 @@
 <?php
+/**
+ * Config: auth.php
+ * Deskripsi: Konfigurasi otentikasi aplikasi.
+ * Catatan penting untuk Orasis:
+ * - `defaults.guard` diatur ke `sanctum` sehingga API menggunakan Laravel Sanctum untuk autentikasi token/SPA.
+ * - Provider `users` mengarah ke model yang didefinisikan oleh env `AUTH_MODEL` (default App\Models\User).
+ * - Pastikan `passwords.users.table` sesuai dengan tabel yang digunakan untuk reset password.
+ */
 
 return [
 

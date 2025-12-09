@@ -5,11 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
+/**
+ * CategoryController
+ *
+ * Mengelola operasi CRUD untuk kategori showcase.
+ * Semua response dan error handling dikembalikan dalam format JSON.
+ *
+ * @package App\Http\Controllers
+ */
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of categories.
+     * Menampilkan daftar kategori yang tersedia.
+     *
+     * Endpoint: GET /api/categories
+     * Access: Public
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -26,7 +38,13 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created category.
+     * Membuat kategori baru.
+     *
+     * Endpoint: POST /api/categories
+     * Body: { name: string }
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -59,7 +77,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display the specified category.
+     * Menampilkan detail kategori berdasarkan ID.
+     *
+     * Endpoint: GET /api/categories/{id}
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
@@ -78,7 +101,14 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified category.
+     * Memperbarui nama kategori.
+     *
+     * Endpoint: PUT /api/categories/{id}
+     * Body: { name: string }
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -118,7 +148,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified category.
+     * Menghapus kategori jika tidak sedang digunakan oleh showcase mana pun.
+     *
+     * Endpoint: DELETE /api/categories/{id}
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {

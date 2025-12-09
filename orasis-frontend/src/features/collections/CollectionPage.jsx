@@ -3,6 +3,13 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Grid } from 'lucide-react';
 import { useCollection } from '../../context/CollectionContext';
+/**
+ * CollectionPage
+ *
+ * Halaman untuk menampilkan collections milik user.
+ * Menyediakan daftar collection, create/update/delete, dan akses ke
+ * showcase di dalam masing-masing collection.
+ */
 import CollectionCard from './components/CollectionCard';
 import CollectionModal from './components/CollectionModal';
 import CollectionDetailModal from './components/CollectionDetailModal';

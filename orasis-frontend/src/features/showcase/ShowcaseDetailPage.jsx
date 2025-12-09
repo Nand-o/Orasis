@@ -1,3 +1,10 @@
+/**
+ * ShowcaseDetailPage
+ *
+ * Halaman detail untuk sebuah showcase. Menampilkan informasi lengkap,
+ * tags, author, dan related items. Memanggil `showcaseService.getById`
+ * dan `showcaseService.trackView` untuk tracking views.
+ */
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

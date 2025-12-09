@@ -1,3 +1,18 @@
+/**
+ * Root App component dan routing
+ *
+ * File ini mendefinisikan struktur routing aplikasi, wrapper animasi,
+ * dan provider global (Auth, Collection, Theme). Komponen utama:
+ * - `AnimatedRoutes`: konfigurasi route dengan `framer-motion` untuk
+ *   smooth page transitions.
+ * - `ConditionalLayout`: memilih apakah akan membungkus route dengan
+ *   layout publik atau layout dashboard.
+ * - `DashboardRouter` dan `ShowcasesDashboardRouter`: logika routing
+ *   khusus untuk halaman dashboard berdasarkan role user.
+ *
+ * Dokumentasi komponen ditulis dalam Bahasa Indonesia untuk kebutuhan
+ * akademik; implementasi dikomentari di bagian terkait.
+ */
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';

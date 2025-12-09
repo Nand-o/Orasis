@@ -1,3 +1,10 @@
+/**
+ * AdminAnalyticsPage
+ *
+ * Halaman analytics untuk admin yang menampilkan metrik aplikasi,
+ * chart, dan statistik utama. Mengambil data dari `adminService`
+ * dan menyediakan retry/refresh untuk kegagalan koneksi.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

@@ -1,3 +1,10 @@
+/**
+ * RoundedCorners
+ *
+ * Definisi SVG dan filter yang digunakan secara dekoratif di beberapa
+ * komponen landing page. Diekspor sebagai komponen kecil untuk
+ * dimasukkan pada level layout tanpa mengganggu alur DOM utama.
+ */
 import React from 'react'
 
 const RoundedCorners = () => {

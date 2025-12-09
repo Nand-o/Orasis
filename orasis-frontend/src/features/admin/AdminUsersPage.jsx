@@ -1,3 +1,10 @@
+/**
+ * AdminUsersPage
+ *
+ * Halaman manajemen pengguna untuk admin. Menyediakan daftar pengguna,
+ * pencarian, pembuatan/edit pengguna, serta aksi manajemen (role,
+ * penghapusan) menggunakan `adminService`.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {

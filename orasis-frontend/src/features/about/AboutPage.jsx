@@ -1,3 +1,10 @@
+/**
+ * AboutPage
+ *
+ * Halaman 'About' yang menjelaskan misi, cerita, dan nilai-nilai Orasis.
+ * Berisi grid informasi, statistik, dan kontak tim. Menggunakan
+ * IntersectionObserver untuk animasi masuk konten saat di-scroll.
+ */
 import React, { useEffect, useRef } from 'react';
 import {
     MapPin, Calendar, Palette, Monitor, Layout, Lightbulb,

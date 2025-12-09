@@ -1,6 +1,12 @@
 import React from 'react'
 import { FaDiscord, FaTwitter, FaGithub, FaFacebook } from 'react-icons/fa'
 
+/**
+ * Landing Footer
+ *
+ * Footer yang digunakan pada halaman landing, berisi link sosial dan
+ * informasi hak cipta. Sederhana dan tidak mengandung kontrol aplikasi.
+ */
 
 const links = [
     { href: 'https://discord.com', label: 'Discord', icon: <FaDiscord /> },

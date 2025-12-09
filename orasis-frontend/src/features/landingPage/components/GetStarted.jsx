@@ -1,4 +1,10 @@
 import React, { useRef } from 'react'
+/**
+ * GetStarted (Landing)
+ *
+ * Section CTA untuk mengajak pengunjung melakukan pendaftaran atau melihat
+ * demo. Biasanya menampilkan tombol besar dan ringkasan manfaat singkat.
+ */
 import AnimationTitle from './AnimationTitle'
 import RoundedCorners from './RoundedCorners'
 import Button from './Button'

@@ -7,11 +7,49 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * AuthController
+ * 
+ * Controller untuk menangani autentikasi pengguna (registrasi, login, logout).
+ * Menggunakan Laravel Sanctum untuk token-based authentication.
+ * 
+ * @package App\Http\Controllers
+ * @author Orasis Team
+ */
 class AuthController extends Controller
 {
     /**
-     * REGISTRASI (CREATE USER)
-     * [POST] /api/register
+     * Registrasi Pengguna Baru
+     * 
+     * Endpoint untuk mendaftarkan pengguna baru ke dalam sistem.
+     * Validasi input dilakukan untuk memastikan data valid dan unik.
+     * Password akan di-hash menggunakan bcrypt sebelum disimpan ke database.
+     * 
+     * @param Request $request Data registrasi (name, email, password, password_confirmation)
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint POST /api/register
+     * @access Public
+     * 
+     * @bodyParam name string required Nama lengkap pengguna. Contoh: John Doe
+     * @bodyParam email string required Email pengguna (harus unik). Contoh: john@example.com
+     * @bodyParam password string required Password minimal 8 karakter. Contoh: password123
+     * @bodyParam password_confirmation string required Konfirmasi password (harus sama dengan password)
+     * 
+     * @response 201 {
+     *   "message": "User registered successfully",
+     *   "data": {
+     *     "id": 1,
+     *     "name": "John Doe",
+     *     "email": "john@example.com",
+     *     "role": "user"
+     *   }
+     * }
+     * 
+     * @response 422 {
+     *   "message": "Validation error",
+     *   "errors": {...}
+     * }
      */
     public function register(Request $request)
     {
@@ -35,8 +73,36 @@ class AuthController extends Controller
     }
 
     /**
-     * LOGIN (READ/VERIFY USER)
-     * [POST] /api/login
+     * Login Pengguna
+     * 
+     * Endpoint untuk autentikasi pengguna yang sudah terdaftar.
+     * Memverifikasi kredensial (email & password) dan menghasilkan token akses
+     * menggunakan Laravel Sanctum untuk sesi yang aman.
+     * 
+     * @param Request $request Data login (email, password)
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint POST /api/login
+     * @access Public
+     * 
+     * @bodyParam email string required Email pengguna yang terdaftar. Contoh: john@example.com
+     * @bodyParam password string required Password pengguna. Contoh: password123
+     * 
+     * @response 200 {
+     *   "message": "Login successful",
+     *   "access_token": "1|xxxx...",
+     *   "token_type": "Bearer",
+     *   "user": {
+     *     "id": 1,
+     *     "name": "John Doe",
+     *     "email": "john@example.com",
+     *     "role": "user"
+     *   }
+     * }
+     * 
+     * @response 401 {
+     *   "message": "Invalid login credentials"
+     * }
      */
     public function login(Request $request)
     {
@@ -65,12 +131,25 @@ class AuthController extends Controller
 
 
     /**
-     * LOGOUT (DELETE TOKEN)
-     * [POST] /api/logout
+     * Logout Pengguna
+     * 
+     * Endpoint untuk mengeluarkan pengguna dari sesi aktif.
+     * Menghapus token akses saat ini dari database sehingga token tidak dapat
+     * digunakan lagi untuk autentikasi di request berikutnya.
+     * 
+     * @param Request $request Request yang berisi user terautentikasi
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint POST /api/logout
+     * @access Protected (memerlukan Bearer Token)
+     * 
+     * @response 200 {
+     *   "message": "Logged out successfully"
+     * }
      */
     public function logout(Request $request)
     {
-        // delete current token
+        // Menghapus token akses pengguna yang sedang aktif
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([

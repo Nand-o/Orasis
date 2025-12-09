@@ -1,3 +1,10 @@
+/**
+ * AdminOverviewPage
+ *
+ * Ringkasan dashboard untuk admin yang menampilkan metrik cepat,
+ * aktivitas terbaru, dan statistik yang relevan. Mengumpulkan data
+ * dari beberapa endpoint admin untuk ditampilkan di satu layar.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

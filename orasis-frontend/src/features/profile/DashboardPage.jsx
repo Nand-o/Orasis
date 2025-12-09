@@ -1,3 +1,13 @@
+/**
+ * DashboardPage
+ *
+ * Halaman dashboard pengguna yang menampilkan daftar showcase milik user,
+ * collections, dan kontrol CRUD terkait. Untuk admin, halaman ini juga
+ * dapat menampilkan semua submissions dan control moderation.
+ *
+ * Menggunakan `userService`/`adminService` untuk operasi backend dan
+ * beberapa komponen UI seperti `ShowcaseCard` dan `CollectionCard`.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

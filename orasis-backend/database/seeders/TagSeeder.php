@@ -1,4 +1,9 @@
 <?php
+/**
+ * Seeder: TagSeeder
+ * Deskripsi: Menyediakan daftar tag default yang digunakan pada frontend (FilterBar dan metadata).
+ * Perilaku: Menggunakan `Tag::firstOrCreate()` sehingga seeder aman dijalankan berulang kali.
+ */
 
 namespace Database\Seeders;
 

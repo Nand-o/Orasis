@@ -1,4 +1,12 @@
 <?php
+/**
+ * Config: sanctum.php
+ * Deskripsi: Pengaturan Laravel Sanctum untuk autentikasi API/SPA.
+ * Catatan penting untuk Orasis:
+ * - `stateful` menentukan domain frontend yang menggunakan cookie-based SPA auth (sesuaikan environment untuk domain produksi).
+ * - `guard` menentukan guard yang dicek sebelum Sanctum menggunakan bearer token.
+ * - `expiration` mengontrol masa berlaku token (null = tidak kedaluwarsa otomatis).
+ */
 
 use Laravel\Sanctum\Sanctum;
 

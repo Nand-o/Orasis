@@ -1,3 +1,16 @@
+/**
+ * Navbar
+ *
+ * Komponen navigasi utama yang muncul di bagian atas halaman publik.
+ * Menangani:
+ * - Menampilkan logo dan links navigasi
+ * - Search input (meneruskan value & onChange ke parent)
+ * - Tombol login/register atau user avatar jika sudah login
+ *
+ * Props:
+ * - `searchValue` (string)
+ * - `onSearchChange` (function)
+ */
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, Sun, Moon, Monitor, Settings, User, FileText, Upload, Grid, LogOut, Bookmark, LayoutDashboard, LogIn, Users, BarChart3, Clock, Folder, Tag, Smartphone } from 'lucide-react';

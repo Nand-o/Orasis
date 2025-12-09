@@ -11,7 +11,16 @@ class Tag extends Model
 
     protected $fillable = ['name'];
 
-    // Tag bisa ada di banyak Showcase
+    /**
+     * Tag Model
+     *
+     * Tag mewakili label yang dapat di-assign ke Showcase. Digunakan untuk
+     * pencarian dan filter. Relasi many-to-many ke Showcase.
+     *
+     * @package App\Models
+     */
+
+    // Relasi many-to-many: Tag dapat dimiliki banyak Showcase
     public function showcases()
     {
         return $this->belongsToMany(Showcase::class, 'showcase_tag');

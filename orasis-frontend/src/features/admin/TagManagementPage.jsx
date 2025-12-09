@@ -1,3 +1,10 @@
+/**
+ * TagManagementPage
+ *
+ * Halaman administrasi untuk mengelola tag. Menyediakan CRUD tag,
+ * pencarian, dan feedback status operasi. Berkomunikasi dengan
+ * `tagService` untuk operasi backend.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Tag as TagIcon, AlertCircle, CheckCircle, Search, Hash } from 'lucide-react';

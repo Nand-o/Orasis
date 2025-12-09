@@ -1,3 +1,16 @@
+/**
+ * Category Service
+ *
+ * Service ringkas untuk operasi kategori (CRUD). Digunakan terutama
+ * oleh halaman admin (CategoryManagement) dan saat menampilkan filter
+ * kategori di frontend.
+ *
+ * Endpoints:
+ * - GET /api/categories
+ * - POST /api/categories (admin)
+ * - PUT /api/categories/:id (admin)
+ * - DELETE /api/categories/:id (admin)
+ */
 import api from './api';
 
 const categoryService = {

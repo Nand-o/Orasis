@@ -1,4 +1,16 @@
 <?php
+/**
+ * API Routes
+ *
+ * File ini mendefinisikan semua endpoint REST API yang digunakan oleh
+ * frontend Orasis. Struktur dibagi menjadi:
+ * - Public routes: endpoints yang dapat diakses tanpa autentikasi
+ * - Protected routes: membutuhkan middleware auth:sanctum
+ * - Admin routes: group dengan middleware is.admin untuk moderasi/manajemen
+ *
+ * Setiap route biasanya menunjuk ke method di controller yang mendokumentasikan
+ * behavior endpoint secara lebih detail.
+ */
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

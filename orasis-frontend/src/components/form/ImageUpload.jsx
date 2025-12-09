@@ -1,3 +1,20 @@
+/**
+ * ImageUpload
+ *
+ * Komponen form untuk upload gambar dengan dukungan:
+ * - Drag & drop
+ * - Validasi ukuran dan format
+ * - Preview gambar
+ * - Opsi cropping sebelum mengirimkan file
+ *
+ * Props utama:
+ * - `value` (string|null): data URL preview awal atau null
+ * - `onChange` (function): callback (file, dataUrl)
+ * - `maxSize` (number): ukuran maksimal file dalam MB
+ * - `acceptedFormats` (array): daftar MIME types yang diterima
+ * - `enableCrop` (boolean): apakah cropping diizinkan
+ * - `aspectRatio` (number): aspect ratio default untuk preview/crop
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, Image as ImageIcon, AlertCircle, Crop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

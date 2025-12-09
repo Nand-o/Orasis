@@ -1,3 +1,18 @@
+/**
+ * User Service
+ *
+ * Service untuk operasi terkait user (profile, password, dashboard stats, dll).
+ * Digunakan oleh berbagai komponen dan context untuk fetch/update data user.
+ *
+ * Fitur utama:
+ * - Mendapatkan profile user saat ini
+ * - Update profile (dengan dan tanpa file upload)
+ * - Ganti password
+ * - Hapus akun
+ * - Mendapatkan daftar showcase milik user
+ *
+ * Semua fungsi mengembalikan `response.data` dari endpoint terkait.
+ */
 import api from './api';
 
 const userService = {

@@ -1,3 +1,10 @@
+/**
+ * Skeleton Loading
+ *
+ * Sekumpulan skeleton loader yang digunakan sebagai placeholder saat data
+ * sedang dimuat. Berisi variasi untuk kartu, tabel, halaman overview, dan
+ * komponen terkait lainnya. Ditujukan untuk memperbaiki UX selama loading.
+ */
 import React from 'react';
 
 // Base Skeleton component

@@ -1,3 +1,10 @@
+/**
+ * CollectionModal
+ *
+ * Modal untuk menambahkan atau memilih collection ketika user ingin
+ * menyimpan sebuah showcase ke collection. Memungkinkan pembuatan
+ * collection baru dan toggle penambahan/pelepasan showcase.
+ */
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

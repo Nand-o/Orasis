@@ -1,3 +1,10 @@
+/**
+ * RegisterPage
+ *
+ * Halaman registrasi pengguna baru. Mengelola form pendaftaran, validasi
+ * sisi-klien, dan integrasi dengan `useAuth().register`. Menyediakan opsi
+ * social sign-in placeholder dan notifikasi hasil.
+ */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';

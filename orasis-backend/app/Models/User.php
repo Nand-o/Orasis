@@ -12,6 +12,16 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    /**
+     * User Model
+     *
+     * Model untuk entitas pengguna (user) aplikasi.
+     * Menyimpan informasi seperti name, email, role, dan profile picture.
+     * Model ini juga menyediakan relasi ke Showcase dan Collection serta
+     * helper untuk memeriksa role (isAdmin).
+     *
+     * @package App\Models
+     */
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 

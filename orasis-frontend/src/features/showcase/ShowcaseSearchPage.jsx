@@ -1,3 +1,11 @@
+/**
+ * ShowcaseSearchPage
+ *
+ * Halaman hasil pencarian untuk showcase. Menerima query dari URL dan
+ * menampilkan daftar hasil yang cocok, beserta filter dan pagination.
+ * Melakukan fetch data dari `showcaseService` dan menyediakan fallback
+ * skeleton saat loading.
+ */
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';

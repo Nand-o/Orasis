@@ -1,3 +1,16 @@
+/**
+ * ProfilePage
+ *
+ * Halaman pengaturan profil pengguna. Menyediakan fitur:
+ * - Update profil (nama, email)
+ * - Upload dan crop foto profil
+ * - Ubah password
+ * - Pengaturan notifikasi dan privacy dasar
+ * - Hapus akun (melalui modal konfirmasi)
+ *
+ * Komponen mengelola state formulir, validasi sisi-klien, dan pemanggilan
+ * service (`userService`) untuk menyimpan perubahan.
+ */
 import React, { useState, useEffect } from 'react';
 import {
     User, Shield, Settings,

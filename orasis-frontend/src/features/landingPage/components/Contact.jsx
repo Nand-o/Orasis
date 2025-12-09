@@ -1,3 +1,9 @@
+/**
+ * Landing Contact
+ *
+ * Section kontak sederhana pada landing page (form atau link). Digunakan
+ * untuk meminta feedback atau menampilkan metode kontak utama.
+ */
 import React from 'react'
 import Button from './Button'
 import PixelBlast from '../../../components/ui/PixelBlast';

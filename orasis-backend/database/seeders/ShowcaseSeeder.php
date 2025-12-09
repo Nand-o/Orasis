@@ -1,4 +1,16 @@
 <?php
+/**
+ * Seeder: ShowcaseSeeder
+ * Deskripsi: Mengisi tabel `showcases` dari file CSV `database/data/showcase_data.csv`.
+ * Format CSV: kolom minimal yang diharapkan termasuk title, category_name, description, tags(json/string), url_website, image_url, logo_url
+ * Perilaku:
+ * - Membaca CSV baris per baris, membuat atau mengambil (firstOrCreate) setiap showcase berdasarkan `title`.
+ * - Menyinkronkan tag yang ditemukan pada kolom tags; tag dibuat menggunakan Tag::firstOrCreate().
+ * - Menetapkan `status` = 'approved' untuk data seeded.
+ * Catatan penting:
+ * - Pastikan file `database/data/showcase_data.csv` tersedia sebelum menjalankan seeder.
+ * - Seeder ini mengandalkan tabel `categories` untuk memetakan nama kategori ke `category_id`.
+ */
 
 namespace Database\Seeders;
 
@@ -28,7 +40,7 @@ class ShowcaseSeeder extends Seeder
         $csvPath = base_path('database/data/showcase_data.csv');
 
         if (!File::exists($csvPath)) {
-            $this->command->error("File CSV tidak ditemukan di: $csvPath");
+            $this->command->error("CSV file not found at: $csvPath");
             return;
         }
 

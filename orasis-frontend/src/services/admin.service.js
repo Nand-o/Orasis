@@ -1,3 +1,12 @@
+/**
+ * Admin Service
+ *
+ * Kumpulan API helper yang hanya dipakai oleh halaman admin.
+ * Mencakup manajemen showcases (review/approve/reject), users, dan
+ * pengambilan statistik/analytics.
+ *
+ * Perhatian: endpoint di sini mengharuskan user memiliki role `admin`.
+ */
 import api from './api';
 
 const adminService = {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Seeder: CollectionSeeder
+ * Deskripsi: Membuat beberapa contoh koleksi (collections) untuk pengguna tertentu.
+ * Catatan: Menggunakan `Collection::firstOrCreate()` sehingga seeder ini idempotent (aman dijalankan berulang).
+ */
 
 namespace Database\Seeders;
 

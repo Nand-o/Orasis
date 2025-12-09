@@ -1,3 +1,10 @@
+/**
+ * SearchBar
+ *
+ * Komponen input pencarian yang simple dan dapat digunakan di header.
+ * - Menavigasi ke halaman hasil pencarian saat Enter ditekan
+ * - Props: `value`, `onChange`, `placeholder`, `className`
+ */
 import React from 'react';
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

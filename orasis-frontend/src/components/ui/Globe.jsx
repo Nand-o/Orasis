@@ -1,3 +1,13 @@
+/**
+ * Globe
+ *
+ * Komponen dekoratif yang merender globe interaktif menggunakan library
+ * `cobe`. Digunakan sebagai elemen latar atau visualisasi ringan.
+ *
+ * Props:
+ * - `className` (string): kelas CSS tambahan untuk wrapper
+ * - `brightness` (number): pengaturan kecerahan peta (default: 1)
+ */
 import React, { useEffect, useRef } from "react";
 import createGlobe from "cobe";
 

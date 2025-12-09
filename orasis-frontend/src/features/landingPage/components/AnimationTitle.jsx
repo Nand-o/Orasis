@@ -1,3 +1,9 @@
+/**
+ * AnimationTitle
+ *
+ * Komponen judul beranimasi untuk landing page. Digunakan untuk efek
+ * tipografi dinamis di bagian hero atau CTA.
+ */
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'

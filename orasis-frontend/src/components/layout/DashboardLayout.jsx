@@ -1,3 +1,18 @@
+/**
+ * DashboardLayout
+ *
+ * Layout untuk halaman dashboard (admin & user). Menggabungkan
+ * `DashboardSidebar` (fixed) dan area konten utama dengan header
+ * yang menampilkan judul halaman, breadcrumb sederhana, dan action.
+ *
+ * Komponen ini menangani:
+ * - Responsive sidebar collapse
+ * - Mobile drawer untuk navigasi
+ * - Ambil pending counts untuk admin
+ *
+ * Props:
+ * - `children` (ReactNode): konten halaman yang akan ditampilkan di area utama
+ */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {

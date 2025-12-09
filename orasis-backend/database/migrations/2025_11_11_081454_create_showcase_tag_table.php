@@ -1,4 +1,10 @@
 <?php
+/**
+ * Migration: create_showcase_tag_table
+ * Deskripsi: Pivot table many-to-many antara `showcases` dan `tags`.
+ * Kolom penting: showcase_id (FK ke showcases.id), tag_id (FK ke tags.id)
+ * Catatan: Biasanya tidak memerlukan timestamps, hanya relasi.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

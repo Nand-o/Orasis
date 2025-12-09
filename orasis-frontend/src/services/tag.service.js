@@ -1,3 +1,16 @@
+/**
+ * Tag Service
+ *
+ * Service sederhana untuk mengelola tags di sistem.
+ * Digunakan di halaman admin untuk CRUD tag dan di form pembuatan
+ * showcase untuk menampilkan daftar tag yang tersedia.
+ *
+ * Endpoints:
+ * - GET /api/tags
+ * - POST /api/tags (admin)
+ * - PUT /api/tags/:id (admin)
+ * - DELETE /api/tags/:id (admin)
+ */
 import api from './api';
 
 const tagService = {

@@ -1,3 +1,10 @@
+/**
+ * CollectionCard
+ *
+ * Kartu presentasional untuk menampilkan satu collection. Menyajikan
+ * preview gambar, nama collection, dan aksi edit/delete. Digunakan di
+ * halaman collections dan dashboard.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Trash2, Pencil } from 'lucide-react';

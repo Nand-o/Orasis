@@ -1,3 +1,15 @@
+/**
+ * ShowcaseCard
+ *
+ * Komponen kartu untuk menampilkan ringkasan sebuah showcase/design.
+ * - Menampilkan preview image, judul, kategori, logo/fallback, view count
+ * - Menyediakan tombol bookmark yang membuka `CollectionModal`
+ *
+ * Props:
+ * - `design` (object): data showcase
+ * - `onClick` (function): callback saat kartu diklik
+ * - `showBookmark` (boolean): toggle tampilkan tombol bookmark
+ */
 import React, { useState } from 'react';
 import { Bookmark, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';

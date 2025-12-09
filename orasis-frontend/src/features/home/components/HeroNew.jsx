@@ -1,3 +1,10 @@
+/**
+ * HeroNew
+ *
+ * Versi hero yang diperbarui untuk halaman Home. Menampilkan slider
+ * horizontal berisi showcase yang sedang tren, dekorasi animasi, dan
+ * kontrol navigasi untuk desktop dan mobile.
+ */
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

@@ -8,6 +8,13 @@ import {
     ArrowUpDown,
     Tag as TagIcon
 } from 'lucide-react';
+/**
+ * FilterBar
+ *
+ * Komponen bar filter untuk halaman eksplorasi/beranda.
+ * Memungkinkan pengguna memilih kategori, sorting, dan melakukan search.
+ * Props diharapkan berupa handler untuk perubahan filter.
+ */
 import categoryService from '../../../services/category.service';
 import tagService from '../../../services/tag.service';
 

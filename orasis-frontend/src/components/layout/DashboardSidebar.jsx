@@ -1,3 +1,15 @@
+/**
+ * DashboardSidebar
+ *
+ * Sidebar navigasi untuk area dashboard (admin & user).
+ * Menyediakan menu utama, snippet profil user, dan tombol aksi seperti
+ * theme toggle serta logout. Sidebar ini dibuat responsif dan mendukung
+ * collapsed state untuk menghemat ruang layar.
+ *
+ * Props:
+ * - `collapsed` (boolean): apakah sidebar dalam mode ter-collapsed
+ * - `setCollapsed` (function): setter untuk mengubah collapsed state
+ */
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';

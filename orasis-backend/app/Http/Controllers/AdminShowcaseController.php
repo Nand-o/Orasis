@@ -5,9 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\Showcase;
 use Illuminate\Http\Request;
 
+/**
+ * AdminShowcaseController
+ * 
+ * Controller khusus untuk admin mengelola semua showcase dalam sistem.
+ * Fitur moderasi termasuk approve/reject showcase dan bulk operations.
+ * 
+ * Hanya dapat diakses oleh user dengan role 'admin' (middleware: admin).
+ * 
+ * @package App\Http\Controllers
+ * @author Orasis Team
+ */
 class AdminShowcaseController extends Controller
 {
-    // melihat SEMUA showcase untuk admin dashboard (tanpa pagination)
+    /**
+     * Menampilkan Semua Showcase untuk Admin
+     * 
+     * Endpoint untuk admin melihat semua showcase tanpa filter status.
+     * Digunakan untuk dashboard admin untuk monitoring seluruh showcase.
+     * Tidak menggunakan pagination agar admin bisa melihat overview lengkap.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint GET /api/admin/showcases/all
+     * @access Admin Only
+     * 
+     * @response 200 {
+     *   "message": "List all showcases for admin",
+     *   "data": [...],
+     *   "total": 50
+     * }
+     */
     public function indexAll()
     {
         $showcases = Showcase::with(['user', 'tags', 'category'])

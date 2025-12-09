@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+/**
+ * ShowcaseFormPage
+ *
+ * Halaman untuk membuat atau mengedit showcase. Mengelola form data,
+ * upload gambar/logo, tags, dan submit ke API melalui `showcaseService`.
+ */
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import showcaseService from '../../services/showcase.service';

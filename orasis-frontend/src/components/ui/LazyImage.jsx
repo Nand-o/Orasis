@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 /**
- * LazyImage - Image component with lazy loading and placeholder
- * Uses Intersection Observer API to load images only when they enter viewport
- * 
- * @param {string} src - Image source URL
- * @param {string} alt - Image alt text
- * @param {string} className - CSS classes for the image
- * @param {string} placeholderSrc - Optional placeholder image (defaults to gradient)
- * @param {function} onLoad - Optional callback when image loads
- * @param {function} onError - Optional callback when image fails to load
+ * LazyImage
+ *
+ * Komponen gambar dengan lazy-loading dan placeholder. Menggunakan
+ * Intersection Observer untuk menunda pemanggilan resource sampai gambar
+ * muncul di viewport. Menangani retry dan state error/loading.
+ *
+ * Props:
+ * - `src` (string): URL gambar
+ * - `alt` (string): teks alt untuk aksesibilitas
+ * - `className` (string): kelas CSS tambahan
+ * - `placeholderSrc` (string|null): URL placeholder sementara
+ * - `onLoad` (function): callback saat gambar berhasil dimuat
+ * - `onError` (function): callback saat gagal memuat
  */
 const LazyImage = ({
     src,

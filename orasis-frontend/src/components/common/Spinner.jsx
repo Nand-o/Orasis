@@ -1,10 +1,16 @@
 import React from 'react';
 
 /**
- * Spinner - Loading indicator component
- * @param {string} size - Size of spinner: 'sm', 'md', 'lg', 'xl'
- * @param {string} color - Color variant: 'primary', 'white', 'gray'
- * @param {string} className - Additional CSS classes
+ * Spinner
+ *
+ * Indikator loading sederhana yang mendukung beberapa ukuran dan varian
+ * warna. Digunakan pada tombol, proses async, atau komponen yang membutuhkan
+ * penanda status pemuatan.
+ *
+ * Props:
+ * - `size` (string): 'sm'|'md'|'lg'|'xl'
+ * - `color` (string): 'primary'|'white'|'gray'
+ * - `className` (string)
  */
 const Spinner = ({ size = 'md', color = 'primary', className = '' }) => {
     const sizeClasses = {

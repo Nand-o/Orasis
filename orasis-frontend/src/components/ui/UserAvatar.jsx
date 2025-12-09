@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 
 /**
- * UserAvatar component - displays user profile picture or fallback initial
- * @param {Object} user - User object with name and profile_picture_url
- * @param {string} size - Size variant: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
- * @param {string} className - Additional CSS classes
+ * UserAvatar
+ *
+ * Menampilkan avatar pengguna dengan fallback inisial jika tidak ada foto.
+ * Komponen ini menangani error loading gambar dan menyediakan beberapa
+ * ukuran yang dapat dipilih.
+ *
+ * Props:
+ * - `user` (object): objek user dengan `name` dan `profile_picture_url`
+ * - `size` (string): 'xs'|'sm'|'md'|'lg'|'xl'
+ * - `className` (string): kelas CSS tambahan
  */
 const UserAvatar = ({ user, size = 'md', className = '' }) => {
     const [imageError, setImageError] = useState(false);

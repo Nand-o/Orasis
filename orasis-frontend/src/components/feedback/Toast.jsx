@@ -1,3 +1,16 @@
+/**
+ * Toast
+ *
+ * Komponen toast notifikasi sederhana untuk menampilkan pesan singkat
+ * kepada user (success, error, warning, info). Digunakan oleh custom hook
+ * `useToast` yang mengendalikan state visibility.
+ *
+ * Props:
+ * - `message` (string)
+ * - `type` ('info'|'success'|'error'|'warning')
+ * - `isVisible` (boolean)
+ * - `onClose` (function)
+ */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';

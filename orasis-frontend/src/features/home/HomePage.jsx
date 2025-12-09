@@ -9,6 +9,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import showcaseService from '../../services/showcase.service';
 import cacheManager from '../../utils/cacheManager';
 
+/**
+ * HomePage
+ *
+ * Halaman utama setelah landing, menampilkan daftar showcase,
+ * filter, dan section hero. Mengatur pemanggilan API untuk list
+ * showcase dan state pagination/filter.
+ */
 const HomePage = ({ searchValue }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();

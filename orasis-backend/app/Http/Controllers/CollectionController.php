@@ -4,10 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection;
 use Illuminate\Http\Request;
-
+/**
+ * CollectionController
+ *
+ * Mengelola fitur collection (bookmark) milik user.
+ * Collection berfungsi sebagai folder untuk menyimpan showcase favorit.
+ * Semua operasi membutuhkan autentikasi (user harus login).
+ *
+ * @package App\Http\Controllers
+ */
 class CollectionController extends Controller
 {
-    // GET: Lihat daftar koleksi milik User yang login
+    /**
+     * Menampilkan semua collection milik user yang sedang login.
+     *
+     * Endpoint: GET /api/collections
+     * Access: Authenticated
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $collections = $request->user()
@@ -22,7 +38,15 @@ class CollectionController extends Controller
         return response()->json(['data' => $collections]);
     }
 
-    // POST: Buat folder koleksi baru
+    /**
+     * Membuat collection baru untuk user.
+     *
+     * Endpoint: POST /api/collections
+     * Body: { name: string }
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -39,7 +63,16 @@ class CollectionController extends Controller
         ], 201);
     }
 
-    // GET: Lihat detail isi satu koleksi
+    /**
+     * Menampilkan detail satu collection beserta showcases di dalamnya.
+     *
+     * Endpoint: GET /api/collections/{id}
+     * Access: Owner (user yang sama)
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Request $request, $id)
     {
         // Cari koleksi milik user (jika bukan milik user, otomatis 404)
@@ -52,7 +85,16 @@ class CollectionController extends Controller
         return response()->json(['data' => $collection]);
     }
 
-    // PUT: Ganti nama koleksi
+    /**
+     * Mengubah nama collection milik user.
+     *
+     * Endpoint: PUT /api/collections/{id}
+     * Body: { name: string }
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
         $request->validate(['name' => 'required|string|max:255']);
@@ -61,23 +103,40 @@ class CollectionController extends Controller
         $collection->update(['name' => $request->name]);
 
         return response()->json([
-            'message' => 'Collection renamed',
+            'message' => 'Collection updated successfully',
             'data' => $collection
         ]);
     }
 
-    // DELETE: Hapus folder koleksi
+    /**
+     * Menghapus collection milik user.
+     *
+     * Endpoint: DELETE /api/collections/{id}
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Request $request, $id)
     {
         $collection = $request->user()->collections()->findOrFail($id);
         $collection->delete();
 
-        return response()->json(['message' => 'Collection deleted']);
+        return response()->json(['message' => 'Collection deleted successfully']);
     }
 
     // === FITUR BOOKMARK (ADD/REMOVE SHOWCASE) ===
 
-    // POST: Simpan showcase ke koleksi
+    /**
+     * Menambahkan showcase ke dalam collection (bookmark).
+     *
+     * Endpoint: POST /api/collections/{id}/showcases
+     * Body: { showcase_id: number }
+     *
+     * @param Request $request
+     * @param int $id Collection ID
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function addShowcase(Request $request, $id)
     {
         $request->validate([
@@ -92,7 +151,16 @@ class CollectionController extends Controller
         return response()->json(['message' => 'Showcase added to collection']);
     }
 
-    // DELETE: Hapus showcase dari koleksi (tanpa hapus foldernya)
+    /**
+     * Menghapus showcase dari collection (unbookmark).
+     *
+     * Endpoint: DELETE /api/collections/{collectionId}/showcases/{showcaseId}
+     *
+     * @param Request $request
+     * @param int $id Collection ID
+     * @param int $showcaseId Showcase ID
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function removeShowcase(Request $request, $id, $showcaseId)
     {
         $collection = $request->user()->collections()->findOrFail($id);

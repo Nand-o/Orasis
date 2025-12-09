@@ -20,8 +20,23 @@ class Showcase extends Model
         'status',
         'views_count',
     ];
+    /**
+     * Showcase Model
+     *
+     * Representasi karya/design yang diunggah user. Menyimpan informasi
+     * seperti title, description, image_url, logo_url, kategori, status,
+     * dan jumlah views.
+     *
+     * Relasi:
+     * - belongsTo User
+     * - belongsTo Category
+     * - belongsToMany Tag
+     * - belongsToMany Collection
+     *
+     * @package App\Models
+     */
 
-    // Relasi ke User
+    // Relasi ke User (pemilik showcase)
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -33,13 +48,13 @@ class Showcase extends Model
         return $this->belongsTo(Category::class);
     }
 
-    // Showcase punya banyak Tag (many-to-many)
+    // Relasi many-to-many: Showcase punya banyak Tag
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'showcase_tag');
     }
 
-    // Showcase bisa dimasukkan ke banyak Collection (many-to-many)
+    // Relasi many-to-many: Showcase bisa dimasukkan ke banyak Collection
     public function collections()
     {
         return $this->belongsToMany(Collection::class, 'collection_showcase');

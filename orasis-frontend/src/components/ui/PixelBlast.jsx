@@ -1,3 +1,13 @@
+/**
+ * PixelBlast
+ *
+ * Komponen visual berbasis Three.js dan postprocessing yang merender efek
+ * "pixel blast" interaktif. Mendukung opsi seperti bentuk pixel, ukuran,
+ * efek liquid/ripples, dan noise. Dirancang untuk digunakan sebagai latar
+ * dinamis atau dekoratif.
+ *
+ * Props: banyak opsi konfigurasi (variant, pixelSize, color, liquid, dll.).
+ */
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { EffectComposer, EffectPass, RenderPass, Effect } from 'postprocessing';

@@ -1,3 +1,10 @@
+/**
+ * LandingPage
+ *
+ * Halaman landing publik dengan overview produk, fitur, dan CTA untuk
+ * mendorong pendaftaran. Berisi beberapa komponen dekoratif dan sektion
+ * yang menjelaskan nilai utama Orasis.
+ */
 import React from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
