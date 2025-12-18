@@ -64,8 +64,15 @@ const TagManagementPage = () => {
 
     const handleOpenModal = (tag = null) => {
         if (tag) {
+            // Ensure tag has valid ID before proceeding
+            if (!tag.id) {
+                console.error('Tag ID is missing:', tag);
+                showMessage('error', 'Invalid tag data - ID is missing');
+                return;
+            }
             setEditingTag(tag);
             setFormData({ name: tag.name });
+            console.log('Opening edit modal for tag:', tag.id, tag.name);
         } else {
             setEditingTag(null);
             setFormData({ name: '' });
@@ -89,6 +96,13 @@ const TagManagementPage = () => {
 
         try {
             if (editingTag) {
+                // Double-check ID exists before making API call
+                if (!editingTag.id) {
+                    console.error('Cannot update tag - ID is missing:', editingTag);
+                    showMessage('error', 'Cannot update tag - invalid ID');
+                    return;
+                }
+                console.log('Updating tag with ID:', editingTag.id);
                 await tagService.update(editingTag.id, formData);
                 showMessage('success', 'Tag updated successfully!');
             } else {
