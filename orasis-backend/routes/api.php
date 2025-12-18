@@ -87,12 +87,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Manajemen Tag (Create/Update/Delete hanya admin)
         Route::post('/tags', [TagController::class, 'store']);
-        Route::put('/tags/{id}', [TagController::class, 'update']);
-        Route::delete('/tags/{id}', [TagController::class, 'destroy']);
+        Route::put('/tags/{tag}', [TagController::class, 'update']);
+        Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
 
         // Manajemen Category (Create/Update/Delete hanya admin)
         Route::post('/categories', [CategoryController::class, 'store']);
-        Route::put('/categories/{id}', [CategoryController::class, 'update']);
-        Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+        Route::put('/categories/{category}', [CategoryController::class, 'update']);
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
 });

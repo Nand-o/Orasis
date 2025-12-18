@@ -28,14 +28,24 @@ const tagService = {
 
     // Update tag (admin only)
     update: async (id, tagData) => {
-        const response = await api.put(`/tags/${id}`, tagData);
-        return response.data;
+        try {
+            const response = await api.put(`/tags/${id}`, tagData);
+            return response.data;
+        } catch (error) {
+            console.error('Tag update error:', error.response?.data || error.message);
+            throw error;
+        }
     },
 
     // Delete tag (admin only)
     delete: async (id) => {
-        const response = await api.delete(`/tags/${id}`);
-        return response.data;
+        try {
+            const response = await api.delete(`/tags/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Tag delete error:', error.response?.data || error.message);
+            throw error;
+        }
     }
 };
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -103,34 +104,28 @@ class CategoryController extends Controller
     /**
      * Memperbarui nama kategori.
      *
-     * Endpoint: PUT /api/categories/{id}
+     * Endpoint: PUT /api/categories/{category}
      * Body: { name: string }
      *
      * @param Request $request
-     * @param int $id
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category)
     {
         try {
-            $category = DB::table('categories')->find($id);
-
-            if (!$category) {
-                return response()->json(['message' => 'Category not found'], 404);
-            }
-
             $request->validate([
-                'name' => 'required|string|max:255|unique:categories,name,' . $id,
+                'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             ]);
 
             DB::table('categories')
-                ->where('id', $id)
+                ->where('id', $category->id)
                 ->update([
                     'name' => $request->name,
                     'updated_at' => now(),
                 ]);
 
-            $updatedCategory = DB::table('categories')->find($id);
+            $updatedCategory = DB::table('categories')->find($category->id);
 
             return response()->json([
                 'message' => 'Category updated successfully',
@@ -150,23 +145,17 @@ class CategoryController extends Controller
     /**
      * Menghapus kategori jika tidak sedang digunakan oleh showcase mana pun.
      *
-     * Endpoint: DELETE /api/categories/{id}
+     * Endpoint: DELETE /api/categories/{category}
      *
-     * @param int $id
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Category $category)
     {
         try {
-            $category = DB::table('categories')->find($id);
-
-            if (!$category) {
-                return response()->json(['message' => 'Category not found'], 404);
-            }
-
             // Check if category is in use
             $showcasesCount = DB::table('showcases')
-                ->where('category_id', $id)
+                ->where('category_id', $category->id)
                 ->count();
 
             if ($showcasesCount > 0) {
@@ -175,7 +164,7 @@ class CategoryController extends Controller
                 ], 409);
             }
 
-            DB::table('categories')->where('id', $id)->delete();
+            DB::table('categories')->where('id', $category->id)->delete();
 
             return response()->json([
                 'message' => 'Category deleted successfully'

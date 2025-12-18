@@ -119,9 +119,20 @@ const TagManagementPage = () => {
     };
 
     const handleDelete = async () => {
-        if (!deleteModal.tag) return;
+        if (!deleteModal.tag) {
+            console.error('No tag selected for deletion');
+            return;
+        }
+
+        if (!deleteModal.tag.id) {
+            console.error('Tag ID is missing:', deleteModal.tag);
+            showMessage('error', 'Cannot delete tag - invalid ID');
+            setDeleteModal({ isOpen: false, tag: null });
+            return;
+        }
 
         try {
+            console.log('Deleting tag with ID:', deleteModal.tag.id);
             await tagService.delete(deleteModal.tag.id);
             showMessage('success', 'Tag deleted successfully!');
             fetchTags();
@@ -129,6 +140,7 @@ const TagManagementPage = () => {
         } catch (error) {
             console.error('Failed to delete tag:', error);
             showMessage('error', error.response?.data?.message || 'Failed to delete tag');
+            setDeleteModal({ isOpen: false, tag: null });
         }
     };
 
