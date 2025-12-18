@@ -1,4 +1,12 @@
 <?php
+/**
+ * Config: database.php
+ * Deskripsi: Konfigurasi koneksi database aplikasi.
+ * Catatan penting untuk Orasis:
+ * - Default menggunakan `env('DB_CONNECTION', 'sqlite')` untuk kemudahan pengembangan; untuk deployment gunakan `mysql`.
+ * - Pastikan variabel environment (`DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`) diatur sesuai lingkungan.
+ * - Bagian `migrations` mengontrol nama tabel migrasi dan perilaku update date.
+ */
 
 use Illuminate\Support\Str;
 

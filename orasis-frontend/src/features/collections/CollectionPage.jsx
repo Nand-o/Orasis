@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Grid } from 'lucide-react';
 import { useCollection } from '../../context/CollectionContext';
+/**
+ * CollectionPage
+ *
+ * Halaman untuk menampilkan collections milik user.
+ * Menyediakan daftar collection, create/update/delete, dan akses ke
+ * showcase di dalam masing-masing collection.
+ */
 import CollectionCard from './components/CollectionCard';
 import CollectionModal from './components/CollectionModal';
 import CollectionDetailModal from './components/CollectionDetailModal';
-import ConfirmationModal from '../../components/ui/ConfirmationModal';
+import ConfirmationModal from '../../components/feedback/ConfirmationModal';
 
 const CollectionPage = () => {
     const { collections = [], deleteCollection } = useCollection();
@@ -13,6 +21,8 @@ const CollectionPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [collectionToDelete, setCollectionToDelete] = useState(null);
+    const location = useLocation();
+    const isDashboard = location.pathname.includes('/dashboard');
 
     useEffect(() => {
         document.title = 'My Collections | Orasis';
@@ -30,7 +40,7 @@ const CollectionPage = () => {
     // Filter collections based on active tab
     const filteredCollections = useMemo(() => {
         if (!Array.isArray(collections)) return [];
-        
+
         return collections.filter(collection => {
             // Get all showcases in this collection
             const showcases = collection.showcases || [];
@@ -62,44 +72,42 @@ const CollectionPage = () => {
     };
 
     return (
-        <div>
-            <motion.div
-                className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-            >
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Collections</h1>
+        <div className={isDashboard ? "space-y-6" : ""}>
+            {/* Header & Tabs */}
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isDashboard ? 'bg-white dark:bg-dark-gray rounded-3xl p-1 border border-gray-100 dark:border-white/5' : 'mb-8'}`}>
+                {!isDashboard && (
+                    <motion.h1
+                        className="text-3xl font-bold text-gray-900 dark:text-white"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                    >
+                        Collections
+                    </motion.h1>
+                )}
 
-                {/* Toggle - Reused Style from FilterBar */}
-                <motion.div
-                    className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-full relative w-fit"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                    {["Websites", "Mobiles"].map((tab) => (
-                        <motion.button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`relative px-5 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 z-10 ${activeTab === tab
-                                ? 'text-white dark:text-black'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                                }`}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            {activeTab === tab && (
-                                <motion.div
-                                    layoutId="activeCollectionTab"
-                                    className="absolute inset-0 bg-black dark:bg-white rounded-full -z-10 shadow-sm"
-                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                />
-                            )}
-                            {tab}
-                        </motion.button>
-                    ))}
-                </motion.div>
-            </motion.div>
+                {/* Premium Tabs */}
+                <div className={`${isDashboard ? 'w-full' : ''}`}>
+                    <div className="flex p-2 gap-2">
+                        {["Websites", "Mobiles"].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`relative px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === tab
+                                    ? 'bg-white dark:bg-main-black text-main-black dark:text-white shadow-sm'
+                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5'
+                                    }`}
+                            >
+                                {tab}
+                                {activeTab === tab && !isDashboard && (
+                                    // Optional: Add a different indicator for non-dashboard if desired, 
+                                    // but the background style works well for both now.
+                                    null
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
             {filteredCollections.length === 0 ? (
                 <motion.div
@@ -108,7 +116,7 @@ const CollectionPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                 >
-                    <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
+                    <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-dark-gray flex items-center justify-center mb-4">
                         <Grid className="w-10 h-10 text-gray-400 dark:text-gray-500" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">

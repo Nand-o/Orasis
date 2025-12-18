@@ -1,3 +1,10 @@
+/**
+ * ShowcaseDetailPage
+ *
+ * Halaman detail untuk sebuah showcase. Menampilkan informasi lengkap,
+ * tags, author, dan related items. Memanggil `showcaseService.getById`
+ * dan `showcaseService.trackView` untuk tracking views.
+ */
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -6,6 +13,7 @@ import showcaseService from '../../services/showcase.service';
 import ShowcaseCard from './components/ShowcaseCard';
 import CollectionModal from '../collections/components/CollectionModal';
 import { useCollection } from '../../context/CollectionContext';
+import { ShowcaseDetailSkeleton } from '../../components/ui/Skeleton';
 
 const ShowcaseDetailPage = () => {
     const { id } = useParams();
@@ -18,7 +26,7 @@ const ShowcaseDetailPage = () => {
     const { collections } = useCollection();
 
     // Check if design is saved in any collection
-    const isSaved = collections.some(col => 
+    const isSaved = collections.some(col =>
         col.showcases?.some(s => s.id === parseInt(id))
     );
 
@@ -31,43 +39,47 @@ const ShowcaseDetailPage = () => {
                 const cacheTime = sessionStorage.getItem(`${cacheKey}_time`);
                 const now = Date.now();
                 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-                
+
                 if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
                     const cached = JSON.parse(cachedData);
                     setDesign(cached.design);
                     setSimilarDesigns(cached.similar);
                     document.title = `${cached.design.title} | Orasis`;
                     setLoading(false);
-                    
+                    setError(null);
+
                     // Track view even when using cache
                     showcaseService.trackView(id);
                     return;
                 }
-                
-                setLoading(true);
+
+                // Only show loading skeleton if there's no cached data
+                if (!cachedData) {
+                    setLoading(true);
+                }
                 const response = await showcaseService.getById(id);
-                
+
                 // Transform snake_case to camelCase
                 const transformedDesign = {
                     ...response.data,
                     imageUrl: response.data.image_url || response.data.imageUrl,
                     urlWebsite: response.data.url_website || response.data.urlWebsite,
                 };
-                
+
                 // Transform similar showcases
                 const transformedSimilar = (response.similar || []).map(showcase => ({
                     ...showcase,
                     imageUrl: showcase.image_url || showcase.imageUrl,
                     urlWebsite: showcase.url_website || showcase.urlWebsite,
                 }));
-                
+
                 // Save to cache
                 sessionStorage.setItem(cacheKey, JSON.stringify({
                     design: transformedDesign,
                     similar: transformedSimilar
                 }));
                 sessionStorage.setItem(`${cacheKey}_time`, now.toString());
-                
+
                 setDesign(transformedDesign);
                 setSimilarDesigns(transformedSimilar);
                 document.title = `${transformedDesign.title} | Orasis`;
@@ -83,37 +95,12 @@ const ShowcaseDetailPage = () => {
     }, [id]);
 
     if (loading) {
-        return (
-            <motion.div 
-                className="flex items-center justify-center min-h-[70vh]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-            >
-                <div className="text-center">
-                    <motion.div
-                        className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    >
-                        <div className="w-8 h-8 border-3 border-gray-300 dark:border-gray-600 border-t-gray-900 dark:border-t-white rounded-full"></div>
-                    </motion.div>
-                    <motion.p
-                        className="text-gray-600 dark:text-gray-400 font-medium"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        Loading showcase...
-                    </motion.p>
-                </div>
-            </motion.div>
-        );
+        return <ShowcaseDetailSkeleton />;
     }
 
     if (error || !design) {
         return (
-            <motion.div 
+            <motion.div
                 className="flex items-center justify-center min-h-[70vh] px-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -127,17 +114,17 @@ const ShowcaseDetailPage = () => {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-800 mb-6"
                     >
-                        <svg 
-                            className="w-12 h-12 text-gray-400 dark:text-gray-500" 
-                            fill="none" 
-                            viewBox="0 0 24 24" 
+                        <svg
+                            className="w-12 h-12 text-gray-400 dark:text-gray-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
-                            <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth={1.5} 
-                                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                             />
                         </svg>
                     </motion.div>
@@ -159,7 +146,7 @@ const ShowcaseDetailPage = () => {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed"
                     >
-                        {error 
+                        {error
                             ? `We couldn't load this showcase. ${error.includes('404') || error.includes('Not Found') ? "It may have been removed or doesn't exist." : 'Please try again later.'}`
                             : "The showcase you're looking for doesn't exist or has been removed."
                         }
@@ -201,13 +188,12 @@ const ShowcaseDetailPage = () => {
             >
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{design.title}</h1>
                 <div className="flex space-x-2">
-                    <button 
+                    <button
                         onClick={() => setIsModalOpen(true)}
-                        className={`p-2 rounded-lg border transition-colors ${
-                            isSaved 
-                                ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' 
-                                : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'
-                        }`}
+                        className={`p-2 rounded-lg border transition-colors ${isSaved
+                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
+                            : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'
+                            }`}
                         title="Save to collection"
                     >
                         <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
@@ -233,7 +219,7 @@ const ShowcaseDetailPage = () => {
                             href={design.urlWebsite}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-between w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium transition-colors"
+                            className="inline-flex items-center justify-between w-full px-4 py-2 bg-gray-100 dark:bg-dark-gray hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium transition-colors"
                         >
                             <span>Visit Website</span>
                             <ArrowUpRight className="w-4 h-4" />
@@ -280,7 +266,7 @@ const ShowcaseDetailPage = () => {
                             <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Tags</h3>
                             <div className="flex flex-wrap gap-2">
                                 {design.tags.map(tag => (
-                                    <span key={tag.id || tag.name} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-full">
+                                    <span key={tag.id || tag.name} className="px-3 py-1 bg-gray-100 dark:bg-dark-gray text-gray-700 dark:text-gray-300 text-xs rounded-full">
                                         {tag.name || tag}
                                     </span>
                                 ))}
@@ -296,7 +282,7 @@ const ShowcaseDetailPage = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <div className="flex items-end justify-end bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden max-h-[85vh] w-full">
+                    <div className="flex items-end justify-end bg-white dark:bg-main-black rounded-xl overflow-hidden max-h-[85vh] w-full">
                         <img
                             src={design.image_url || design.imageUrl}
                             alt={design.title}

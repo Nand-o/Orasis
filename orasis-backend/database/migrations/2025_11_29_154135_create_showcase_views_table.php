@@ -1,4 +1,10 @@
 <?php
+/**
+ * Migration: create_showcase_views_table
+ * Deskripsi: Menyimpan log kunjungan (views) untuk setiap showcase.
+ * Kolom penting: id, showcase_id (FK), user_id (nullable), ip_address, user_agent, created_at
+ * Catatan: Digunakan untuk menghitung views unik dan mencegah double-count dalam periode tertentu.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

@@ -7,9 +7,25 @@ use App\Models\Showcase;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+/**
+ * DashboardController
+ *
+ * Menyediakan endpoint statistik dan analytics untuk dashboard admin.
+ * Mengembalikan rangkuman data seperti total users, jumlah showcase,
+ * serta data time-series dan top contributors.
+ *
+ * @package App\Http\Controllers
+ */
 class DashboardController extends Controller
 {
+    /**
+     * Ringkasan singkat statistik (overview).
+     *
+     * Endpoint: GET /api/admin/stats (contoh)
+     * Access: Admin
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function stats()
     {
         return response()->json([
@@ -22,6 +38,17 @@ class DashboardController extends Controller
         ]);
     }
 
+    /**
+     * Endpoint analytics yang mengembalikan dataset lebih lengkap untuk dashboard.
+     *
+     * Dataset yang dikompilasi:
+     * - showacses_per_month (last 6 months)
+     * - users_per_month (last 6 months)
+     * - top_contributors, showcases_by_category
+     * - popular_tags, view_trends (last 30 days), top_viewed_showcases
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function analytics()
     {
         try {

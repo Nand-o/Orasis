@@ -1,3 +1,16 @@
+/**
+ * Tag Service
+ *
+ * Service sederhana untuk mengelola tags di sistem.
+ * Digunakan di halaman admin untuk CRUD tag dan di form pembuatan
+ * showcase untuk menampilkan daftar tag yang tersedia.
+ *
+ * Endpoints:
+ * - GET /api/tags
+ * - POST /api/tags (admin)
+ * - PUT /api/tags/:id (admin)
+ * - DELETE /api/tags/:id (admin)
+ */
 import api from './api';
 
 const tagService = {
@@ -15,14 +28,24 @@ const tagService = {
 
     // Update tag (admin only)
     update: async (id, tagData) => {
-        const response = await api.put(`/tags/${id}`, tagData);
-        return response.data;
+        try {
+            const response = await api.put(`/tags/${id}`, tagData);
+            return response.data;
+        } catch (error) {
+            console.error('Tag update error:', error.response?.data || error.message);
+            throw error;
+        }
     },
 
     // Delete tag (admin only)
     delete: async (id) => {
-        const response = await api.delete(`/tags/${id}`);
-        return response.data;
+        try {
+            const response = await api.delete(`/tags/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Tag delete error:', error.response?.data || error.message);
+            throw error;
+        }
     }
 };
 

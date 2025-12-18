@@ -1,4 +1,10 @@
 <?php
+/**
+ * Seeder: DatabaseSeeder
+ * Deskripsi: Seeder utama yang memanggil seeder-seeder lain untuk mengisi data awal aplikasi.
+ * Urutan: User -> Category -> Tag -> Showcase -> Collection
+ * Catatan: ShowcaseSeeder membaca data dari `database/data/showcase_data.csv` sehingga pastikan file CSV tersedia jika ingin mengisi data showcase.
+ */
 
 namespace Database\Seeders;
 

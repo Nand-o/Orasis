@@ -1,3 +1,15 @@
+/**
+ * CollectionContext
+ *
+ * Context untuk mengelola collections milik user (CRUD + optimistic updates).
+ * Fitur:
+ * - Fetch collections saat user login
+ * - Create / Update / Delete collection
+ * - Add / Remove showcase ke collection dengan optimistic UI
+ * - Menyimpan state loading dan error untuk UI
+ *
+ * Provider ini menggunakan `collectionService` untuk komunikasi API.
+ */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import collectionService from '../services/collection.service';
 import { useAuth } from './AuthContext';

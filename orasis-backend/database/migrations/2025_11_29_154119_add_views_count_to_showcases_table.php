@@ -1,4 +1,9 @@
 <?php
+/**
+ * Migration: add_views_count_to_showcases_table
+ * Deskripsi: Menambahkan kolom `views_count` pada tabel `showcases` untuk menyimpan angka hitungan sederhana.
+ * Catatan: Selain `showcase_views` yang menyimpan detail per-view, kolom ini berguna untuk agregasi cepat.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

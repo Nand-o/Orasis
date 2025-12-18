@@ -1,3 +1,14 @@
+/**
+ * ThemeContext
+ *
+ * Context untuk mengelola preferensi tema (light/dark/system) di aplikasi.
+ * Fitur utama:
+ * - Menyimpan preferensi ke `localStorage`
+ * - Mengaplikasikan kelas `dark`/`light` ke `document.documentElement`
+ * - Mengikuti preferensi sistem ketika pilihan adalah `system`
+ *
+ * Gunakan `useTheme()` untuk mengakses `theme` dan `setTheme` di komponen.
+ */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();

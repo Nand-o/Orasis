@@ -1,4 +1,10 @@
 <?php
+/**
+ * Seeder: CategorySeeder
+ * Deskripsi: Mengisi tabel `categories` dengan daftar kategori awal yang digunakan pada aplikasi.
+ * Sumber data: didefinisikan langsung di sini (array). Menjalankan seeder ini berfungsi untuk menyediakan opsi kategori default.
+ * Catatan: Seeder ini menggunakan `DB::table(...)->insert()` sehingga tidak idempotent jika dijalankan berulang tanpa pembersihan.
+ */
 
 namespace Database\Seeders;
 

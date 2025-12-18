@@ -1,3 +1,13 @@
+/**
+ * Custom hook `useToast`
+ *
+ * Hook ringan untuk menampilkan toast notifications di UI.
+ * - Mengelola state toast (visibility, message, type)
+ * - Menyediakan `showToast(message, type, duration)` dan `hideToast()`
+ *
+ * Contoh penggunaan:
+ * const { toast, showToast } = useToast();
+ */
 import { useState, useCallback } from 'react';
 
 export const useToast = () => {

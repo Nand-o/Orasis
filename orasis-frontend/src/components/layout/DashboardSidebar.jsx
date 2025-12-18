@@ -1,11 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+/**
+ * DashboardSidebar
+ *
+ * Sidebar navigasi untuk area dashboard (admin & user).
+ * Menyediakan menu utama, snippet profil user, dan tombol aksi seperti
+ * theme toggle serta logout. Sidebar ini dibuat responsif dan mendukung
+ * collapsed state untuk menghemat ruang layar.
+ *
+ * Props:
+ * - `collapsed` (boolean): apakah sidebar dalam mode ter-collapsed
+ * - `setCollapsed` (function): setter untuk mengubah collapsed state
+ */
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { 
-    LayoutDashboard, 
-    FileText, 
-    Users, 
-    Settings, 
+import {
+    LayoutDashboard,
+    FileText,
+    Users,
+    Settings,
     LogOut,
     ChevronLeft,
     ChevronRight,
@@ -13,23 +25,85 @@ import {
     TrendingUp,
     Clock,
     Tag,
-    Folder
+    Folder,
+    Menu,
+    Sun,
+    Moon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import adminService from '../../services/admin.service';
 
 const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    const isAdmin = user?.role === 'admin';
+    const { theme, setTheme } = useTheme();
+    const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
+    const dashboardCaption = useMemo(() => isAdmin ? 'Admin Panel' : 'User Dashboard', [isAdmin]);
     const [pendingCount, setPendingCount] = useState(0);
+    // Handle theme toggle with wave ripple effect
+    const handleThemeToggle = async (event) => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+
+        // Check if View Transitions API is supported
+        if (!document.startViewTransition) {
+            // Fallback: Simple ripple effect without View Transitions
+            const button = event.currentTarget;
+            const rect = button.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.classList.add('wave-ripple');
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            setTheme(newTheme);
+            return;
+        }
+
+        // Get click position relative to viewport
+        const x = event.clientX;
+        const y = event.clientY;
+
+        // Calculate position as percentage for clip-path
+        const xPercent = (x / window.innerWidth) * 100;
+        const yPercent = (y / window.innerHeight) * 100;
+
+        // Set CSS variables for ripple origin
+        document.documentElement.style.setProperty('--ripple-x', `${xPercent}%`);
+        document.documentElement.style.setProperty('--ripple-y', `${yPercent}%`);
+
+        // Add class for wave ripple animation
+        document.documentElement.classList.add('wave-ripple-transition');
+
+        // Start view transition
+        const transition = document.startViewTransition(() => {
+            setTheme(newTheme);
+        });
+
+        // Clean up after transition
+        try {
+            await transition.finished;
+        } finally {
+            document.documentElement.classList.remove('wave-ripple-transition');
+        }
+    };
 
     // Fetch pending count for admin
     useEffect(() => {
         if (isAdmin) {
             fetchPendingCount();
-            
+
             // Refresh count every 30 seconds
             const interval = setInterval(() => {
                 fetchPendingCount();
@@ -91,150 +165,128 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     return (
         <motion.aside
             initial={false}
-            animate={{ width: collapsed ? 80 : 280 }}
-            className="fixed left-0 top-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 flex flex-col"
+            animate={{
+                width: collapsed ? 88 : 280,
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed left-4 top-4 bottom-4 bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/10 z-50 flex-col shadow-2xl overflow-hidden hidden md:flex"
         >
-                {/* Header */}
-                <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-800 gap-3 shrink-0">
-                    {/* Toggle Button - SUPER VISIBLE */}
-                    <motion.button
-                        onClick={() => setCollapsed(!collapsed)}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-3 bg-black dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-200 rounded-xl transition-all shadow-2xl border-2 border-gray-300 dark:border-gray-700 shrink-0"
-                        title={collapsed ? "Buka Sidebar" : "Tutup Sidebar"}
-                        style={{ zIndex: 50 }}
-                    >
-                        {collapsed ? (
-                            <ChevronRight className="w-6 h-6 text-white dark:text-black" strokeWidth={3} />
-                        ) : (
-                            <ChevronLeft className="w-6 h-6 text-white dark:text-black" strokeWidth={3} />
-                        )}
-                    </motion.button>
-
-                    {!collapsed && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="flex flex-col"
-                        >
-                            <h2 className="text-base font-bold text-gray-900 dark:text-white">Orasis</h2>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {isAdmin ? 'Admin Panel' : 'User Dashboard'}
-                            </p>
-                        </motion.div>
-                    )}
-                </div>
-
-                {/* User Info */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="px-4 py-4 border-b border-gray-200 dark:border-gray-800 shrink-0"
-                >
-                    {collapsed ? (
-                        <div className="flex justify-center">
-                            <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
-                                {user?.profile_picture_url ? (
-                                    <img 
-                                        src={user.profile_picture_url} 
-                                        alt={user.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <span className="text-white font-semibold text-sm">
-                                        {user?.name?.charAt(0).toUpperCase()}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
-                                {user?.profile_picture_url ? (
-                                    <img 
-                                        src={user.profile_picture_url} 
-                                        alt={user.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <span className="text-white font-semibold text-base">
-                                        {user?.name?.charAt(0).toUpperCase()}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                    {user?.name}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {user?.email}
-                                </p>
-                            </div>
-                        </div>
-                    )}
-                </motion.div>
-
-                {/* Navigation */}
-                <nav className="flex-1 overflow-y-auto py-4 px-3 min-h-0">
-                    <div className="space-y-1">
-                        {menuItems.map((item) => {
-                            const Icon = item.icon;
-                            const active = isActive(item.path);
-
-                            return (
-                                <motion.button
-                                    key={item.path}
-                                    onClick={() => navigate(item.path)}
-                                    whileHover={{ x: collapsed ? 0 : 4 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-                                        active
-                                            ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                    }`}
-                                >
-                                    <Icon className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
-                                    {!collapsed && (
-                                        <>
-                                            <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
-                                            {item.badge === 'pending' && pendingCount > 0 && (
-                                                <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-medium rounded-full">
-                                                    {pendingCount}
-                                                </span>
-                                            )}
-                                        </>
-                                    )}
-                                </motion.button>
-                            );
-                        })}
+            {/* Header & Toggle */}
+            <div className="h-20 flex items-center justify-between px-6 shrink-0">
+                <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                        <img src="/logo-black.svg" alt="Orasis" className="w-full h-full object-contain dark:hidden" />
+                        <img src="/logo-white.svg" alt="Orasis" className="w-full h-full object-contain hidden dark:block" />
                     </div>
-                </nav>
-
-                {/* Bottom Actions */}
-                <div className="border-t border-gray-200 dark:border-gray-800 p-3 space-y-1 shrink-0 bg-white dark:bg-gray-900">
-                    <motion.button
-                        onClick={() => navigate('/profile')}
-                        whileHover={{ x: collapsed ? 0 : 4 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    >
-                        <Settings className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
-                        {!collapsed && <span className="text-sm font-medium">Settings</span>}
-                    </motion.button>
-                    <motion.button
-                        onClick={handleLogout}
-                        whileHover={{ x: collapsed ? 0 : 4 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                    >
-                        <LogOut className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
-                        {!collapsed && <span className="text-sm font-medium">Logout</span>}
-                    </motion.button>
+                    {!collapsed && (
+                        <div className="flex flex-col min-w-0">
+                            <span className="font-bold text-sm text-violet-300 dark:text-yellow-300 tracking-tight">ORASIS</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wider">
+                                {dashboardCaption}
+                            </span>
+                        </div>
+                    )}
                 </div>
+
+                <button
+                    onClick={() => setCollapsed(!collapsed)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors text-gray-500 dark:text-gray-400"
+                >
+                    {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+                </button>
+            </div>
+
+            {/* User Profile Snippet */}
+            <div className={`px-4 mb-6 ${collapsed ? 'flex justify-center' : ''}`}>
+                <div className={`flex items-center gap-3 rounded-2xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 ${collapsed ? 'justify-center w-12 h-12 p-0' : 'p-3'}`}>
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-violet-300/80 to-violet-300 dark:from-yellow-300/80 dark:to-yellow-300 p-0.5 shrink-0">
+                        <img
+                            src={user?.profile_picture_url || `https://ui-avatars.com/api/?name=${user?.name}&background=random`}
+                            alt={user?.name}
+                            className="w-full h-full rounded-full object-cover border-2 border-white dark:border-dark-gray"
+                        />
+                    </div>
+                    {!collapsed && (
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 overflow-y-auto overflow-x-hidden px-4 space-y-2 scrollbar-hide">
+                {menuItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.path);
+
+                    return (
+                        <motion.button
+                            key={item.path}
+                            onClick={() => navigate(item.path)}
+                            whileHover={{ x: 4 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative ${active
+                                ? 'bg-violet-600 dark:bg-yellow-300 text-white dark:text-black shadow-lg shadow-violet-500/20 dark:shadow-yellow-300/20'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                                }`}
+                        >
+                            <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-white dark:text-black' : 'group-hover:text-violet-600 dark:group-hover:text-yellow-300'} transition-colors`} />
+
+                            {!collapsed && (
+                                <>
+                                    <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
+                                    {item.badge === 'pending' && pendingCount > 0 && (
+                                        <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-sm">
+                                            {pendingCount}
+                                        </span>
+                                    )}
+                                </>
+                            )}
+
+                            {/* Tooltip for collapsed state */}
+                            {collapsed && (
+                                <div className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-black text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-xl">
+                                    {item.label}
+                                </div>
+                            )}
+                        </motion.button>
+                    );
+                })}
+            </nav>
+
+            {/* Bottom Actions */}
+            <div className="p-4 mt-auto space-y-2 border-t border-gray-100 dark:border-white/5">
+                <button
+                    onClick={handleThemeToggle}
+                    className={`relative overflow-hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all group ${collapsed ? 'justify-center' : ''}`}
+                >
+                    {theme === 'dark' ? (
+                        <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
+                    ) : (
+                        <Moon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />
+                    )}
+                    {!collapsed && <span className="text-sm font-medium">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+                </button>
+
+                <button
+                    onClick={() => navigate('/profile')}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all group ${collapsed ? 'justify-center' : ''}`}
+                >
+                    <Settings className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
+                    {!collapsed && <span className="text-sm font-medium">Settings</span>}
+                </button>
+                <button
+                    onClick={handleLogout}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-all group ${collapsed ? 'justify-center' : ''}`}
+                >
+                    <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    {!collapsed && <span className="text-sm font-medium">Logout</span>}
+                </button>
+            </div>
         </motion.aside>
     );
 };
 
-export default DashboardSidebar;
+export default React.memo(DashboardSidebar);

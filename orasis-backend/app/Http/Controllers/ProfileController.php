@@ -6,8 +6,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
+/**
+ * ProfileController
+ *
+ * Menangani operasi terkait profil user: update profil, ganti password,
+ * menampilkan showcase milik user, statistik user, dan hapus akun.
+ * Semua endpoint di controller ini membutuhkan autentikasi.
+ *
+ * @package App\Http\Controllers
+ */
 class ProfileController extends Controller
 {
+    /**
+     * Update profile user (nama, email, profile picture).
+     *
+     * Endpoint: PUT /api/profile
+     * Body: { name, email, profile_picture }
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         $user = $request->user();
@@ -45,6 +63,15 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * Mengubah password user.
+     *
+     * Endpoint: POST /api/profile/change-password
+     * Body: { current_password, password, password_confirmation }
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function changePassword(Request $request)
     {
         // Add no-cache headers
@@ -101,6 +128,14 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan semua showcase milik user yang sedang login.
+     *
+     * Endpoint: GET /api/profile/showcases
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function showcases(Request $request)
     {
         $user = $request->user();
@@ -115,6 +150,14 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * Mengembalikan statistik singkat untuk user (jumlah showcase, views, dll.).
+     *
+     * Endpoint: GET /api/profile/stats
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function stats(Request $request)
     {
         $user = $request->user();
@@ -134,5 +177,60 @@ class ProfileController extends Controller
         return response()->json([
             'data' => $stats
         ]);
+    }
+
+    /**
+     * Menghapus akun user beserta resource terkait (gambar, showcases, collections, tokens).
+     *
+     * Endpoint: DELETE /api/profile
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteAccount(Request $request)
+    {
+        $user = $request->user();
+
+        try {
+            // Delete user's profile picture if exists
+            if ($user->profile_picture) {
+                $oldPath = str_replace(url('/storage/'), '', $user->profile_picture);
+                if (\Storage::disk('public')->exists($oldPath)) {
+                    \Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            // Delete all user's showcase images
+            foreach ($user->showcases as $showcase) {
+                if ($showcase->image_url) {
+                    $imagePath = str_replace(url('/storage/'), '', $showcase->image_url);
+                    if (\Storage::disk('public')->exists($imagePath)) {
+                        \Storage::disk('public')->delete($imagePath);
+                    }
+                }
+            }
+
+            // Delete all user's showcases (will cascade to pivot tables)
+            $user->showcases()->delete();
+
+            // Delete all user's collections (will cascade to pivot tables)
+            $user->collections()->delete();
+
+            // Revoke all tokens
+            $user->tokens()->delete();
+
+            // Delete the user account
+            $user->delete();
+
+            return response()->json([
+                'message' => 'Account deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete account: ' . $e->getMessage());
+            
+            return response()->json([
+                'message' => 'Failed to delete account. Please try again.'
+            ], 500);
+        }
     }
 }

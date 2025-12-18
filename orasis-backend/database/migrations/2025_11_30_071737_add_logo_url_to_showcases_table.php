@@ -1,4 +1,9 @@
 <?php
+/**
+ * Migration: add_logo_url_to_showcases_table
+ * Deskripsi: Menambahkan kolom `logo_url` pada tabel `showcases` untuk menyimpan path/logo perusahaan/brand terkait.
+ * Catatan: Logo berguna untuk tampilan daftar atau preview pada UI.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

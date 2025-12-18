@@ -1,4 +1,10 @@
 <?php
+/**
+ * Seeder: UserSeeder
+ * Deskripsi: Membuat akun pengguna awal termasuk akun admin.
+ * Perilaku: Menggunakan `User::firstOrCreate()` sehingga seeder idempotent.
+ * Catatan keamanan: Password yang dibuat di sini bersifat contoh; untuk lingkungan produksi, jangan gunakan password default.
+ */
 
 namespace Database\Seeders;
 

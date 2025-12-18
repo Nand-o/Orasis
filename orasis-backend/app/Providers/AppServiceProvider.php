@@ -1,4 +1,10 @@
 <?php
+/**
+ * Provider: AppServiceProvider
+ * Deskripsi: Tempat untuk mendaftarkan layanan (services) aplikasi dan melakukan bootstrapping umum.
+ * Catatan: Pada proyek ini file ini saat ini kosong kecuali stub standar Laravel.
+ * Gunakan metode `register()` untuk binding container dan `boot()` untuk event/observer atau macro yang perlu dieksekusi saat aplikasi mulai.
+ */
 
 namespace App\Providers;
 
@@ -11,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Tempat mendaftarkan binding service container bila diperlukan.
     }
 
     /**
@@ -19,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Tempat bootstrap seperti observer model, custom validation, atau macro.
     }
 }

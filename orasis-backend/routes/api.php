@@ -1,4 +1,16 @@
 <?php
+/**
+ * API Routes
+ *
+ * File ini mendefinisikan semua endpoint REST API yang digunakan oleh
+ * frontend Orasis. Struktur dibagi menjadi:
+ * - Public routes: endpoints yang dapat diakses tanpa autentikasi
+ * - Protected routes: membutuhkan middleware auth:sanctum
+ * - Admin routes: group dengan middleware is.admin untuk moderasi/manajemen
+ *
+ * Setiap route biasanya menunjuk ke method di controller yang mendokumentasikan
+ * behavior endpoint secara lebih detail.
+ */
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user', [ProfileController::class, 'update']);
     Route::post('/user', [ProfileController::class, 'update']); // For file uploads with _method=PUT
+    Route::delete('/user', [ProfileController::class, 'deleteAccount']); // Delete account
     Route::put('/user/password', [ProfileController::class, 'changePassword']);
     Route::put('/user/change-password', [ProfileController::class, 'changePassword']); // NEW endpoint to bypass cache
     Route::get('/user/showcases', [ProfileController::class, 'showcases']);
@@ -74,12 +87,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Manajemen Tag (Create/Update/Delete hanya admin)
         Route::post('/tags', [TagController::class, 'store']);
-        Route::put('/tags/{id}', [TagController::class, 'update']);
-        Route::delete('/tags/{id}', [TagController::class, 'destroy']);
+        Route::put('/tags/{tag}', [TagController::class, 'update']);
+        Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
 
         // Manajemen Category (Create/Update/Delete hanya admin)
         Route::post('/categories', [CategoryController::class, 'store']);
-        Route::put('/categories/{id}', [CategoryController::class, 'update']);
-        Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+        Route::put('/categories/{category}', [CategoryController::class, 'update']);
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
 });

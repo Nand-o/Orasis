@@ -6,9 +6,48 @@ use App\Models\Showcase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * ShowcaseController
+ * 
+ * Controller utama untuk mengelola showcase (karya desain) dalam sistem.
+ * Menangani CRUD operations, filtering, sorting, dan tracking views.
+ * 
+ * Fitur utama:
+ * - Listing showcase dengan filter & sort
+ * - Upload showcase (file/URL)
+ * - Detail showcase dengan similar items
+ * - Update & delete showcase
+ * - View tracking system
+ * 
+ * @package App\Http\Controllers
+ * @author Orasis Team
+ */
 class ShowcaseController extends Controller
 {
-    // PUBLIC: Hanya tampilkan yang APPROVED
+    /**
+     * Menampilkan Daftar Showcase yang Disetujui
+     * 
+     * Endpoint publik untuk mendapatkan daftar showcase yang sudah disetujui (approved).
+     * Mendukung filtering berdasarkan kategori, sorting, dan pagination dengan jumlah custom.
+     * 
+     * @param Request $request Query parameters untuk filtering dan sorting
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint GET /api/showcases
+     * @access Public
+     * 
+     * @queryParam sort string Pilihan sorting (newest, oldest, most_viewed, title_asc, title_desc). Default: newest
+     * @queryParam per_page int Jumlah item per halaman (max 100). Default: 10
+     * @queryParam category string Filter berdasarkan nama kategori (case-insensitive)
+     * @queryParam page int Nomor halaman untuk pagination
+     * 
+     * @response 200 {
+     *   "data": [...],
+     *   "current_page": 1,
+     *   "total": 50,
+     *   "per_page": 10
+     * }
+     */
     public function index(Request $request)
     {
         // Get parameters
@@ -54,7 +93,36 @@ class ShowcaseController extends Controller
         return response()->json($results);
     }
 
-    // USER: Upload showcase baru (Otomatis Pending)
+    /**
+     * Upload Showcase Baru
+     * 
+     * Endpoint untuk user mengunggah showcase baru ke sistem.
+     * Mendukung upload file gambar atau URL eksternal untuk showcase dan logo.
+     * Status showcase:
+     * - Admin: langsung approved
+     * - User biasa: pending (menunggu moderasi)
+     * 
+     * @param Request $request Data showcase (title, description, url_website, image, logo, category_id, tags)
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint POST /api/showcases
+     * @access Protected (memerlukan Bearer Token)
+     * 
+     * @bodyParam title string required Judul showcase. Contoh: Modern E-Commerce Dashboard
+     * @bodyParam description string required Deskripsi showcase
+     * @bodyParam url_website string required URL website showcase (harus valid URL)
+     * @bodyParam image_url string URL gambar eksternal (opsional jika ada image_file)
+     * @bodyParam image_file file Upload file gambar (JPEG/PNG/JPG/WEBP, max 5MB)
+     * @bodyParam logo_url string URL logo eksternal (opsional)
+     * @bodyParam logo_file file Upload file logo (JPEG/PNG/JPG/WEBP/SVG, max 2MB)
+     * @bodyParam category_id int required ID kategori yang ada di database
+     * @bodyParam tags array Array berisi ID tags. Contoh: [1,2,3]
+     * 
+     * @response 201 {
+     *   "message": "Karya berhasil diunggah dan sedang menunggu moderasi.",
+     *   "data": {...}
+     * }
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -117,13 +185,38 @@ class ShowcaseController extends Controller
         }
 
         $message = $initialStatus === 'pending'
-            ? 'Karya berhasil diunggah dan sedang menunggu moderasi.'
-            : 'Karya berhasil diterbitkan.';
+            ? 'Showcase uploaded successfully and is pending moderation.'
+            : 'Showcase published successfully.';
 
         return response()->json(['message' => $message, 'data' => $showcase], 201);
     }
 
-    // PUBLIC/USER: Lihat detail
+    /**
+     * Menampilkan Detail Showcase
+     * 
+     * Endpoint untuk melihat detail lengkap sebuah showcase beserta:
+     * - Informasi user pembuat
+     * - Tags yang terkait
+     * - Kategori showcase
+     * - Showcase serupa (berdasarkan kategori yang sama)
+     * 
+     * Sistem keamanan:
+     * - Showcase dengan status 'pending' hanya bisa dilihat oleh owner atau admin
+     * - View tracking otomatis untuk showcase approved (kecuali owner/admin)
+     * 
+     * @param int $id ID showcase
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @endpoint GET /api/showcases/{id}
+     * @access Public (dengan pembatasan untuk pending)
+     * 
+     * @response 200 {
+     *   "data": {...},
+     *   "similar": [...]
+     * }
+     * @response 403 {"message": "Showcase sedang dimoderasi."}
+     * @response 404 {"message": "Showcase not found"}
+     */
     public function show($id)
     {
         $showcase = Showcase::with(['user', 'tags', 'category'])->findOrFail($id);
@@ -134,7 +227,7 @@ class ShowcaseController extends Controller
         $isAdmin = $user && $user->role === 'admin';
 
         if ($showcase->status !== 'approved' && !$isOwner && !$isAdmin) {
-            return response()->json(['message' => 'Showcase sedang dimoderasi.'], 403);
+            return response()->json(['message' => 'Showcase is under moderation.'], 403);
         }
 
         // Track view (if not owner and not admin)
@@ -213,7 +306,7 @@ class ShowcaseController extends Controller
         $isAdmin = $user && $user->role === 'admin';
 
         if ($showcase->status !== 'approved' && !$isOwner && !$isAdmin) {
-            return response()->json(['message' => 'Showcase tidak ditemukan.'], 404);
+            return response()->json(['message' => 'Showcase not found.'], 404);
         }
 
         // Track view (if not owner and not admin)

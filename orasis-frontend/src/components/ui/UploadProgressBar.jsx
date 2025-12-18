@@ -1,3 +1,13 @@
+/**
+ * UploadProgressBar
+ *
+ * Komponen visual untuk menampilkan progres upload file.
+ * Menyediakan status text, persen, dan bar animasi.
+ *
+ * Props:
+ * - `progress` (number): persen progress 0-100
+ * - `status` (string): 'uploading'|'processing'|'success'|'error'
+ */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';

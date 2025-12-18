@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
+/**
+ * ShowcaseFormPage
+ *
+ * Halaman untuk membuat atau mengedit showcase. Mengelola form data,
+ * upload gambar/logo, tags, dan submit ke API melalui `showcaseService`.
+ */
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import showcaseService from '../../services/showcase.service';
 import tagService from '../../services/tag.service';
 import categoryService from '../../services/category.service';
 import { useAuth } from '../../context/AuthContext';
-import ImageUpload from '../../components/ui/ImageUpload';
-import Spinner from '../../components/ui/Spinner';
+import ImageUpload from '../../components/form/ImageUpload';
+import { ShowcaseFormPageSkeleton } from '../../components/ui/SkeletonLoading';
 import UploadProgressBar from '../../components/ui/UploadProgressBar';
 import cacheManager from '../../utils/cacheManager';
+import { ChevronLeft, Upload, Link as LinkIcon, Image as ImageIcon, Check, AlertCircle } from 'lucide-react';
+import Spinner from '../../components/common/Spinner';
 
 const ShowcaseFormPage = () => {
     const navigate = useNavigate();
@@ -43,6 +51,8 @@ const ShowcaseFormPage = () => {
     const [loadingTags, setLoadingTags] = useState(true);
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [showcaseType, setShowcaseType] = useState('website'); // 'website' | 'mobile'
 
     // Load showcase data if editing
     useEffect(() => {
@@ -90,9 +100,9 @@ const ShowcaseFormPage = () => {
 
             // Check if user owns this showcase or is admin
             if (showcase.user_id !== user.id && user.role !== 'admin') {
-                setMessage({ 
-                    type: 'error', 
-                    text: 'You do not have permission to edit this showcase.' 
+                setMessage({
+                    type: 'error',
+                    text: 'You do not have permission to edit this showcase.'
                 });
                 setTimeout(() => navigate('/dashboard'), 2000);
                 return;
@@ -109,6 +119,10 @@ const ShowcaseFormPage = () => {
             });
             setImagePreview(showcase.image_url);
             setLogoPreview(showcase.logo_url);
+            // Set showcase type based on category
+            if (showcase.category?.name.toLowerCase() === 'mobile') {
+                setShowcaseType('mobile');
+            }
             // If it's a stored image (not external URL), switch to upload mode
             if (showcase.image_url && !showcase.image_url.startsWith('http')) {
                 setUseUrlMode(false);
@@ -118,9 +132,9 @@ const ShowcaseFormPage = () => {
             }
         } catch (error) {
             console.error('Failed to load showcase:', error);
-            setMessage({ 
-                type: 'error', 
-                text: 'Failed to load showcase data. Redirecting...' 
+            setMessage({
+                type: 'error',
+                text: 'Failed to load showcase data. Redirecting...'
             });
             setTimeout(() => navigate('/dashboard'), 2000);
         } finally {
@@ -178,6 +192,30 @@ const ShowcaseFormPage = () => {
         }));
     };
 
+    const handleTypeToggle = (type) => {
+        setShowcaseType(type);
+        // Clear category if switching types and current category is invalid for new type
+        const currentCategory = categories.find(c => c.id == formData.category_id);
+        if (currentCategory) {
+            const isMobileCategory = currentCategory.name.toLowerCase() === 'mobile';
+            if (type === 'website' && isMobileCategory) {
+                setFormData(prev => ({ ...prev, category_id: '' }));
+            } else if (type === 'mobile' && !isMobileCategory) {
+                const mobileCategory = categories.find(c => c.name.toLowerCase() === 'mobile');
+                setFormData(prev => ({ ...prev, category_id: mobileCategory?.id || '' }));
+            }
+        }
+    };
+
+    // Get filtered categories based on showcase type
+    const filteredCategories = categories.filter(cat => {
+        const isMobileCategory = cat.name.toLowerCase() === 'mobile';
+        return showcaseType === 'mobile' ? isMobileCategory : !isMobileCategory;
+    });
+
+    // Get aspect ratio based on showcase type
+    const getAspectRatio = () => showcaseType === 'mobile' ? 9 / 16 : 16 / 9;
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -231,11 +269,11 @@ const ShowcaseFormPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
-            setMessage({ 
-                type: 'error', 
-                text: 'Please fix the errors in the form.' 
+            setMessage({
+                type: 'error',
+                text: 'Please fix the errors in the form.'
             });
             return;
         }
@@ -253,21 +291,21 @@ const ShowcaseFormPage = () => {
                 formDataToSend.append('description', formData.description.trim());
                 formDataToSend.append('url_website', formData.url_website.trim());
                 formDataToSend.append('category_id', formData.category_id);
-                
+
                 // Add image (file or URL)
                 if (imageFile) {
                     formDataToSend.append('image_file', imageFile);
                 } else if (formData.image_url) {
                     formDataToSend.append('image_url', formData.image_url.trim());
                 }
-                
+
                 // Add logo (file or URL) - optional
                 if (logoFile) {
                     formDataToSend.append('logo_file', logoFile);
                 } else if (formData.logo_url) {
                     formDataToSend.append('logo_url', formData.logo_url.trim());
                 }
-                
+
                 // Add tags array
                 formData.tags.forEach((tagId, index) => {
                     formDataToSend.append(`tags[${index}]`, tagId);
@@ -284,16 +322,16 @@ const ShowcaseFormPage = () => {
                 if (isEditMode) {
                     await showcaseService.update(id, formDataToSend, onProgress);
                     setUploadStatus('success');
-                    setMessage({ 
-                        type: 'success', 
-                        text: 'Showcase updated successfully!' 
+                    setMessage({
+                        type: 'success',
+                        text: 'Showcase updated successfully!'
                     });
                 } else {
                     await showcaseService.create(formDataToSend, onProgress);
                     setUploadStatus('success');
-                    setMessage({ 
-                        type: 'success', 
-                        text: 'Showcase created successfully!' 
+                    setMessage({
+                        type: 'success',
+                        text: 'Showcase created successfully!'
                     });
                 }
             } else {
@@ -310,15 +348,15 @@ const ShowcaseFormPage = () => {
 
                 if (isEditMode) {
                     await showcaseService.update(id, submitData);
-                    setMessage({ 
-                        type: 'success', 
-                        text: 'Showcase updated successfully!' 
+                    setMessage({
+                        type: 'success',
+                        text: 'Showcase updated successfully!'
                     });
                 } else {
                     await showcaseService.create(submitData);
-                    setMessage({ 
-                        type: 'success', 
-                        text: 'Showcase created successfully!' 
+                    setMessage({
+                        type: 'success',
+                        text: 'Showcase created successfully!'
                     });
                 }
             }
@@ -334,8 +372,8 @@ const ShowcaseFormPage = () => {
         } catch (error) {
             setUploadStatus('error');
             console.error('Form submission error:', error);
-            const errorMessage = error.response?.data?.message 
-                || error.message 
+            const errorMessage = error.response?.data?.message
+                || error.message
                 || `Failed to ${isEditMode ? 'update' : 'create'} showcase`;
             setMessage({ type: 'error', text: errorMessage });
         } finally {
@@ -348,18 +386,11 @@ const ShowcaseFormPage = () => {
     };
 
     if (initialLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Spinner size="xl" color="gray" />
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">Loading showcase data...</p>
-                </div>
-            </div>
-        );
+        return <ShowcaseFormPageSkeleton />;
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div className="min-h-screen bg-white dark:bg-main-black py-12 transition-colors duration-300">
             <div className="max-w-4xl mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -370,22 +401,51 @@ const ShowcaseFormPage = () => {
                     <div className="mb-8">
                         <button
                             onClick={handleCancel}
-                            className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 mb-4 flex items-center gap-2 transition-colors"
+                            className="text-violet-600 hover:text-violet-700 dark:text-yellow-300 dark:hover:text-yellow-400 mb-4 flex items-center gap-2 transition-colors font-medium"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
+                            <ChevronLeft className="w-5 h-5" />
                             Back to Dashboard
                         </button>
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                            {isEditMode ? 'Edit Showcase' : 'Create New Showcase'}
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            {isEditMode 
-                                ? 'Update the details of your showcase below.'
-                                : 'Share your amazing work with the community.'
-                            }
-                        </p>
+                        
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <h1 className="text-2xl font-bold text-main-black dark:text-white mb-2 uppercase tracking-tight">
+                                    {isEditMode ? 'Edit Showcase' : 'Create New Showcase'}
+                                </h1>
+                                <p className="text-dark-gray dark:text-white/50">
+                                    {isEditMode
+                                        ? 'Update the details of your showcase below.'
+                                        : 'Share your amazing work with the community.'
+                                    }
+                                </p>
+                            </div>
+                            
+                            {/* Showcase Type Toggle */}
+                            <div className="flex items-center gap-2 bg-gray-100 dark:bg-white/5 p-1.5 rounded-xl border border-gray-200 dark:border-white/10">
+                                <button
+                                    type="button"
+                                    onClick={() => handleTypeToggle('website')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        showcaseType === 'website'
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-black shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    Website
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleTypeToggle('mobile')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        showcaseType === 'mobile'
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-black shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    Mobile
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Message Display */}
@@ -393,21 +453,16 @@ const ShowcaseFormPage = () => {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className={`mb-6 p-4 rounded-lg ${
-                                message.type === 'success'
-                                    ? 'bg-green-50 border border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400'
-                                    : 'bg-red-50 border border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
-                            }`}
+                            className={`mb-6 p-4 rounded-xl border ${message.type === 'success'
+                                ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400'
+                                : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                                }`}
                         >
                             <div className="flex items-center gap-2">
                                 {message.type === 'success' ? (
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
+                                    <Check className="w-5 h-5" />
                                 ) : (
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
+                                    <AlertCircle className="w-5 h-5" />
                                 )}
                                 <span className="font-medium">{message.text}</span>
                             </div>
@@ -419,7 +474,7 @@ const ShowcaseFormPage = () => {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700"
+                            className="mb-6 p-4 bg-gray-50 dark:bg-dark-gray rounded-xl border border-gray-200 dark:border-white/10"
                         >
                             <UploadProgressBar progress={uploadProgress} status={uploadStatus} />
                         </motion.div>
@@ -428,7 +483,7 @@ const ShowcaseFormPage = () => {
                     {/* Form */}
                     <motion.form
                         onSubmit={handleSubmit}
-                        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8"
+                        className="bg-white dark:bg-dark-gray rounded-xl shadow-sm border border-gray-200 dark:border-white/10 p-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
@@ -436,7 +491,7 @@ const ShowcaseFormPage = () => {
                         <div className="space-y-6">
                             {/* Title */}
                             <div>
-                                <label htmlFor="title" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                <label htmlFor="title" className="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                                     Showcase Title <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -446,11 +501,10 @@ const ShowcaseFormPage = () => {
                                     value={formData.title}
                                     onChange={handleInputChange}
                                     placeholder="e.g., Modern E-Commerce Dashboard"
-                                    className={`w-full px-4 py-3 rounded-lg border ${
-                                        errors.title 
-                                            ? 'border-red-500 focus:ring-red-500' 
-                                            : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
-                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
+                                    className={`w-full px-4 py-3.5 rounded-xl border ${errors.title
+                                        ? 'border-red-500 focus:ring-red-500'
+                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300'
+                                        } bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 transition-all`}
                                 />
                                 {errors.title && (
                                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>
@@ -459,7 +513,7 @@ const ShowcaseFormPage = () => {
 
                             {/* Description */}
                             <div>
-                                <label htmlFor="description" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                <label htmlFor="description" className="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                                     Description <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
@@ -469,38 +523,39 @@ const ShowcaseFormPage = () => {
                                     onChange={handleInputChange}
                                     placeholder="Describe your showcase... What makes it special? What technologies did you use?"
                                     rows="5"
-                                    className={`w-full px-4 py-3 rounded-lg border ${
-                                        errors.description 
-                                            ? 'border-red-500 focus:ring-red-500' 
-                                            : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
-                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors resize-none`}
+                                    className={`w-full px-4 py-3.5 rounded-xl border ${errors.description
+                                        ? 'border-red-500 focus:ring-red-500'
+                                        : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300'
+                                        } bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 transition-all resize-none`}
                                 />
                                 {errors.description && (
                                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
                                 )}
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 text-right">
                                     {formData.description.length} characters
                                 </p>
                             </div>
 
                             {/* Website URL */}
                             <div>
-                                <label htmlFor="url_website" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                <label htmlFor="url_website" className="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                                     Website URL <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="url"
-                                    id="url_website"
-                                    name="url_website"
-                                    value={formData.url_website}
-                                    onChange={handleInputChange}
-                                    placeholder="https://example.com"
-                                    className={`w-full px-4 py-3 rounded-lg border ${
-                                        errors.url_website 
-                                            ? 'border-red-500 focus:ring-red-500' 
-                                            : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
-                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
-                                />
+                                <div className="relative">
+                                    <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="url"
+                                        id="url_website"
+                                        name="url_website"
+                                        value={formData.url_website}
+                                        onChange={handleInputChange}
+                                        placeholder="https://example.com"
+                                        className={`w-full pl-12 pr-4 py-3.5 rounded-xl border ${errors.url_website
+                                            ? 'border-red-500 focus:ring-red-500'
+                                            : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300'
+                                            } bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 transition-all`}
+                                    />
+                                </div>
                                 {errors.url_website && (
                                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.url_website}</p>
                                 )}
@@ -508,12 +563,12 @@ const ShowcaseFormPage = () => {
 
                             {/* Image Upload/URL */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-3">
                                     Showcase Image <span className="text-red-500">*</span>
                                 </label>
 
                                 {/* Toggle between URL and Upload */}
-                                <div className="flex items-center gap-4 mb-4">
+                                <div className="flex items-center gap-2 mb-4 p-1 bg-gray-100 dark:bg-black/20 rounded-lg w-fit">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -522,11 +577,10 @@ const ShowcaseFormPage = () => {
                                                 setErrors(prev => ({ ...prev, image: '' }));
                                             }
                                         }}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                            useUrlMode
-                                                ? 'bg-indigo-600 text-white shadow-md'
-                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                                        }`}
+                                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${useUrlMode
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-main-black shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                            }`}
                                     >
                                         Use URL
                                     </button>
@@ -538,11 +592,10 @@ const ShowcaseFormPage = () => {
                                                 setErrors(prev => ({ ...prev, image: '' }));
                                             }
                                         }}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                            !useUrlMode
-                                                ? 'bg-indigo-600 text-white shadow-md'
-                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                                        }`}
+                                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${!useUrlMode
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-main-black shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                            }`}
                                     >
                                         Upload File
                                     </button>
@@ -550,32 +603,37 @@ const ShowcaseFormPage = () => {
 
                                 {useUrlMode ? (
                                     <>
-                                        <input
-                                            type="url"
-                                            id="image_url"
-                                            name="image_url"
-                                            value={formData.image_url}
-                                            onChange={handleInputChange}
-                                            placeholder="https://example.com/image.jpg"
-                                            className={`w-full px-4 py-3 rounded-lg border ${
-                                                errors.image 
-                                                    ? 'border-red-500 focus:ring-red-500' 
-                                                    : 'border-gray-300 dark:border-gray-600 focus:ring-indigo-500'
-                                            } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
-                                        />
-                                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <div className="relative">
+                                            <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="url"
+                                                id="image_url"
+                                                name="image_url"
+                                                value={formData.image_url}
+                                                onChange={handleInputChange}
+                                                placeholder="https://example.com/image.jpg"
+                                                className={`w-full pl-12 pr-4 py-3.5 rounded-xl border ${errors.image
+                                                    ? 'border-red-500 focus:ring-red-500'
+                                                    : 'border-gray-200 dark:border-white/10 focus:border-violet-500 dark:focus:border-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300'
+                                                    } bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 transition-all`}
+                                            />
+                                        </div>
+                                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                             Use a direct link to your showcase screenshot or preview image
                                         </p>
-                                        
+
                                         {/* URL Image Preview */}
                                         {formData.image_url && isValidUrl(formData.image_url) && (
                                             <div className="mt-4">
-                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
-                                                <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
-                                                    <img 
-                                                        src={formData.image_url} 
-                                                        alt="Preview" 
-                                                        className="w-full h-64 object-cover"
+                                                <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">Preview:</p>
+                                                <div className={`relative rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-sm ${
+                                                    showcaseType === 'mobile' ? 'max-w-sm mx-auto' : 'w-full'
+                                                }`}>
+                                                    <img
+                                                        src={formData.image_url}
+                                                        alt="Preview"
+                                                        className="w-full object-cover"
+                                                        style={{ aspectRatio: showcaseType === 'mobile' ? '9/16' : '16/9' }}
                                                         onError={(e) => {
                                                             e.target.style.display = 'none';
                                                         }}
@@ -591,37 +649,40 @@ const ShowcaseFormPage = () => {
                                         error={errors.image}
                                         maxSize={5}
                                         acceptedFormats={['image/jpeg', 'image/png', 'image/jpg', 'image/webp']}
+                                        aspectRatio={getAspectRatio()}
+                                        helperText={showcaseType === 'mobile' 
+                                            ? "Recommended: 9:16 aspect ratio (e.g., 1080x1920px). Max 5MB. Supports JPG, PNG, WebP."
+                                            : "Recommended: 16:9 aspect ratio (e.g., 1920x1080px). Max 5MB. Supports JPG, PNG, WebP."
+                                        }
                                     />
                                 )}
                             </div>
 
                             {/* Logo Upload/URL */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-3">
                                     Website Logo <span className="text-gray-400 text-xs font-normal">(Optional)</span>
                                 </label>
 
                                 {/* Toggle between URL and Upload */}
-                                <div className="flex items-center gap-4 mb-4">
+                                <div className="flex items-center gap-2 mb-4 p-1 bg-gray-100 dark:bg-black/20 rounded-lg w-fit">
                                     <button
                                         type="button"
                                         onClick={() => setUseLogoUrlMode(true)}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                            useLogoUrlMode
-                                                ? 'bg-indigo-600 text-white shadow-md'
-                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                                        }`}
+                                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${useLogoUrlMode
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-main-black shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                            }`}
                                     >
                                         Use URL
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setUseLogoUrlMode(false)}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                            !useLogoUrlMode
-                                                ? 'bg-indigo-600 text-white shadow-md'
-                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                                        }`}
+                                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${!useLogoUrlMode
+                                            ? 'bg-violet-300 dark:bg-yellow-300 text-white dark:text-main-black shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                            }`}
                                     >
                                         Upload File
                                     </button>
@@ -629,28 +690,31 @@ const ShowcaseFormPage = () => {
 
                                 {useLogoUrlMode ? (
                                     <>
-                                        <input
-                                            type="url"
-                                            id="logo_url"
-                                            name="logo_url"
-                                            value={formData.logo_url}
-                                            onChange={handleInputChange}
-                                            placeholder="https://example.com/logo.png"
-                                            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
-                                        />
-                                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <div className="relative">
+                                            <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="url"
+                                                id="logo_url"
+                                                name="logo_url"
+                                                value={formData.logo_url}
+                                                onChange={handleInputChange}
+                                                placeholder="https://example.com/logo.png"
+                                                className={`w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-violet-500 dark:focus:border-yellow-300 focus:ring-1 focus:ring-violet-500 dark:focus:ring-yellow-300 transition-all`}
+                                            />
+                                        </div>
+                                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                             Add a logo to personalize your showcase card
                                         </p>
-                                        
+
                                         {/* URL Logo Preview */}
                                         {formData.logo_url && isValidUrl(formData.logo_url) && (
                                             <div className="mt-4">
-                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
-                                                <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-4">
-                                                    <img 
-                                                        src={formData.logo_url} 
-                                                        alt="Logo Preview" 
-                                                        className="w-full h-full object-contain"
+                                                <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">Preview:</p>
+                                                <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 p-2 flex items-center justify-center">
+                                                    <img
+                                                        src={formData.logo_url}
+                                                        alt="Logo Preview"
+                                                        className="max-w-full max-h-full object-contain"
                                                         onError={(e) => {
                                                             e.target.style.display = 'none';
                                                         }}
@@ -673,7 +737,7 @@ const ShowcaseFormPage = () => {
 
                             {/* Tags */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-3">
                                     Tags (Optional)
                                 </label>
                                 {loadingTags ? (
@@ -682,20 +746,26 @@ const ShowcaseFormPage = () => {
                                         <span className="text-sm">Loading tags...</span>
                                     </div>
                                 ) : availableTags.length > 0 ? (
-                                    <div className="max-h-64 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
+                                    <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50 dark:bg-black/20">
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                             {availableTags.map((tag) => (
                                                 <label
                                                     key={tag.id}
-                                                    className="flex items-center gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-gray-700 bg-white dark:bg-gray-800 transition-colors"
+                                                    className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all ${formData.tags.includes(tag.id)
+                                                        ? 'bg-violet-50 dark:bg-yellow-300/10 border-violet-200 dark:border-yellow-300/30'
+                                                        : 'bg-white dark:bg-dark-gray border-gray-200 dark:border-white/5 hover:border-violet-300 dark:hover:border-yellow-300/50'
+                                                        }`}
                                                 >
                                                     <input
                                                         type="checkbox"
                                                         checked={formData.tags.includes(tag.id)}
                                                         onChange={() => handleTagToggle(tag.id)}
-                                                        className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 dark:focus:ring-purple-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                        className="w-4 h-4 text-violet-300 dark:text-yellow-300 bg-gray-100 border-gray-300 rounded focus:ring-violet-500 dark:focus:ring-yellow-300 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                                     />
-                                                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                                                    <span className={`text-sm truncate ${formData.tags.includes(tag.id)
+                                                        ? 'text-violet-300 dark:text-yellow-300 font-medium'
+                                                        : 'text-gray-700 dark:text-gray-300'
+                                                        }`}>
                                                         {tag.name}
                                                     </span>
                                                 </label>
@@ -714,32 +784,58 @@ const ShowcaseFormPage = () => {
 
                             {/* Category */}
                             <div>
-                                <label htmlFor="category_id" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                <label htmlFor="category_id" className="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                                     Category <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                    id="category_id"
-                                    name="category_id"
-                                    value={formData.category_id}
-                                    onChange={handleInputChange}
-                                    disabled={loadingCategories}
-                                    className={`w-full px-4 py-3 rounded-lg border ${
-                                        errors.category 
-                                            ? 'border-red-500 focus:ring-red-500' 
-                                            : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500'
-                                    } dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                                >
-                                    {loadingCategories ? (
-                                        <option>Loading categories...</option>
-                                    ) : (
+                                <div className="relative">
+                                    <button
+                                        type="button"
+                                        onClick={() => !loadingCategories && setIsCategoryOpen(!isCategoryOpen)}
+                                        className={`w-full px-4 py-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${errors.category
+                                            ? 'border-red-500 focus:ring-red-500'
+                                            : `border-gray-200 dark:border-white/10 ${isCategoryOpen ? 'ring-2 ring-violet-500 dark:ring-yellow-300 border-transparent' : 'hover:border-violet-300 dark:hover:border-yellow-300/50'}`
+                                            } bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:outline-none`}
+                                    >
+                                        <span className={!formData.category_id ? "text-gray-400" : "font-medium"}>
+                                            {loadingCategories
+                                                ? "Loading categories..."
+                                                : (filteredCategories.find(c => c.id == formData.category_id)?.name || "Select a category")
+                                            }
+                                        </span>
+                                        <ChevronLeft className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isCategoryOpen ? 'rotate-90' : '-rotate-90'}`} />
+                                    </button>
+
+                                    {isCategoryOpen && (
                                         <>
-                                            <option value="">Select a category</option>
-                                            {categories.map(cat => (
-                                                <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                            ))}
+                                            <div className="fixed inset-0 z-10" onClick={() => setIsCategoryOpen(false)} />
+                                            <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-dark-gray border border-gray-200 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                {filteredCategories.map(cat => (
+                                                    <div
+                                                        key={cat.id}
+                                                        onClick={() => {
+                                                            handleInputChange({ target: { name: 'category_id', value: cat.id } });
+                                                            setIsCategoryOpen(false);
+                                                        }}
+                                                        className={`px-4 py-3 text-sm font-medium cursor-pointer transition-colors flex items-center justify-between
+                                                            ${formData.category_id == cat.id
+                                                                ? 'bg-violet-50 dark:bg-yellow-300/10 text-violet-700 dark:text-yellow-300'
+                                                                : 'text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {cat.name}
+                                                        {formData.category_id == cat.id && <Check className="w-4 h-4" />}
+                                                    </div>
+                                                ))}
+                                                {filteredCategories.length === 0 && (
+                                                    <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 italic">
+                                                        No categories available for {showcaseType} showcases
+                                                    </div>
+                                                )}
+                                            </div>
                                         </>
                                     )}
-                                </select>
+                                </div>
                                 {errors.category && (
                                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>
                                 )}
@@ -747,22 +843,20 @@ const ShowcaseFormPage = () => {
                         </div>
 
                         {/* Form Actions */}
-                        <div className="flex items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-white/10">
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex-1 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 dark:hover:bg-yellow-300 text-white dark:text-black font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
                             >
                                 {loading ? (
                                     <>
-                                        <Spinner size="sm" color="white" />
+                                        <Spinner size="sm" color={isEditMode ? "white" : "white"} />
                                         <span>{isEditMode ? 'Updating...' : 'Creating...'}</span>
                                     </>
                                 ) : (
                                     <>
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Upload className="w-5 h-5" />
                                         <span>{isEditMode ? 'Update Showcase' : 'Create Showcase'}</span>
                                     </>
                                 )}
@@ -771,7 +865,7 @@ const ShowcaseFormPage = () => {
                                 type="button"
                                 onClick={handleCancel}
                                 disabled={loading}
-                                className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-700 dark:text-white font-bold py-3.5 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
@@ -779,8 +873,9 @@ const ShowcaseFormPage = () => {
                     </motion.form>
 
                     {/* Help Text */}
-                    <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                        <p className="text-sm text-blue-800 dark:text-blue-300">
+                    <div className="mt-6 p-4 bg-violet-50 dark:bg-yellow-300/10 border border-violet-100 dark:border-yellow-300/20 rounded-xl flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-violet-600 dark:text-yellow-300 shrink-0 mt-0.5" />
+                        <p className="text-sm text-violet-800 dark:text-yellow-100">
                             <strong>Note:</strong> Your showcase will be submitted for review. Once approved by an admin, it will be visible to all users.
                         </p>
                     </div>

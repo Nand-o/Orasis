@@ -1,12 +1,21 @@
+/**
+ * CategoryManagementPage
+ *
+ * Halaman administrasi untuk mengelola kategori showcase. Menyediakan
+ * pembuatan, pembaruan, penghapusan, dan pencarian kategori melalui
+ * `categoryService`.
+ */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, X, Tag, AlertCircle, CheckCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Tag, AlertCircle, CheckCircle, Search, Filter } from 'lucide-react';
 import categoryService from '../../services/category.service';
 import { TableRowSkeleton } from '../../components/ui/Skeleton';
 
 const CategoryManagementPage = () => {
     const [categories, setCategories] = useState([]);
+    const [filteredCategories, setFilteredCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
     const [formData, setFormData] = useState({ name: '' });
@@ -18,17 +27,34 @@ const CategoryManagementPage = () => {
         fetchCategories();
     }, []);
 
+    useEffect(() => {
+        filterCategories();
+    }, [searchQuery, categories]);
+
     const fetchCategories = async () => {
         try {
             setLoading(true);
             const response = await categoryService.getAll();
-            setCategories(response);
+            setCategories(response || []);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
             showMessage('error', 'Failed to load categories');
         } finally {
             setLoading(false);
         }
+    };
+
+    const filterCategories = () => {
+        if (!searchQuery.trim()) {
+            setFilteredCategories(categories);
+            return;
+        }
+
+        const query = searchQuery.toLowerCase();
+        const filtered = categories.filter(category =>
+            category.name.toLowerCase().includes(query)
+        );
+        setFilteredCategories(filtered);
     };
 
     const showMessage = (type, text) => {
@@ -55,7 +81,7 @@ const CategoryManagementPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!formData.name.trim()) {
             showMessage('error', 'Category name is required');
             return;
@@ -93,229 +119,242 @@ const CategoryManagementPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                            Category Management
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
-                            Manage website categories for showcase submissions
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => handleOpenModal()}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Add Category
-                    </button>
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        Category Management
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                        Manage website categories for showcase submissions
+                    </p>
                 </div>
-
-                {/* Message */}
-                <AnimatePresence>
-                    {message.text && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className={`mb-4 p-4 rounded-lg flex items-center gap-2 ${
-                                message.type === 'success'
-                                    ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                                    : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                            }`}
-                        >
-                            {message.type === 'success' ? (
-                                <CheckCircle className="w-5 h-5" />
-                            ) : (
-                                <AlertCircle className="w-5 h-5" />
-                            )}
-                            {message.text}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Content */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Category Name
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {loading ? (
-                                    Array.from({ length: 5 }).map((_, index) => (
-                                        <TableRowSkeleton key={index} columns={2} />
-                                    ))
-                                ) : categories.length > 0 ? (
-                                    categories.map((category) => (
-                                            <tr
-                                                key={category.id}
-                                                className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                                            >
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center gap-2">
-                                                        <Tag className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                                            {category.name}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <button
-                                                            onClick={() => handleOpenModal(category)}
-                                                            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                                                            title="Edit category"
-                                                        >
-                                                            <Pencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setDeleteModal({ isOpen: true, category })}
-                                                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                                            title="Delete category"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="2" className="px-6 py-12 text-center">
-                                                <Tag className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                                <p className="text-gray-600 dark:text-gray-400">No categories yet</p>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                <div className="flex items-center gap-3 w-full lg:w-auto">
+                    <div className="relative flex-1 lg:flex-none">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white" />
+                        <input
+                            type="text"
+                            placeholder="Search categories..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full lg:w-64 pl-10 pr-4 py-2 text-gray-400 dark:text-white bg-white dark:bg-dark-gray border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-yellow-300"
+                        />
                     </div>
+                    <motion.button
+                        onClick={() => handleOpenModal()}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="px-4 py-2 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 hover:dark:bg-yellow-300 dark:text-main-black text-white rounded-xl font-bold flex items-center gap-2 transition-colors shadow-lg shadow-violet-500/20"
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span className="hidden sm:inline">Add Category</span>
+                    </motion.button>
+                </div>
+            </div>
 
-                {/* Add/Edit Modal */}
-                <AnimatePresence>
-                    {showModal && (
-                        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                                onClick={handleCloseModal}
-                            />
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6"
-                            >
-                                <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                                        {editingCategory ? 'Edit Category' : 'Add New Category'}
-                                    </h2>
-                                    <button
-                                        onClick={handleCloseModal}
-                                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            {/* Content */}
+            <div className="bg-white dark:bg-dark-gray rounded-3xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5">
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Category Name
+                                </th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, index) => (
+                                    <TableRowSkeleton key={index} columns={2} />
+                                ))
+                            ) : filteredCategories.length > 0 ? (
+                                filteredCategories.map((category) => (
+                                    <tr
+                                        key={category.id}
+                                        className="group hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                                     >
-                                        <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                                    </button>
-                                </div>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-main-black flex items-center justify-center text-violet-300 dark:text-yellow-300 ">
+                                                    <Tag className="w-5 h-5" />
+                                                </div>
+                                                <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-yellow-300 transition-colors">
+                                                    {category.name}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => handleOpenModal(category)}
+                                                    className="p-2 text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-yellow-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                                                    title="Edit category"
+                                                >
+                                                    <Pencil className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => setDeleteModal({ isOpen: true, category })}
+                                                    className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                    title="Delete category"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="2" className="px-6 py-12 text-center">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <Tag className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                                            <p className="text-gray-500 dark:text-gray-400">
+                                                {searchQuery ? 'No categories found' : 'No categories yet'}
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                                <form onSubmit={handleSubmit}>
-                                    <div className="mb-6">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Category Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ name: e.target.value })}
-                                            placeholder="e.g., E-commerce, Blog, Portfolio"
-                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
-                                            autoFocus
-                                        />
-                                    </div>
+            {/* Add/Edit Modal */}
+            <AnimatePresence>
+                {showModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={handleCloseModal}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative bg-white dark:bg-dark-gray rounded-3xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-white/10"
+                        >
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {editingCategory ? 'Edit Category' : 'Add New Category'}
+                                </h2>
+                                <button
+                                    onClick={handleCloseModal}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors text-gray-500 dark:text-gray-400"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
 
-                                    <div className="flex gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={handleCloseModal}
-                                            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium"
-                                        >
-                                            {editingCategory ? 'Update' : 'Create'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </motion.div>
-                        </div>
-                    )}
-                </AnimatePresence>
-
-                {/* Delete Confirmation Modal */}
-                <AnimatePresence>
-                    {deleteModal.isOpen && (
-                        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                                onClick={() => setDeleteModal({ isOpen: false, category: null })}
-                            />
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6"
-                            >
-                                <div className="mb-4">
-                                    <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
-                                        <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
-                                    </div>
-                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                                        Delete Category
-                                    </h2>
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        Are you sure you want to delete "<strong>{deleteModal.category?.name}</strong>"? This action cannot be undone.
-                                    </p>
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        Category Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ name: e.target.value })}
+                                        placeholder="e.g., E-commerce, Blog, Portfolio"
+                                        className="w-full px-4 py-3 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-yellow-300 text-gray-900 dark:text-white transition-all"
+                                        autoFocus
+                                    />
                                 </div>
 
                                 <div className="flex gap-3">
                                     <button
-                                        onClick={() => setDeleteModal({ isOpen: false, category: null })}
-                                        className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={handleDelete}
-                                        className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
+                                        type="submit"
+                                        className="flex-1 px-4 py-3 bg-violet-600 hover:bg-violet-700 dark:bg-yellow-300/90 dark:hover:bg-yellow-300 text-white dark:text-main-black rounded-xl font-bold transition-colors shadow-lg shadow-violet-500/20"
                                     >
-                                        Delete
+                                        {editingCategory ? 'Update' : 'Create'}
                                     </button>
                                 </div>
-                            </motion.div>
-                        </div>
-                    )}
-                </AnimatePresence>
-            </div>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteModal.isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setDeleteModal({ isOpen: false, category: null })}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative bg-white dark:bg-dark-gray rounded-3xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-white/10"
+                        >
+                            <div className="mb-6 text-center">
+                                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                    Delete Category
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    Are you sure you want to delete "<strong>{deleteModal.category?.name}</strong>"? This action cannot be undone.
+                                </p>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setDeleteModal({ isOpen: false, category: null })}
+                                    className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors shadow-lg shadow-red-500/20"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Message Toast */}
+            <AnimatePresence>
+                {message.text && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        className={`fixed bottom-8 right-8 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 ${message.type === 'success'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-red-600 text-white'
+                            }`}
+                    >
+                        {message.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                        <span className="font-medium">{message.text}</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

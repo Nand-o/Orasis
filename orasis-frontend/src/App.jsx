@@ -1,3 +1,18 @@
+/**
+ * Root App component dan routing
+ *
+ * File ini mendefinisikan struktur routing aplikasi, wrapper animasi,
+ * dan provider global (Auth, Collection, Theme). Komponen utama:
+ * - `AnimatedRoutes`: konfigurasi route dengan `framer-motion` untuk
+ *   smooth page transitions.
+ * - `ConditionalLayout`: memilih apakah akan membungkus route dengan
+ *   layout publik atau layout dashboard.
+ * - `DashboardRouter` dan `ShowcasesDashboardRouter`: logika routing
+ *   khusus untuk halaman dashboard berdasarkan role user.
+ *
+ * Dokumentasi komponen ditulis dalam Bahasa Indonesia untuk kebutuhan
+ * akademik; implementasi dikomentari di bagian terkait.
+ */
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -11,12 +26,14 @@ import ShowcaseFormPage from './features/showcase/ShowcaseFormPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/profile/DashboardPage';
+import AdminDashboardPage from './features/admin/AdminDashboardPage';
 import AdminPendingReviewPage from './features/admin/AdminPendingReviewPage';
 import AdminUsersPage from './features/admin/AdminUsersPage';
 import AdminAnalyticsPage from './features/admin/AdminAnalyticsPage';
 import CategoryManagementPage from './features/admin/CategoryManagementPage';
 import TagManagementPage from './features/admin/TagManagementPage';
 import ProfilePage from './features/profile/ProfilePage';
+import LandingPage from './features/landingPage/LandingPage';
 import { CollectionProvider } from './context/CollectionContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -42,14 +59,34 @@ import DashboardLayout from './components/layout/DashboardLayout';
 // Component to conditionally render dashboard based on user role
 const DashboardRouter = () => {
   const { user } = useAuth();
-  
+
   if (!user) {
     return <DashboardLayout><UserOverviewPage /></DashboardLayout>;
   }
-  
+
   return (
     <DashboardLayout>
       {user.role === 'admin' ? <AdminOverviewPage /> : <UserOverviewPage />}
+    </DashboardLayout>
+  );
+};
+
+// Component to render All Showcases page based on user role
+const ShowcasesDashboardRouter = () => {
+  const { user } = useAuth();
+
+  // Redirect non-admin users to their own showcase page
+  if (!user || user.role !== 'admin') {
+    return (
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <AdminDashboardPage />
     </DashboardLayout>
   );
 };
@@ -62,6 +99,12 @@ const AnimatedRoutes = ({ searchValue }) => {
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"
+          element={
+            <LandingPage />
+          }
+        />
+        <Route
+          path="/home"
           element={
             <PageWrapper>
               <HomePage searchValue={searchValue} />
@@ -122,11 +165,7 @@ const AnimatedRoutes = ({ searchValue }) => {
         />
         <Route
           path="/dashboard/showcases"
-          element={
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
-          }
+          element={<ShowcasesDashboardRouter />}
         />
         <Route
           path="/dashboard/collections"
@@ -201,12 +240,14 @@ const AnimatedRoutes = ({ searchValue }) => {
 const ConditionalLayout = ({ children, searchValue, onSearchChange }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
-  
-  // Only Dashboard routes use their own layout (no main navbar)
-  if (isDashboardRoute) {
+  const isLandingPage = location.pathname === '/';
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+
+  // Dashboard routes, Landing Page, and Auth pages use their own layout (or no layout)
+  if (isDashboardRoute || isLandingPage || isAuthPage) {
     return children;
   }
-  
+
   return (
     <Layout searchValue={searchValue} onSearchChange={onSearchChange}>
       {children}

@@ -63,11 +63,13 @@ class TagController extends Controller
 
     /**
      * DELETE: Menghapus data tag spesifik.
-     * (DELETE /api/tags/{id})
+     * (DELETE /api/tags/{tag})
      */
     public function destroy(Tag $tag)
     {
         $tag->delete();
-        return response()->json(null, 204);
+        return response()->json([
+            'message' => 'Tag deleted successfully'
+        ], 200);
     }
 }

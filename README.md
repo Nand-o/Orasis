@@ -603,150 +603,199 @@ Orasis/
 │   ├── app/
 │   │   ├── Http/
 │   │   │   ├── Controllers/       # API Controllers
-│   │   │   │   ├── AuthController.php          # Authentication
-│   │   │   │   ├── ShowcaseController.php      # Public showcase API
-│   │   │   │   ├── AdminShowcaseController.php # Admin moderation
-│   │   │   │   ├── CollectionController.php    # User collections
-│   │   │   │   ├── ProfileController.php       # User profile
-│   │   │   │   └── DashboardController.php     # User dashboard
+│   │   │   │   ├── AuthController.php
+│   │   │   │   ├── ShowcaseController.php
+│   │   │   │   ├── AdminShowcaseController.php
+│   │   │   │   ├── CollectionController.php
+│   │   │   │   ├── ProfileController.php
+│   │   │   │   ├── UserController.php
+│   │   │   │   ├── CategoryController.php
+│   │   │   │   ├── TagController.php
+│   │   │   │   └── DashboardController.php
 │   │   │   │
-│   │   │   └── Middleware/        # Custom Middleware
-│   │   │       ├── AdminMiddleware.php         # Admin route protection
-│   │   │       └── Cors.php                    # CORS handling
+│   │   │   └── Middleware/
+│   │   │       └── AdminMiddleware.php
 │   │   │
-│   │   ├── Models/                # Eloquent Models
-│   │   │   ├── User.php           # User model
-│   │   │   ├── Showcase.php       # Showcase model
-│   │   │   ├── Collection.php     # Collection model
-│   │   │   └── Tag.php            # Tag model
+│   │   ├── Models/
+│   │   │   ├── User.php
+│   │   │   ├── Showcase.php
+│   │   │   ├── Collection.php
+│   │   │   ├── Category.php
+│   │   │   └── Tag.php
 │   │   │
 │   │   └── Providers/
 │   │       └── AppServiceProvider.php
 │   │
 │   ├── database/
-│   │   ├── migrations/            # Database Schema
-│   │   │   ├── create_users_table.php
-│   │   │   ├── create_showcases_table.php
-│   │   │   ├── create_tags_table.php
-│   │   │   ├── create_showcase_tag_table.php
-│   │   │   ├── create_collections_table.php
-│   │   │   └── create_collection_showcase_table.php
-│   │   │
-│   │   └── seeders/               # Database Seeders
-│   │       ├── UserSeeder.php     # Create default users
-│   │       ├── ShowcaseSeeder.php # Sample showcases
-│   │       ├── TagSeeder.php      # Common tags
-│   │       └── CollectionSeeder.php
+│   │   ├── migrations/
+│   │   ├── seeders/
+│   │   │   ├── UserSeeder.php
+│   │   │   ├── CategorySeeder.php
+│   │   │   ├── ShowcaseSeeder.php
+│   │   │   └── TagSeeder.php
+│   │   └── data/
+│   │       └── showcase_data.csv
 │   │
 │   ├── routes/
-│   │   ├── api.php               # API Routes
-│   │   └── web.php               # Web Routes (minimal)
+│   │   ├── api.php
+│   │   ├── web.php
+│   │   └── console.php
 │   │
-│   ├── config/                   # Configuration Files
+│   ├── config/
 │   │   ├── cors.php
 │   │   ├── sanctum.php
 │   │   └── database.php
 │   │
-│   ├── storage/                  # Storage
-│   │   ├── app/
-│   │   │   ├── public/          # Public files (uploads)
-│   │   │   └── private/         # Private files
-│   │   └── logs/                # Application logs
+│   ├── storage/
+│   │   ├── app/public/
+│   │   └── logs/
 │   │
-│   ├── .env.example             # Environment template
-│   ├── composer.json            # PHP dependencies
-│   └── artisan                  # Laravel CLI tool
+│   ├── .env.example
+│   ├── composer.json
+│   └── artisan
 │
 ├── orasis-frontend/              # React Frontend
 │   ├── src/
-│   │   ├── components/          # Reusable Components
-│   │   │   ├── layout/         # Layout components
-│   │   │   │   ├── Navbar.jsx           # Main navigation
-│   │   │   │   ├── Footer.jsx           # Footer
-│   │   │   │   └── AdminLayout.jsx      # Admin panel layout
+│   │   ├── components/          # Organized by purpose
+│   │   │   ├── common/         # Reusable general components
+│   │   │   │   ├── Button.jsx
+│   │   │   │   ├── Spinner.jsx
+│   │   │   │   └── ErrorBoundary.jsx
 │   │   │   │
-│   │   │   └── ui/             # UI Components
-│   │   │       ├── Button.jsx
-│   │   │       ├── Card.jsx
-│   │   │       ├── Modal.jsx
-│   │   │       ├── Pagination.jsx
-│   │   │       ├── Skeleton.jsx         # Loading skeletons
-│   │   │       └── Toast.jsx
+│   │   │   ├── feedback/       # User feedback components
+│   │   │   │   ├── Toast.jsx
+│   │   │   │   ├── ConfirmationModal.jsx
+│   │   │   │   └── DeleteAccountModal.jsx
+│   │   │   │
+│   │   │   ├── form/          # Form-related components
+│   │   │   │   ├── ImageUpload.jsx
+│   │   │   │   ├── ImageCropModal.jsx
+│   │   │   │   ├── CircularImageCropper.jsx
+│   │   │   │   └── SearchBar.jsx
+│   │   │   │
+│   │   │   ├── ui/            # Pure UI/Visual components
+│   │   │   │   ├── Globe.jsx
+│   │   │   │   ├── GridMotion.jsx
+│   │   │   │   ├── LazyImage.jsx
+│   │   │   │   ├── Pagination.jsx
+│   │   │   │   ├── PixelBlast.jsx
+│   │   │   │   ├── Skeleton.jsx
+│   │   │   │   ├── SkeletonLoading.jsx
+│   │   │   │   ├── StatusBadge.jsx
+│   │   │   │   ├── UploadProgressBar.jsx
+│   │   │   │   └── UserAvatar.jsx
+│   │   │   │
+│   │   │   └── layout/        # Layout components
+│   │   │       ├── Layout.jsx
+│   │   │       ├── Navbar.jsx
+│   │   │       ├── Footer.jsx
+│   │   │       ├── DashboardLayout.jsx
+│   │   │       └── DashboardSidebar.jsx
 │   │   │
-│   │   ├── features/           # Feature Modules
-│   │   │   ├── home/          # Homepage
+│   │   ├── features/          # Feature-based modules
+│   │   │   ├── home/
 │   │   │   │   ├── HomePage.jsx
 │   │   │   │   └── components/
-│   │   │   │       ├── HeroSection.jsx
-│   │   │   │       ├── FilterBar.jsx
-│   │   │   │       └── ShowcaseGrid.jsx
 │   │   │   │
-│   │   │   ├── auth/          # Authentication
+│   │   │   ├── landingPage/
+│   │   │   │   ├── LandingPage.jsx
+│   │   │   │   └── components/
+│   │   │   │       ├── Hero.jsx
+│   │   │   │       ├── Features.jsx
+│   │   │   │       ├── About.jsx
+│   │   │   │       ├── Contact.jsx
+│   │   │   │       ├── GetStarted.jsx
+│   │   │   │       ├── Button.jsx
+│   │   │   │       ├── AnimationTitle.jsx
+│   │   │   │       └── RoundedCorners.jsx
+│   │   │   │
+│   │   │   ├── auth/
 │   │   │   │   ├── LoginPage.jsx
 │   │   │   │   └── RegisterPage.jsx
 │   │   │   │
-│   │   │   ├── showcase/      # Showcase Features
+│   │   │   ├── showcase/
 │   │   │   │   ├── ShowcaseDetailPage.jsx
 │   │   │   │   ├── ShowcaseSearchPage.jsx
+│   │   │   │   ├── ShowcaseFormPage.jsx
 │   │   │   │   └── components/
-│   │   │   │       ├── ShowcaseCard.jsx
-│   │   │   │       └── ShowcaseModal.jsx
+│   │   │   │       └── ShowcaseCard.jsx
 │   │   │   │
-│   │   │   ├── collections/   # Collections Feature
-│   │   │   │   ├── CollectionsPage.jsx
-│   │   │   │   ├── CollectionDetailPage.jsx
+│   │   │   ├── collections/
+│   │   │   │   ├── CollectionPage.jsx
 │   │   │   │   └── components/
+│   │   │   │       ├── CollectionCard.jsx
+│   │   │   │       ├── CollectionModal.jsx
+│   │   │   │       └── CollectionDetailModal.jsx
 │   │   │   │
-│   │   │   ├── admin/         # Admin Panel
-│   │   │   │   ├── dashboard/
-│   │   │   │   │   └── AdminDashboardPage.jsx
-│   │   │   │   ├── users/
-│   │   │   │   │   └── AdminUsersPage.jsx
-│   │   │   │   └── showcases/
-│   │   │   │       └── AdminShowcasesPage.jsx
+│   │   │   ├── profile/
+│   │   │   │   ├── ProfilePage.jsx
+│   │   │   │   ├── DashboardPage.jsx
+│   │   │   │   └── UserOverviewPage.jsx
 │   │   │   │
-│   │   │   └── about/         # About Page
+│   │   │   ├── admin/
+│   │   │   │   ├── AdminDashboardPage.jsx
+│   │   │   │   ├── AdminUsersPage.jsx
+│   │   │   │   ├── AdminPendingReviewPage.jsx
+│   │   │   │   ├── AdminAnalyticsPage.jsx
+│   │   │   │   ├── AdminOverviewPage.jsx
+│   │   │   │   ├── CategoryManagementPage.jsx
+│   │   │   │   └── TagManagementPage.jsx
+│   │   │   │
+│   │   │   └── about/
 │   │   │       └── AboutPage.jsx
 │   │   │
 │   │   ├── services/          # API Services
-│   │   │   ├── api.js         # Axios instance configuration
-│   │   │   ├── auth.service.js      # Authentication API
-│   │   │   ├── showcase.service.js  # Showcase API
+│   │   │   ├── api.js
+│   │   │   ├── auth.service.js
+│   │   │   ├── showcase.service.js
 │   │   │   ├── collection.service.js
 │   │   │   ├── category.service.js
 │   │   │   ├── tag.service.js
-│   │   │   └── admin.service.js     # Admin API
+│   │   │   ├── user.service.js
+│   │   │   └── admin.service.js
 │   │   │
-│   │   ├── context/           # React Context
-│   │   │   ├── AuthContext.jsx      # Authentication state
-│   │   │   └── ThemeContext.jsx     # Dark mode state
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx
+│   │   │   ├── ThemeContext.jsx
+│   │   │   └── CollectionContext.jsx
 │   │   │
-│   │   ├── utils/             # Utility Functions
-│   │   │   ├── cacheManager.js      # SessionStorage cache
-│   │   │   ├── dateFormatter.js
-│   │   │   └── validators.js
+│   │   ├── utils/
+│   │   │   └── cacheManager.js
 │   │   │
-│   │   ├── hooks/             # Custom React Hooks
-│   │   │   ├── useAuth.js
-│   │   │   ├── useTheme.js
-│   │   │   └── useDebounce.js
+│   │   ├── hooks/
+│   │   │   └── useToast.js
 │   │   │
-│   │   ├── App.jsx            # Main App Component
-│   │   ├── main.jsx           # React entry point
-│   │   └── index.css          # Global styles
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
 │   │
-│   ├── public/                # Static Assets
-│   │   ├── favicon.ico
-│   │   └── images/
+│   ├── public/
+│   │   ├── audio/
+│   │   ├── fonts/
+│   │   ├── img/
+│   │   ├── videos/
+│   │   ├── favicon.svg
+│   │   ├── logo-black.svg
+│   │   └── logo-white.svg
 │   │
-│   ├── .env.example          # Environment template
-│   ├── package.json          # Node.js dependencies
-│   ├── vite.config.js        # Vite configuration
-│   ├── tailwind.config.js    # Tailwind configuration
-│   └── eslint.config.js      # ESLint rules
+│   ├── .env.example
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   └── eslint.config.js
 │
-└── README.md                 # Project documentation
+└── README.md
 ```
+
+### Component Organization Strategy
+
+The frontend components are now organized into logical groups:
+
+- **common/** - Reusable components used across the application (Button, Spinner, ErrorBoundary)
+- **feedback/** - Components for user feedback and confirmations (Toast, Modals)
+- **form/** - Form-related components including image upload and cropping functionality
+- **ui/** - Pure visual components without complex business logic (animations, skeletons, avatars)
+- **layout/** - Application layout structure (Navbar, Footer, Sidebar)
 
 ---
 
@@ -825,65 +874,57 @@ POST   /api/admin/showcases/bulk-reject      # Bulk reject
 
 ---
 
-## 🎨 UI/UX Features & Optimizations
+## Performance & Optimization
 
-### Performance Optimizations
+### Image Loading Optimization
 
-1. **Optimistic UI Pattern**
-   - Cache-first data loading
-   - Instant page transitions
-   - Background data refresh
-   - SessionStorage caching (5min TTL)
+**LazyImage Component** - Intelligent image loading with retry mechanism:
+- Intersection Observer API for viewport-based loading
+- Automatic retry (up to 2 attempts) for failed images
+- 15-second timeout for external API (Microlink screenshot generation)
+- Graceful error states with user-friendly fallbacks
+- Loading skeletons for better perceived performance
 
-2. **Code Splitting**
-   - Lazy loading untuk routes
-   - Dynamic imports untuk heavy components
-   - Reduced initial bundle size
+### Caching Strategy
 
-3. **Image Optimization**
-   - Lazy loading images
-   - Responsive images dengan srcset
-   - WebP format support
-   - Progressive image loading
+**SessionStorage Cache Manager**:
+- Cache-first data loading strategy
+- 5-minute TTL (Time To Live) for showcase data
+- Background refresh for stale data
+- Optimistic UI updates
 
-4. **API Optimizations**
-   - Request debouncing (search)
-   - Pagination untuk large datasets
-   - Selective field loading
-   - Response caching
+### Code Organization
 
-### Animations & Transitions
+**Component Structure**:
+- Logical separation by purpose (common, feedback, form, ui, layout)
+- Feature-based modules for better maintainability
+- Reusable components following DRY principles
+- Clear import paths after restructuring
 
-- Framer Motion untuk smooth page transitions
-- Micro-interactions pada buttons & cards
-- Loading skeletons untuk better perceived performance
+### API Optimizations
+
+- Request debouncing for search functionality
+- Pagination for large datasets (50 items per page)
+- Efficient filtering and sorting on backend
+- Response caching with cache invalidation
+
+### Animations & Interactions
+
+- Framer Motion for smooth transitions
+- Micro-interactions on interactive elements
 - Smooth scroll behavior
-- Hover effects dengan scale transformations
+- Optimized animation performance
 
-### Accessibility (A11y)
+### Responsive Design
 
-- Semantic HTML elements
-- ARIA labels untuk interactive elements
-- Keyboard navigation support
-- Focus visible indicators
-- Screen reader friendly
-- High contrast dark mode
+The application follows mobile-first approach with breakpoints:
 
-### Responsive Breakpoints
-
-```css
-/* Mobile */
-@media (max-width: 639px) { ... }
-
-/* Tablet */
-@media (min-width: 640px) and (max-width: 1023px) { ... }
-
-/* Desktop */
-@media (min-width: 1024px) { ... }
-
-/* Large Desktop */
-@media (min-width: 1280px) { ... }
-```
+| Breakpoint | Screen Size | Target Devices |
+|-----------|-------------|----------------|
+| Mobile | < 640px | Smartphones |
+| Tablet | 640px - 1023px | Tablets, Small laptops |
+| Desktop | 1024px - 1279px | Laptops, Desktops |
+| Large | ≥ 1280px | Large displays |
 
 ---
 
@@ -1304,27 +1345,48 @@ npm run build
 
 ---
 
-## 📚 Additional Resources
+## Technical Documentation
 
-### Laravel Documentation
-- [Official Laravel Docs](https://laravel.com/docs/10.x)
-- [Laravel Sanctum](https://laravel.com/docs/10.x/sanctum)
-- [Eloquent ORM](https://laravel.com/docs/10.x/eloquent)
+### Architecture Decisions
 
-### React Documentation
-- [Official React Docs](https://react.dev/)
-- [React Router](https://reactrouter.com/)
-- [Vite Guide](https://vitejs.dev/guide/)
+**Backend (Laravel)**:
+- RESTful API architecture
+- Token-based authentication with Laravel Sanctum
+- Repository pattern for data access (via Eloquent ORM)
+- Middleware-based authorization
+- PostgreSQL for relational data integrity
 
-### Styling & UI
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Lucide Icons](https://lucide.dev/)
+**Frontend (React)**:
+- Component-based architecture with feature modules
+- Context API for global state management
+- Service layer pattern for API calls
+- Organized component structure by functionality
+- Optimistic UI patterns for better UX
 
-### Tutorials & Learning
-- [Laracasts](https://laracasts.com/) - Laravel video tutorials
-- [React Official Tutorial](https://react.dev/learn)
-- [Tailwind UI Components](https://tailwindui.com/)
+### Key Libraries & Dependencies
+
+**Backend**:
+- Laravel 10.x - PHP framework
+- Laravel Sanctum - API authentication
+- PostgreSQL - Database
+
+**Frontend**:
+- React 18.3.1 - UI library
+- Vite 5.4.11 - Build tool
+- React Router DOM 7.1.1 - Routing
+- Tailwind CSS 3.4.17 - Styling
+- Framer Motion 11.15.0 - Animations
+- Axios 1.7.9 - HTTP client
+- React Easy Crop 5.5.6 - Image cropping
+- Lucide React 0.469.0 - Icons
+
+### External Resources
+
+- [Laravel Documentation](https://laravel.com/docs/10.x)
+- [React Documentation](https://react.dev/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Vite Documentation](https://vitejs.dev/guide/)
+- [Framer Motion Documentation](https://www.framer.com/motion/)
 
 ---
 
@@ -1386,27 +1448,29 @@ Terima kasih kepada:
 
 ---
 
-## 📈 Project Stats
+## Project Statistics
 
-- **Lines of Code:** ~15,000+ (Frontend + Backend)
-- **Components:** 50+ React components
+### Codebase Metrics
+- **Total Lines of Code:** ~15,000+ (Frontend + Backend combined)
+- **React Components:** 60+ components (organized into common, feedback, form, ui, layout, features)
 - **API Endpoints:** 40+ RESTful endpoints
-- **Database Tables:** 8 tables dengan relationships
-- **Development Time:** 2 bulan (November - Desember 2024)
-- **Contributors:** 3 developers
+- **Database Tables:** 8 tables with proper relationships
+- **Development Duration:** November - December 2024
+
+### Component Breakdown
+- Common Components: 3 (Button, Spinner, ErrorBoundary)
+- Feedback Components: 3 (Toast, ConfirmationModal, DeleteAccountModal)
+- Form Components: 4 (ImageUpload, ImageCropModal, CircularImageCropper, SearchBar)
+- UI Components: 10 (Globe, GridMotion, LazyImage, Pagination, etc.)
+- Layout Components: 5 (Navbar, Footer, Layout, DashboardLayout, DashboardSidebar)
+- Feature Modules: 8 (Home, Landing, Auth, Showcase, Collections, Profile, Admin, About)
 
 ---
 
 <div align="center">
 
-## 🌟 Star This Repository
+**Made by Team Orasis - Universitas Negeri Jakarta**
 
-Jika project ini membantu Anda, berikan ⭐ di GitHub!
-
-**Made with ❤️ by Team Orasis**
-
----
-
-**Happy Coding! 🚀**
+*Perancangan dan Pemrograman Website - Semester 3 (2024/2025)*
 
 </div>

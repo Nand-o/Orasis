@@ -1,3 +1,14 @@
+/**
+ * DesignModal
+ *
+ * Modal besar untuk melihat detail showcase secara penuh.
+ * Menampilkan gambar berukuran besar, tags, warna, dan aksi seperti
+ * visit live site atau share.
+ *
+ * Props:
+ * - `design` (object): data showcase yang akan ditampilkan
+ * - `onClose` (function): callback untuk menutup modal
+ */
 import React from 'react';
 import { X, ExternalLink, Share2 } from 'lucide-react';
 

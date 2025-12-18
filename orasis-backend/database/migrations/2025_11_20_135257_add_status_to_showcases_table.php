@@ -1,4 +1,10 @@
 <?php
+/**
+ * Migration: add_status_to_showcases_table
+ * Deskripsi: Menambahkan kolom `status` pada tabel `showcases` untuk mendukung alur moderasi.
+ * Kolom tambahan: status (enum/string) — contoh nilai: 'published', 'pending', 'rejected', 'draft'
+ * Catatan: Perubahan ini digunakan untuk memisahkan konten yang harus dimoderasi sebelum tampil publik.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

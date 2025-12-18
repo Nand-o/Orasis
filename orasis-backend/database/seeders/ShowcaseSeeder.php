@@ -1,4 +1,16 @@
 <?php
+/**
+ * Seeder: ShowcaseSeeder
+ * Deskripsi: Mengisi tabel `showcases` dari file CSV `database/data/showcase_data.csv`.
+ * Format CSV: kolom minimal yang diharapkan termasuk title, category_name, description, tags(json/string), url_website, image_url, logo_url
+ * Perilaku:
+ * - Membaca CSV baris per baris, membuat atau mengambil (firstOrCreate) setiap showcase berdasarkan `title`.
+ * - Menyinkronkan tag yang ditemukan pada kolom tags; tag dibuat menggunakan Tag::firstOrCreate().
+ * - Menetapkan `status` = 'approved' untuk data seeded.
+ * Catatan penting:
+ * - Pastikan file `database/data/showcase_data.csv` tersedia sebelum menjalankan seeder.
+ * - Seeder ini mengandalkan tabel `categories` untuk memetakan nama kategori ke `category_id`.
+ */
 
 namespace Database\Seeders;
 
@@ -366,43 +378,56 @@ class ShowcaseSeeder extends Seeder
             ],
         ];
 
-        foreach ($showcases as $index => $item) {
-            // Extract tags from item
-            $tags = $item['tags'] ?? [];
-            unset($item['tags']);
+        $file = fopen($csvPath, "r");
+        fgetcsv($file);
+
+        $index = 0; 
+
+        while (($data = fgetcsv($file, 2000, ",")) !== FALSE) {
             
-            // Convert category name to category_id
-            if (isset($item['category'])) {
-                $item['category_id'] = $this->getCategoryId($item['category']);
-                unset($item['category']);
+            $rawTags = $data[3];
+            $validJsonTags = str_replace("'", '"', $rawTags);
+            $tagsArray = json_decode($validJsonTags) ?? [];
+
+            $daysAgo = max(0, 21 - $index);
+            $timestamp = now()->subDays($daysAgo);
+
+            $logoUrl = $data[6] ?? null;
+            if ($logoUrl && strlen($logoUrl) > 255) {
+                $logoUrl = null;
             }
-            
-            // Add different timestamps (older to newer, 21 days ago to today)
-            $daysAgo = 21 - $index;
-            $item['created_at'] = now()->subDays($daysAgo);
-            $item['updated_at'] = $item['created_at'];
-            
-            // Create the showcase using firstOrCreate (check by title and user_id)
+
             $showcase = Showcase::firstOrCreate(
                 [
-                    'title' => $item['title'],
-                    'user_id' => $item['user_id']
+                    'title' => $data[0] 
                 ],
-                $item
+                [
+                    'user_id'       => rand(2, 4),
+                    'category_id'   => $this->getCategoryId($data[1]),
+                    'description'   => $data[2],
+                    'url_website'   => $data[4], 
+                    'image_url'     => $data[5],
+                    'logo_url'      => $logoUrl,
+                    'status'        => 'approved',
+                    'created_at'    => $timestamp,
+                    'updated_at'    => $timestamp,
+                ]
             );
-            
-            // Update timestamps even if exists
-            $showcase->update([
-                'created_at' => $item['created_at'],
-                'updated_at' => $item['updated_at']
-            ]);
-            
-            // Attach tags to the showcase (sync to avoid duplicates)
-            if (!empty($tags)) {
-                $tagIds = Tag::whereIn('name', $tags)->pluck('id')->toArray();
+
+            if (!empty($tagsArray)) {
+                $tagIds = [];
+                foreach ($tagsArray as $tagName) {
+                    $cleanName = trim($tagName);
+                    
+                    $tag = Tag::firstOrCreate(
+                        ['name' => $cleanName], 
+                    );
+                    
+                    $tagIds[] = $tag->id;
+                }
+                
                 $showcase->tags()->sync($tagIds);
             }
         }*/
     }
 }
-

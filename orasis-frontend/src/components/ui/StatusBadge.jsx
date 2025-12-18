@@ -1,3 +1,15 @@
+/**
+ * StatusBadge
+ *
+ * Komponen kecil yang menampilkan status sebuah showcase (approved, pending,
+ * rejected). Memiliki ikon, palet warna, dan tooltip singkat saat hover.
+ * Digunakan di daftar showcase, detail, dan area moderation untuk menunjukkan
+ * status review secara visual.
+ *
+ * Props:
+ * - `status` (string): 'approved'|'pending'|'rejected'
+ * - `size` (string): 'sm'|'md'|'lg'
+ */
 import React, { useState } from 'react';
 import { CheckCircle, Clock, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +27,7 @@ const StatusBadge = ({ status, size = 'md' }) => {
         pending: {
             icon: Clock,
             color: 'text-yellow-600 dark:text-yellow-400',
-            bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+            bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
             label: 'Pending Review'
         },
         rejected: {
@@ -42,7 +54,7 @@ const StatusBadge = ({ status, size = 'md' }) => {
     };
 
     return (
-        <div 
+        <div
             className="relative inline-block"
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}

@@ -1,3 +1,16 @@
+/**
+ * Pagination
+ *
+ * Komponen navigasi pagination reusable.
+ * Props penting:
+ * - `currentPage` (number): halaman saat ini
+ * - `totalPages` (number): total halaman
+ * - `onPageChange` (function): callback saat pindah halaman
+ * - `itemsPerPage` (number)
+ * - `totalItems` (number)
+ *
+ * Menampilkan kontrol halaman untuk desktop dan indicator sederhana untuk mobile.
+ */
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
