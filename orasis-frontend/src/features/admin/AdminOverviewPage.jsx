@@ -6,7 +6,7 @@
  * dari beberapa endpoint admin untuk ditampilkan di satu layar.
  */
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
     TrendingUp,
@@ -17,7 +17,10 @@ import {
     XCircle,
     Eye,
     ArrowUp,
-    ArrowDown
+    ArrowDown,
+    RefreshCw,
+    Download,
+    X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/admin.service';
@@ -27,6 +30,15 @@ const AdminOverviewPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [exportOptions, setExportOptions] = useState({
+        summary: true,
+        showcases: true,
+        users: false,
+        activity: false
+    });
+    const [exporting, setExporting] = useState(false);
     const [stats, setStats] = useState({
         totalShowcases: 0,
         approvedShowcases: 0,
@@ -45,9 +57,13 @@ const AdminOverviewPage = () => {
         fetchDashboardData();
     }, []);
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = async (isRefresh = false) => {
         try {
-            setLoading(true);
+            if (isRefresh) {
+                setRefreshing(true);
+            } else {
+                setLoading(true);
+            }
             
             // Fetch showcases and users in parallel
             const [showcasesResponse, usersResponse] = await Promise.all([
@@ -101,6 +117,119 @@ const AdminOverviewPage = () => {
             console.error('Failed to fetch dashboard data:', error);
         } finally {
             setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    const handleRefresh = () => {
+        fetchDashboardData(true);
+    };
+
+    const toggleExportOption = (option) => {
+        setExportOptions(prev => ({
+            ...prev,
+            [option]: !prev[option]
+        }));
+    };
+
+    const generateCSV = (data, filename) => {
+        const csv = data.map(row => row.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleExport = async () => {
+        setExporting(true);
+        
+        try {
+            const timestamp = new Date().toISOString().split('T')[0];
+
+            // Export Summary
+            if (exportOptions.summary) {
+                const summaryData = [
+                    ['Metric', 'Value', 'Date'],
+                    ['Total Users', stats.totalUsers, timestamp],
+                    ['Total Showcases', stats.totalShowcases, timestamp],
+                    ['Approved Showcases', stats.approvedShowcases, timestamp],
+                    ['Pending Showcases', stats.pendingShowcases, timestamp],
+                    ['Rejected Showcases', stats.rejectedShowcases, timestamp],
+                    ['Total Views', stats.totalViews, timestamp],
+                    ['New Users This Month', stats.newUsersThisMonth, timestamp]
+                ];
+                generateCSV(summaryData, `dashboard-summary-${timestamp}.csv`);
+            }
+
+            // Export Showcases
+            if (exportOptions.showcases) {
+                const showcasesResponse = await adminService.getAllShowcases();
+                const showcases = showcasesResponse.data || [];
+                const showcasesData = [
+                    ['ID', 'Title', 'Author', 'Status', 'Category', 'Views', 'Created Date', 'URL']
+                ];
+                showcases.forEach(s => {
+                    showcasesData.push([
+                        s.id,
+                        `"${s.title.replace(/"/g, '""')}"`,
+                        `"${s.user?.name || 'Unknown'}"`,
+                        s.status,
+                        s.category?.name || 'Uncategorized',
+                        s.views_count || 0,
+                        new Date(s.created_at).toLocaleDateString(),
+                        s.url_website || ''
+                    ]);
+                });
+                generateCSV(showcasesData, `showcases-${timestamp}.csv`);
+            }
+
+            // Export Users
+            if (exportOptions.users) {
+                const usersResponse = await adminService.getAllUsers();
+                const users = usersResponse.data || [];
+                const usersData = [
+                    ['ID', 'Name', 'Email', 'Role', 'Joined Date', 'Total Showcases']
+                ];
+                users.forEach(u => {
+                    usersData.push([
+                        u.id,
+                        `"${u.name.replace(/"/g, '""')}"`,
+                        u.email,
+                        u.role,
+                        new Date(u.created_at).toLocaleDateString(),
+                        u.showcases?.length || 0
+                    ]);
+                });
+                generateCSV(usersData, `users-${timestamp}.csv`);
+            }
+
+            // Export Activity
+            if (exportOptions.activity) {
+                const activityData = [
+                    ['User', 'Action', 'Type', 'Date']
+                ];
+                recentActivity.forEach(a => {
+                    activityData.push([
+                        `"${a.user.replace(/"/g, '""')}"`,
+                        `"${a.action.replace(/"/g, '""')}"`,
+                        a.type,
+                        a.time
+                    ]);
+                });
+                generateCSV(activityData, `activity-log-${timestamp}.csv`);
+            }
+
+            setShowExportModal(false);
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Failed to export data. Please try again.');
+        } finally {
+            setExporting(false);
         }
     };
 
@@ -161,11 +290,20 @@ const AdminOverviewPage = () => {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors">
-                        Download Report
+                    <button 
+                        onClick={() => setShowExportModal(true)}
+                        className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export Report
                     </button>
-                    <button className="px-4 py-2 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 dark:hover:bg-yellow-300 dark:text-main-black text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-violet-500/20">
-                        Refresh Data
+                    <button 
+                        onClick={handleRefresh}
+                        disabled={refreshing}
+                        className="px-4 py-2 bg-violet-300/90 hover:bg-violet-300 dark:bg-yellow-300/90 dark:hover:bg-yellow-300 dark:text-main-black text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                        {refreshing ? 'Refreshing...' : 'Refresh Data'}
                     </button>
                 </div>
             </div>
@@ -333,6 +471,137 @@ const AdminOverviewPage = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Export Modal */}
+            <AnimatePresence>
+                {showExportModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowExportModal(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative bg-white dark:bg-dark-gray rounded-3xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-white/10"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/20 rounded-2xl flex items-center justify-center">
+                                        <Download className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Export Data</h2>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Select data to export</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowExportModal(false)}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors text-gray-500 dark:text-gray-400"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Options */}
+                            <div className="space-y-3 mb-6">
+                                <label className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors group">
+                                    <input
+                                        type="checkbox"
+                                        checked={exportOptions.summary}
+                                        onChange={() => toggleExportOption('summary')}
+                                        className="w-5 h-5 rounded border-gray-300 dark:border-white/20 text-violet-600 dark:text-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300 focus:ring-offset-0 cursor-pointer"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-yellow-300 transition-colors">
+                                            Dashboard Summary
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">Overview statistics and metrics</p>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors group">
+                                    <input
+                                        type="checkbox"
+                                        checked={exportOptions.showcases}
+                                        onChange={() => toggleExportOption('showcases')}
+                                        className="w-5 h-5 rounded border-gray-300 dark:border-white/20 text-violet-600 dark:text-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300 focus:ring-offset-0 cursor-pointer"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-yellow-300 transition-colors">
+                                            All Showcases
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">Complete showcase data with details</p>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors group">
+                                    <input
+                                        type="checkbox"
+                                        checked={exportOptions.users}
+                                        onChange={() => toggleExportOption('users')}
+                                        className="w-5 h-5 rounded border-gray-300 dark:border-white/20 text-violet-600 dark:text-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300 focus:ring-offset-0 cursor-pointer"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-yellow-300 transition-colors">
+                                            All Users
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">User list with join dates</p>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors group">
+                                    <input
+                                        type="checkbox"
+                                        checked={exportOptions.activity}
+                                        onChange={() => toggleExportOption('activity')}
+                                        className="w-5 h-5 rounded border-gray-300 dark:border-white/20 text-violet-600 dark:text-yellow-300 focus:ring-violet-500 dark:focus:ring-yellow-300 focus:ring-offset-0 cursor-pointer"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-yellow-300 transition-colors">
+                                            Activity Log
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">Recent platform activities</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowExportModal(false)}
+                                    disabled={exporting}
+                                    className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleExport}
+                                    disabled={exporting || (!exportOptions.summary && !exportOptions.showcases && !exportOptions.users && !exportOptions.activity)}
+                                    className="flex-1 px-4 py-3 bg-violet-600 hover:bg-violet-700 dark:bg-yellow-300/90 dark:hover:bg-yellow-300 text-white dark:text-main-black rounded-xl font-bold transition-colors shadow-lg shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {exporting ? (
+                                        <>
+                                            <RefreshCw className="w-4 h-4 animate-spin" />
+                                            Exporting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Download className="w-4 h-4" />
+                                            Export CSV
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
